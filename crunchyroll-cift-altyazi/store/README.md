@@ -11,6 +11,7 @@ Bu klasör, eklentiyi Chrome Web Mağazası'na yüklerken gereken her şeyi içe
 | `gorseller/kucuk-tanitim-440x280.png` | Küçük tanıtım kutusu |
 | `gorseller/buyuk-afis-1400x560.png` | Büyük afiş (isteğe bağlı) |
 | `gorseller/opera/*-612x408.png` | Opera mağazası için ekran görüntüleri (beyaz zemin) |
+| `gorseller/opera/tanitim-300x188.png` | Opera tanıtım görseli |
 
 ## 1. Senin yapman gerekenler
 
@@ -160,16 +161,108 @@ Aynı `…-magaza.zip` dosyası Opera ve Edge mağazalarına da yüklenebilir; i
 ### Opera Eklentileri
 
 1. [addons.opera.com/developer](https://addons.opera.com/developer/) adresinde hesap aç, **Upload** ile `dist/crunchyroll-cift-altyazi-1.0.0-magaza.zip` dosyasını yükle.
-2. Chrome formundan farkları:
+2. **General** sekmesi:
+   - **Category:** Entertainment. Listede yoksa Fun.
+   - **I want my extension to be available for auto-publishing:** işaretle. Otomatik analizden geçerse elle inceleme kuyruğunu beklemeden yayınlanır.
+   - **Hide the add-on from search results:** yalnızca bağlantıyı bilenlere dağıtmak istiyorsan işaretle. Chrome'daki "Liste dışı"nın karşılığı.
+3. **Promotional Image** sekmesi: `gorseller/opera/tanitim-300x188.png`. İsteğe bağlı ama Opera editörleri eklentiyi öne çıkarmaya karar verirse bu görseli kullanıyor.
+4. **Versions → 1.0.0** sayfasındaki alanlar:
    - **Ekran görüntüleri:** `gorseller/opera/` klasöründeki dört görsel. Opera **612×408** (en fazla 800×600) ve **beyaz zemin** istiyor; 1280×800'lük Chrome görselleri kabul edilmez.
-   - **Kategori:** Entertainment.
-   - **Özet, açıklama ve gizlilik politikası:** Chrome'daki metinlerin aynısı kullanılabilir.
-   - **Destek sayfası:** boş bırakılırsa reddedilebiliyor; gizlilik politikası adresi ya da depo adresi yazılabilir.
-3. İnceleme elle yapılıyor, genelde 1–2 hafta sürüyor.
+   - **Özet ve açıklama:** Chrome'daki metinlerin aynısı.
+   - **Service website URL:** boş bırak. Bu alan, eklentinin bağlandığı servisin sahibi olanlar içindir; buraya `crunchyroll.com` yazmak "eklentiyi Crunchyroll yapıyor" izlenimi verir ve marka gerekçesiyle reddedilir.
+   - **Extension support page URL:** deponun Issues sayfası ya da gizlilik politikası adresi. Boş bırakılırsa reddedilebiliyor.
+   - **Extension source code URL (public / for Opera moderators):** **zorunlu.** Pakette küçültülmüş tek dosya var (`src/background/vendor/anthropic-sdk.mjs`, esbuild `--minify` çıktısı) ve Opera, kod küçültülmüş ya da birleştirilmişse kaynak bağlantısı istiyor. Herkese açık depo adresini iki alana da yaz.
+   - **Build instructions:** aşağıdaki metin.
+   - **License URL / Full license text:** boş bırakılırsa standart telif hakkı geçerli olur. Depoda bir LICENSE dosyası varsa adresini ver ya da metni buraya yapıştır.
+   - **Privacy policy URL:** yayınladığın gizlilik politikası adresi. URL verilince "Full privacy policy text" alanını doldurmak gerekmiyor.
+5. İnceleme elle yapılıyor, genelde 1–2 hafta sürüyor.
+
+**Build instructions** alanına yapıştırılacak metin (her yeni sürümde kaynak bağlantısı o sürüme karşılık gelmeli):
+
+```
+Only one file in the package is minified: src/background/vendor/anthropic-sdk.mjs.
+It is the official open-source Anthropic SDK (MIT licence, version 0.127.0), bundled
+with esbuild. Its licence text is kept at the end of that file and in
+src/background/vendor/anthropic-sdk.LICENSE.txt. Every other file is hand-written
+and shipped unmodified.
+
+Requirements: Node.js 20 or newer, npm.
+
+1. Download the source from the link above.
+2. cd crunchyroll-cift-altyazi
+3. npm install
+   (installs @anthropic-ai/sdk 0.127.0 and esbuild 0.28.2 as dev dependencies)
+4. npm run vendor
+   Rebuilds the bundled file with exactly this command:
+   esbuild tools/anthropic-entry.js --bundle --format=esm --platform=browser
+     --target=chrome111 --minify --legal-comments=eof
+     --outfile=src/background/vendor/anthropic-sdk.mjs
+   tools/anthropic-entry.js only re-exports the SDK client used by the extension.
+5. npm test
+   Runs 34 unit tests for the subtitle parsers, the player hook, the translation
+   services and the packaging script.
+6. npm run package
+   Writes dist/crunchyroll-cift-altyazi-1.0.0-magaza.zip, which is the package
+   uploaded to the store.
+```
 
 Opera kullanıcıları, eklenti Chrome Web Mağazası'nda yayınlandıktan sonra onu [Install Chrome Extensions](https://addons.opera.com/en/extensions/details/install-chrome-extensions/) eklentisiyle de kurabiliyor. Opera mağazası şart değil, yalnızca mağazada aranınca bulunmak için gerekiyor.
 
 Opera 136'da denendi: paket MV3 olarak yükleniyor, kurulum izinleri yalnızca `crunchyroll.com` + `translate.googleapis.com` + `storage` olarak görünüyor ve MAIN dünyasındaki kanca crunchyroll.com'da `fetch` ile `XMLHttpRequest`'i sarıyor.
+
+**İngilizce liste metni.** Opera'da liste dili sekmesi **English (en)** geliyor ve paketteki Türkçe özet oraya düşüyor; İngilizce sekmesine İngilizce metin yazılmalı. Dil eklenemiyor: Opera liste dillerini paketteki `_locales` klasöründen alıyor, bizim pakette `_locales` yok. Türkçe kullanıcılar için, İngilizce açıklamanın sonuna kısa bir Türkçe paragraf eklemek yeterli. Gerçek bir Türkçe liste istenirse eklentiye `default_locale` + `_locales/en` + `_locales/tr` eklenip yeni sürüm yüklenmeli (aynısı Chrome tarafı için de geçerli).
+
+Summary:
+
+```
+Shows the original Crunchyroll subtitle and its translation into the language you choose at the same time.
+```
+
+Description:
+
+```
+Crunchyroll does not offer subtitles in every language. This extension shows the original subtitle of the episode you are watching (English, for example) together with its translation into the language you choose, as two lines over the video.
+
+HOW IT WORKS
+• When you open an episode, the extension reads the subtitle that the Crunchyroll player itself loads and translates it into the language you picked.
+• If Crunchyroll already has an official subtitle in that language, it shows that one instead of a machine translation.
+• Both lines stay inside the picture area of the video and remain visible in fullscreen.
+
+FEATURES
+• Pick your translation service: Google Translate (free, used by default), DeepL or Claude with your own API key.
+• Sentences split across two subtitle lines are translated as one, so the result reads naturally.
+• Translation starts at the point you are watching and follows you when you skip ahead.
+• Translated episodes are kept in your browser, so the same episode is never translated twice.
+• Signs and on-screen text are translated as well, in a smaller size at the top.
+• Font size, colours, background opacity and position are adjustable.
+• Keyboard shortcuts: Alt+Shift+S turns the subtitles on and off, Alt+Shift+Y hides the translation line.
+• So the lines do not overlap the subtitles burned into the video, the extension uses the stream Crunchyroll serves with subtitles turned off. This can be switched off in the settings.
+
+PRIVACY
+• No data is collected. There is no advertising, analytics or tracking code.
+• Subtitle text is sent only to the translation service you select.
+• Your API keys are stored only in your browser.
+• Your Crunchyroll account, cookies and watch history are never accessed.
+
+NOTES
+• You need the right to watch the episode on Crunchyroll. The extension does not download video, it only draws subtitles.
+• Works in Opera and other Chromium-based browsers.
+
+This extension is not affiliated with or endorsed by Crunchyroll. Crunchyroll is a trademark of Crunchyroll, LLC.
+```
+
+Açıklamanın sonuna eklenecek Türkçe paragraf:
+
+```
+TÜRKÇE
+Crunchyroll'da Türkçe altyazı yoksa bu eklenti bölümün İngilizce altyazısını alır ve Türkçe çevirisiyle birlikte, iki satır halinde videonun üzerinde gösterir. Çeviri servisi olarak ücretsiz Google Çeviri, ya da kendi API anahtarınla DeepL veya Claude kullanılabilir. Eklentinin menüsü Türkçedir.
+```
+
+Changelog (1.0.0):
+
+```
+First release.
+```
 
 ### Microsoft Edge Eklentileri
 
