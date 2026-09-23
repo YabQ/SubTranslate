@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Mağaza görseli</title>
+  <!-- Chrome Web Mağazası görselleri: ?view=popup | services (1280x800), tile (440x280), marquee (1400x560) -->
+  <style>
+    html, body { margin: 0; background: #0c0d11; }
+    body { font-family: "Segoe UI", system-ui, sans-serif; color: #fff; overflow: hidden; }
+    .canvas {
+      position: relative; overflow: hidden; box-sizing: border-box;
+      background:
+        radial-gradient(900px 520px at 85% 15%, rgba(244, 117, 33, .22), transparent 60%),
+        radial-gradient(700px 500px at 10% 100%, rgba(91, 59, 110, .45), transparent 60%),
+        linear-gradient(135deg, #16171d, #0c0d11);
+    }
+    em { font-style: normal; color: #f47521; }
+
+    /* Ekran görüntüsü: solda metin, sağda eklenti menüsü */
+    .shot { width: 1280px; height: 800px; display: grid; grid-template-columns: 1fr 404px; align-items: center; gap: 56px; padding: 0 90px; }
+    .shot h1 { font-size: 50px; line-height: 1.12; margin: 0 0 26px; letter-spacing: -.01em; }
+    .shot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; font-size: 22px; line-height: 1.35; color: #d9dbe1; }
+    .shot li { display: flex; gap: 14px; }
+    .shot li::before { content: ""; flex: none; width: 10px; height: 10px; margin-top: 11px; border-radius: 50%; background: #f47521; box-shadow: 0 0 0 4px rgba(244, 117, 33, .2); }
+    .frame { width: 404px; height: 704px; border-radius: 16px; overflow: hidden; background: #0f1013; box-shadow: 0 30px 90px rgba(0, 0, 0, .65), 0 0 0 1px rgba(255, 255, 255, .08); }
+    .frame iframe { width: 404px; height: 704px; border: 0; display: block; }
+
+    /* Tanıtım kutuları */
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand img { display: block; }
+    .brand h1 { margin: 0; line-height: 1.08; letter-spacing: -.01em; }
+    .brand p { margin: 6px 0 0; color: #c9ccd4; }
+    .demo {
+      border-radius: 14px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      background: linear-gradient(180deg, #141a3a 0%, #5b3b6e 60%, #e8906a 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+    }
+    .demo span {
+      display: inline-block; font-weight: 700; padding: .05em .35em; border-radius: .2em; background: rgba(0, 0, 0, .38);
+      text-shadow: 0 0 .08em #000, .05em .05em .06em #000, -.05em -.05em .06em #000;
+    }
+    .demo .sec { color: #ffd84d; }
+
+    .tile { width: 440px; height: 280px; padding: 24px 26px; display: flex; flex-direction: column; justify-content: space-between; }
+    .tile .brand h1 { font-size: 25px; }
+    .tile .brand p { font-size: 14px; }
+    .tile .demo { height: 116px; padding-bottom: 12px; gap: 4px; }
+    .tile .demo span { font-size: 17px; }
+
+    .marquee { width: 1400px; height: 560px; padding: 0 90px; display: grid; grid-template-columns: 1fr 640px; align-items: center; gap: 60px; }
+    .marquee .brand { flex-direction: column; align-items: flex-start; gap: 22px; }
+    .marquee .brand h1 { font-size: 58px; }
+    .marquee .brand p { font-size: 26px; margin-top: 12px; }
+    .marquee .demo { height: 360px; padding-bottom: 30px; gap: 8px; }
+    .marquee .demo span { font-size: 30px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    (() => {
+      const view = new URLSearchParams(location.search).get('view') || 'popup';
+      const root = document.getElementById('root');
+      const demo = `
+        <div class="demo">
+          <span class="sec">Geri gelip gelmeyeceğini bilmiyorum.</span>
+          <span>I don't know if he will come back.</span>
+        </div>`;
+      const shots = {
+        popup: {
+          title: 'İki dil, <em>tek ekranda</em>',
+          items: [
+            'Orijinal altyazı ve Türkçe çevirisi aynı anda',
+            'Crunchyroll\'da resmi çeviri varsa onu kullanır',
+            'Çeviri önce izlediğin yerden başlar',
+            'Yazı boyutu, renk ve konum ayarları',
+          ],
+          src: 'popup-preview.html?s=done&p=google',
+        },
+        services: {
+          title: 'Çeviriyi <em>istediğin gibi</em> yap',
+          items: [
+            'Google Çeviri: ücretsiz, anahtar gerekmez',
+            'DeepL: kendi API anahtarınla',
+            'Claude: sahneyi anlayan, üslubunu seçebildiğin çeviri',
+            'Çeviriler saklanır, aynı bölüm tekrar çevrilmez',
+          ],
+          src: 'popup-preview.html?s=done&p=claude',
+        },
+      };
+
+      if (shots[view]) {
+        const s = shots[view];
+        root.innerHTML = `
+          <div class="canvas shot">
+            <div>
+              <h1>${s.title}</h1>
+              <ul>${s.items.map((i) => `<li>${i}</li>`).join('')}</ul>
+            </div>
+            <div class="frame"><iframe src="${s.src}" title="Eklenti menüsü"></iframe></div>
+          </div>`;
+        // Claude paneli görünsün diye menü yüklenince iframe'i aşağı kaydır
+        // (menü içeriği iframe'in load olayından sonra eklenir, bu yüzden beklenir)
+        if (view === 'services') {
+          const frame = root.querySelector('iframe');
+          const timer = setInterval(() => {
+            const panel = frame.contentDocument && frame.contentDocument.querySelector('.provider-panel.active[data-provider="claude"]');
+            if (!panel) return;
+            clearInterval(timer);
+            panel.scrollIntoView({ block: 'center' });
+          }, 100);
+        }
+      } else if (view === 'tile') {
+        root.innerHTML = `
+          <div class="canvas tile">
+            <div class="brand">
+              <img src="../icons/icon128.png" width="64" height="64" alt="">
+              <div><h1>Crunchyroll için<br>Çift Altyazı</h1></div>
+            </div>
+            ${demo}
+          </div>`;
+      } else if (view === 'marquee') {
+        root.innerHTML = `
+          <div class="canvas marquee">
+            <div class="brand">
+              <img src="../icons/icon128.png" width="112" height="112" alt="">
+              <div>
+                <h1>Crunchyroll için<br>Çift Altyazı</h1>
+                <p>Orijinal altyazı ve Türkçe çevirisi <em>aynı anda</em></p>
+              </div>
+            </div>
+            ${demo}
+          </div>`;
+      }
+    })();
+  </script>
+</body>
+</html>

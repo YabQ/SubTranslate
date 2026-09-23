@@ -1,0 +1,176 @@
+# Chrome Web Mağazası'nda yayınlama rehberi
+
+Bu klasör, eklentiyi Chrome Web Mağazası'na yüklerken gereken her şeyi içerir. Formlardaki metinleri buradan kopyalayıp yapıştırabilirsin.
+
+| Dosya | Ne işe yarar |
+|---|---|
+| `../dist/crunchyroll-cift-altyazi-1.0.0-magaza.zip` | Mağazaya yüklenecek paket (`npm run package` ile üretilir) |
+| `gizlilik-politikasi.html` | Gizlilik politikası sayfası. Herkese açık bir adrese yüklenmeli |
+| `gorseller/magaza-simgesi-128.png` | Mağaza simgesi (128×128) |
+| `gorseller/1-…png` – `4-…png` | Ekran görüntüleri (1280×800) |
+| `gorseller/kucuk-tanitim-440x280.png` | Küçük tanıtım kutusu |
+| `gorseller/buyuk-afis-1400x560.png` | Büyük afiş (isteğe bağlı) |
+| `gorseller/opera/*-612x408.png` | Opera mağazası için ekran görüntüleri (beyaz zemin) |
+
+## 1. Senin yapman gerekenler
+
+1. **Geliştirici hesabı aç:** [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole) adresinde Google hesabınla giriş yap. Hesap bir kerelik **5 $** kayıt ücreti ister ve Google hesabında **2 adımlı doğrulama** açık olmalıdır.
+2. **Gizlilik politikasını yayınla:** Önce `gizlilik-politikasi.html` içindeki `ILETISIM-EPOSTASI` yazan iki yeri kendi iletişim e-postanla değiştir. Sonra dosyayı herkese açık bir adrese koy:
+   - Kendi web siten varsa oraya yükle.
+   - Ya da ücretsiz **GitHub Pages** kullan: herkese açık bir depo aç, dosyayı `index.html` adıyla yükle, *Settings → Pages* bölümünden yayını aç.
+
+   Çıkan adres (ör. `https://kullaniciadin.github.io/cift-altyazi/`) formda istenecek.
+
+## 2. Paketi hazırla
+
+Eklenti klasöründe şu komutu çalıştır:
+
+```bash
+npm run package
+```
+
+Komut `dist/` klasörüne iki dosya üretir:
+- `crunchyroll-cift-altyazi-1.0.0-magaza.zip`: mağazaya bunu yükle.
+- `crunchyroll-cift-altyazi-1.0.0.zip`: arkadaşlarına elle kurulum için. İçinde `KURULUM.txt` var.
+
+## 3. Yükleme
+
+Kontrol panelinde **Yeni öğe** düğmesine bas ve `…-magaza.zip` dosyasını seç. Ardından aşağıdaki sekmeleri doldur.
+
+### Mağaza girişi (Store listing)
+
+- **Başlık ve özet:** paketten otomatik gelir ("Crunchyroll için Çift Altyazı").
+- **Kategori:** Eğlence
+- **Dil:** Türkçe
+- **Görseller:** simge, 4 ekran görüntüsü ve küçük tanıtım kutusunu `gorseller/` klasöründen yükle. Büyük afiş isteğe bağlıdır.
+- **Açıklama:** aşağıdaki metni olduğu gibi yapıştır.
+
+```
+Crunchyroll'da Türkçe altyazı mı yok? Bu eklenti, izlediğin bölümün orijinal altyazısını (ör. İngilizce) ve Türkçe çevirisini aynı anda, iki satır halinde videonun üzerinde gösterir.
+
+NASIL ÇALIŞIR
+• Bölümü açtığında eklenti, Crunchyroll oynatıcısının yüklediği altyazıyı alır ve seçtiğin dile çevirir.
+• Crunchyroll'da o dilde resmi altyazı varsa çeviri yerine onu gösterir.
+• İki satır da videonun görüntü alanında durur, tam ekranda da görünür.
+
+ÖZELLİKLER
+• Çeviri servisi seçimi: Google Çeviri (ücretsiz, varsayılan), DeepL veya Claude (kendi API anahtarınla).
+• İki satıra bölünmüş cümleler bütün olarak çevrilir, çeviri daha doğal olur.
+• Çeviri önce izlediğin yerden başlar, ileri sardığında sıra oraya kayar.
+• Çevrilen bölümler tarayıcında saklanır, aynı bölüm tekrar çevrilmez.
+• Tabela ve ekran yazıları da çevrilir.
+• Yazı boyutu, renkler, arka plan koyuluğu ve konum ayarlanabilir.
+• Klavye kısayolları: Alt+Shift+S (aç/kapat), Alt+Shift+Y (çeviri satırı).
+• Altyazılar üst üste binmesin diye, Crunchyroll'un videoya gömdüğü altyazı yerine altyazı kapalıyken gelen görüntü kullanılır (ayarlardan kapatılabilir).
+
+GİZLİLİK
+• Veri toplanmaz. Reklam, analiz ya da izleme kodu yoktur.
+• Altyazı metni yalnızca seçtiğin çeviri servisine gönderilir.
+• API anahtarların yalnızca tarayıcında saklanır.
+• Crunchyroll hesabına, çerezlerine ve izleme geçmişine erişilmez.
+
+NOTLAR
+• Bölümü Crunchyroll'da izleme hakkın olmalıdır. Eklenti video indirmez, yalnızca altyazıları gösterir.
+• Chrome ve Chromium tabanlı tarayıcılarda (Edge, Brave, Opera) çalışır.
+
+Bu eklenti Crunchyroll ile bağlantılı değildir ve Crunchyroll tarafından onaylanmamıştır. Crunchyroll, Crunchyroll, LLC'nin ticari markasıdır.
+```
+
+### Gizlilik uygulamaları (Privacy practices)
+
+İnceleme ekibi İngilizce metinleri daha hızlı değerlendirir. Bu yüzden gerekçeler İngilizce.
+
+**Tek amaç (Single purpose):**
+
+```
+Shows the original Crunchyroll subtitle and its translation into a language the user chooses at the same time, as two lines over the Crunchyroll video player.
+```
+
+**storage izni gerekçesi:**
+
+```
+Saves the user's settings (languages, translation service, appearance), the optional DeepL/Anthropic API keys the user enters, and a local cache of finished translations so that an episode is not translated twice. Nothing is sent to the developer.
+```
+
+**Host izni gerekçesi (Host permission justification):**
+
+```
+https://*.crunchyroll.com/* — the content scripts run on Crunchyroll watch pages. They read the subtitle list that the Crunchyroll player itself loads, download the selected subtitle file and draw the original and translated lines over the video.
+https://translate.googleapis.com/* — the default translation service. The background service worker sends the subtitle lines to Google Translate to translate them into the language the user chose.
+Optional host permissions (requested at runtime only when the user selects that service in the popup): https://api-free.deepl.com/* and https://api.deepl.com/* for DeepL, https://api.anthropic.com/* for Claude. They are called with the user's own API key.
+```
+
+**Uzaktan kod (Remote code):** "No, I am not using remote code" seçeneğini işaretle. Gerekçe istenirse:
+
+```
+All JavaScript, including the bundled open-source Anthropic SDK (MIT license), is included in the package. No code is downloaded or evaluated at runtime.
+```
+
+**Veri kullanımı (Data usage).** Yalnızca şu iki kutuyu işaretle:
+- **Website content:** izlenen videonun altyazı metni, kullanıcının seçtiği çeviri servisine gönderilir.
+- **Authentication information:** kullanıcının girdiği DeepL/Anthropic API anahtarı. Yalnızca tarayıcıda saklanır ve yalnızca o servise gönderilir.
+
+Alttaki üç beyanın (veriler satılmaz, amaç dışı kullanılmaz, kredi değerlendirmesinde kullanılmaz) hepsini işaretle.
+
+**Gizlilik politikası URL'si:** 1. adımda yayınladığın adres.
+
+### Test talimatları (Test instructions)
+
+İnceleme ekibi eklentiyi Crunchyroll'da denemek isteyecek. Bu metni ekle:
+
+```
+1. Open https://www.crunchyroll.com and play any episode (a Crunchyroll account with access to the episode is required).
+2. Within a few seconds the original English subtitle (white) and its Turkish translation (yellow) appear over the video. No API key is needed: the default translation service is Google Translate.
+3. Click the toolbar icon to see the status card and to change the languages, the translation service or the appearance. Alt+Shift+S toggles the subtitles.
+DeepL and Claude are optional, need the user's own API key, and the browser asks for permission to reach them only when they are selected.
+```
+
+İstersen buraya bir test hesabı da ekleyebilirsin. Kişisel hesabını değil, bunun için ayrıca açtığın bir hesabı kullan.
+
+### Dağıtım (Distribution)
+
+- **Ücret:** Ücretsiz
+- **Görünürlük:**
+  - *Herkese açık:* mağazada aranıp bulunur.
+  - *Liste dışı (Unlisted):* yalnızca bağlantıyı bilen kurabilir. Arkadaşlarınla paylaşmak için yeterli, yine de incelemeden geçer.
+- **Bölgeler:** Tüm bölgeler ya da yalnızca Türkiye.
+
+Son olarak **İncelemeye gönder** düğmesine bas. İnceleme genellikle birkaç gün sürer. Yeni hesaplarda daha uzun sürebilir.
+
+## 4. Güncelleme yayınlamak
+
+1. `manifest.json` içindeki `version` değerini artır (ör. `1.0.1`). Mağaza aynı sürümü ikinci kez kabul etmez.
+2. `npm run package` komutunu çalıştır.
+3. Kontrol panelinde **Paket → Yeni paket yükle** ile yeni `…-magaza.zip` dosyasını yükle ve incelemeye gönder.
+
+## Reddedilme riskleri ve alınan önlemler
+
+| Risk | Önlem |
+|---|---|
+| Ticari marka / resmi ürün izlenimi | Ad "Crunchyroll **için** Çift Altyazı". Simgede Crunchyroll logosu yok. Açıklama ve gizlilik politikasında "bağlantılı değildir" notu var. |
+| Gereğinden fazla izin | Zorunlu izinler yalnızca crunchyroll.com ve Google Çeviri. DeepL ve Anthropic isteğe bağlı; kullanıcı seçince isteniyor. |
+| İnceleme ekibinin Crunchyroll hesabı olmayabilir | Test talimatları eklendi. Reddedilirse yanıtta ekran kaydı videosu göndermek işe yarar. |
+| Google Çeviri'nin resmî olmayan ücretsiz uç noktası | Yaygın kullanılıyor ama Google'ın resmî API'si değil. Sorun çıkarsa varsayılan servis değiştirilebilir ya da resmî Google Cloud Translation API (anahtarlı) eklenebilir. |
+| Sayfa davranışını değiştirme | Gömülü altyazının kaldırılması açıklamada yazılı ve ayarlardan kapatılabiliyor. Ödeme duvarı ya da DRM atlatılmıyor; kullanıcı zaten izleme hakkı olan bölümü izliyor. |
+
+## Diğer mağazalar
+
+Aynı `…-magaza.zip` dosyası Opera ve Edge mağazalarına da yüklenebilir; ikisinde de kayıt ücreti yoktur.
+
+### Opera Eklentileri
+
+1. [addons.opera.com/developer](https://addons.opera.com/developer/) adresinde hesap aç, **Upload** ile `dist/crunchyroll-cift-altyazi-1.0.0-magaza.zip` dosyasını yükle.
+2. Chrome formundan farkları:
+   - **Ekran görüntüleri:** `gorseller/opera/` klasöründeki dört görsel. Opera **612×408** (en fazla 800×600) ve **beyaz zemin** istiyor; 1280×800'lük Chrome görselleri kabul edilmez.
+   - **Kategori:** Entertainment.
+   - **Özet, açıklama ve gizlilik politikası:** Chrome'daki metinlerin aynısı kullanılabilir.
+   - **Destek sayfası:** boş bırakılırsa reddedilebiliyor; gizlilik politikası adresi ya da depo adresi yazılabilir.
+3. İnceleme elle yapılıyor, genelde 1–2 hafta sürüyor.
+
+Opera kullanıcıları, eklenti Chrome Web Mağazası'nda yayınlandıktan sonra onu [Install Chrome Extensions](https://addons.opera.com/en/extensions/details/install-chrome-extensions/) eklentisiyle de kurabiliyor. Opera mağazası şart değil, yalnızca mağazada aranınca bulunmak için gerekiyor.
+
+Opera 136'da denendi: paket MV3 olarak yükleniyor, kurulum izinleri yalnızca `crunchyroll.com` + `translate.googleapis.com` + `storage` olarak görünüyor ve MAIN dünyasındaki kanca crunchyroll.com'da `fetch` ile `XMLHttpRequest`'i sarıyor.
+
+### Microsoft Edge Eklentileri
+
+[Partner Center](https://partner.microsoft.com/dashboard/microsoftedge) üzerinden aynı paket yüklenir. Görseller Chrome'dakiyle aynı ölçülerde kabul edilir.

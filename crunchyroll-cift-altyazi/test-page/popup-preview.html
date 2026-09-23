@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Popup önizleme</title>
+  <link rel="stylesheet" href="../src/popup/popup.css">
+  <style>html { background: #000; } body { margin: 0 auto; }</style>
+</head>
+<body>
+  <!-- Eklenti menüsünü sahte chrome API'siyle normal bir sayfada gösterir (tasarım denemesi için) -->
+  <script>
+    (() => {
+      const tracks = ['en-US', 'es-419', 'es-ES', 'pt-BR', 'fr-FR', 'de-DE', 'it-IT', 'ar-SA', 'ru-RU']
+        .map((lang) => ({ lang, kind: 'subtitles', format: 'ass' }));
+      // ?s=progress|done|error  ?p=google|deepl|claude (seçili servis)
+      const params = new URLSearchParams(location.search);
+      const scenario = params.get('s') || 'progress';
+      const provider = params.get('p') || (scenario === 'error' ? 'deepl' : 'google');
+      const secondary = {
+        progress: { mode: 'translate', lang: 'tr', provider, done: 142, total: 298, failed: 0, error: null, finished: false, cached: false },
+        done: { mode: 'translate', lang: 'tr', provider, done: 298, total: 298, failed: 0, error: null, finished: true, cached: false },
+        error: { mode: 'translate', lang: 'tr', provider, done: 0, total: 298, failed: 298, error: 'DeepL API anahtarı geçersiz', finished: false, cached: false },
+      }[scenario];
+      const session = {
+        'tab:7': {
+          tracks: { id: 'G1:x', contentId: 'GG1U2J3XV', tracks },
+          frames: { 0: { at: Date.now(), video: true, phase: 'ready', tracks, stripped: true, error: null,
+            primary: { lang: 'en-US', kind: 'subtitles', format: 'ass', cues: 312 }, secondary } },
+        },
+      };
+      const local = { settings: { provider } };
+      if (provider === 'claude') {
+        local.claudeKey = 'sk-ant-api03-ornek-anahtar';
+        local.settings.claudeInstructions = 'Samimi, gündelik bir dil kullan. Onur eklerini (-san, -kun) çevirme.';
+      }
+      const listeners = [];
+      // Hata senaryosu dışında seçili servisin izni verilmiş sayılır
+      const granted = new Set(scenario === 'error' ? [] : ['https://api-free.deepl.com/*', 'https://api.deepl.com/*', 'https://api.anthropic.com/*']);
+      const pick = (src, keys) => {
+        const list = keys == null ? Object.keys(src) : [].concat(keys);
+        return Object.fromEntries(list.filter((k) => k in src).map((k) => [k, src[k]]));
+      };
+      window.chrome = {
+        storage: {
+          local: {
+            get: async (k) => pick(local, k),
+            set: async (o) => { Object.assign(local, o); listeners.forEach((fn) => fn(Object.fromEntries(Object.keys(o).map((k) => [k, { newValue: o[k] }])), 'local')); },
+          },
+          session: { get: async (k) => pick(session, k) },
+          onChanged: { addListener: (fn) => listeners.push(fn) },
+        },
+        tabs: { query: async () => [{ id: 7, url: 'https://www.crunchyroll.com/watch/GG1U2J3XV/the-journeys-end' }] },
+        permissions: {
+          contains: async ({ origins }) => origins.every((o) => granted.has(o)),
+          request: async ({ origins }) => { origins.forEach((o) => granted.add(o)); return true; },
+        },
+        runtime: {
+          sendMessage: async (msg) => {
+            if (msg.type === 'test-provider') return { ok: true, translations: ['Hey, uzun zamandır görüşemedik! Nasılsın?'] };
+            if (msg.type === 'cache-clear') return 3;
+            return null;
+          },
+        },
+      };
+    })();
+
+    fetch('../src/popup/popup.html').then((r) => r.text()).then(async (html) => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('script').forEach((s) => s.remove());
+      document.body.insertAdjacentHTML('beforeend', doc.body.innerHTML);
+      for (const src of ['../src/shared/languages.js', '../src/shared/settings.js', '../src/popup/popup.js']) {
+        await new Promise((resolve) => {
+          const s = document.createElement('script');
+          s.src = src;
+          s.onload = resolve;
+          document.body.append(s);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+CRUNCHYROLL İÇİN ÇİFT ALTYAZI
+=============================
+
+Crunchyroll'da bölüm izlerken orijinal altyazıyı (ör. İngilizce) ve
+Türkçe çevirisini aynı anda gösteren bir tarayıcı eklentisi.
+Chrome, Edge, Brave ve Opera'da çalışır (Firefox'ta çalışmaz).
+
+Eklentiyi Chrome Web Mağazası'ndan kurduysan aşağıdaki adımlara gerek yok.
+
+
+KURULUM
+-------
+1. Bu zip dosyasına sağ tıkla > "Tümünü ayıkla" > "Ayıkla".
+   Zip ile aynı adda bir klasör oluşur. Eklenti bu klasörden çalışır,
+   o yüzden klasörü sonradan silme ya da taşıma.
+
+2. Tarayıcının adres çubuğuna şunu yaz ve Enter'a bas:
+     Chrome : chrome://extensions
+     Edge   : edge://extensions
+     Opera  : opera://extensions
+     Brave  : brave://extensions
+
+3. "Geliştirici modu" anahtarını aç (çoğu tarayıcıda sağ üstte,
+   Edge'de sol alttadır).
+
+4. "Paketlenmemiş öğe yükle" (İngilizcesi: "Load unpacked") düğmesine
+   bas ve 1. adımda oluşan klasörü seç. Doğru klasörün içinde
+   manifest.json dosyası vardır.
+
+5. Crunchyroll sekmesi açıksa sayfayı bir kez yenile.
+
+
+KULLANIM
+--------
+- Crunchyroll'da bir bölüm aç ve oynat. İki satır altyazı kendiliğinden
+  gelir. Varsayılan ayar: İngilizce altyazı + Google ile Türkçe çeviri.
+- Ayarlar için araç çubuğundaki eklenti simgesine tıkla. Simge
+  görünmüyorsa yapboz simgesinden eklentiyi sabitle.
+- Kısayollar:
+    Alt+Shift+S : çift altyazıyı aç / kapat
+    Alt+Shift+Y : Türkçe satırı göster / gizle
+- Google Çeviri ücretsizdir. DeepL ya da Claude API anahtarın varsa
+  menüden o servisi seçip anahtarını girebilirsin. Servisi ilk kez
+  seçtiğinde tarayıcı o servise bağlanma izni ister.
+
+
+SORUN OLURSA
+------------
+- Altyazı çıkmazsa sayfayı yenile ve eklenti menüsündeki durum kartına bak.
+- Tarayıcı açılışta "geliştirici modundaki uzantılar" uyarısı gösterirse
+  eklentiyi kapatma, uyarıyı kapatman yeterli.

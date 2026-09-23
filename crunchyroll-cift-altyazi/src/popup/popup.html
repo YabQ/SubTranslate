@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Çift Altyazı</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="top">
+    <img class="logo" src="../../icons/icon48.png" alt="" width="28" height="28">
+    <div class="brand">
+      <strong>Çift Altyazı</strong>
+      <span>Crunchyroll</span>
+    </div>
+    <label class="switch" title="Çift altyazıyı aç / kapat (Alt+Shift+S)">
+      <input type="checkbox" data-setting="enabled">
+      <span class="slider"></span>
+    </label>
+  </header>
+
+  <section class="card status" id="status">
+    <div class="status-head">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusTitle">Durum okunuyor…</span>
+    </div>
+    <div class="status-body" id="statusBody"></div>
+    <div class="progress" id="statusProgress" hidden><div class="bar"></div></div>
+    <div class="chips" id="statusTracks"></div>
+    <button type="button" class="btn retry" id="retry" hidden>Yeniden dene</button>
+  </section>
+
+  <section class="card">
+    <h2>Diller</h2>
+    <label class="field">
+      <span>Orijinal altyazı</span>
+      <select data-setting="primaryLang" id="primaryLang"></select>
+    </label>
+    <label class="field">
+      <span>Çeviri dili</span>
+      <select data-setting="targetLang" id="targetLang"></select>
+    </label>
+    <label class="check">
+      <input type="checkbox" data-setting="preferOfficial">
+      <span>Crunchyroll'da bu dilde resmi altyazı varsa onu kullan</span>
+    </label>
+    <label class="check">
+      <input type="checkbox" data-setting="mergeSentences">
+      <span>Satırlara bölünmüş cümleleri bütün olarak çevir</span>
+    </label>
+  </section>
+
+  <section class="card">
+    <h2>Çeviri servisi</h2>
+    <div class="segmented" role="radiogroup">
+      <label><input type="radio" name="provider" value="google"><span>Google</span></label>
+      <label><input type="radio" name="provider" value="deepl"><span>DeepL</span></label>
+      <label><input type="radio" name="provider" value="claude"><span>Claude</span></label>
+    </div>
+
+    <div class="provider-panel" data-provider="google">
+      <p class="note">Ücretsizdir, anahtar gerekmez. Hızlıdır ama çeviri satır satır ve bağlamdan bağımsızdır.</p>
+    </div>
+
+    <div class="provider-panel" data-provider="deepl">
+      <label class="field">
+        <span>DeepL API anahtarı</span>
+        <input type="password" id="deeplKey" autocomplete="off" spellcheck="false" placeholder="xxxxxxxx-xxxx-…:fx">
+      </label>
+      <p class="note">Ücretsiz DeepL API hesabı ayda 500.000 karakter verir (bir bölüm ≈ 15–20 bin). Ücretsiz anahtarlar <code>:fx</code> ile biter.</p>
+    </div>
+
+    <div class="provider-panel" data-provider="claude">
+      <label class="field">
+        <span>Anthropic API anahtarı</span>
+        <input type="password" id="claudeKey" autocomplete="off" spellcheck="false" placeholder="sk-ant-…">
+      </label>
+      <label class="field">
+        <span>Model</span>
+        <select data-setting="claudeModel" id="claudeModel"></select>
+      </label>
+      <label class="field">
+        <span>Çeviri talimatların <em>(isteğe bağlı)</em></span>
+        <textarea data-setting="claudeInstructions" rows="3" maxlength="1500" placeholder="Örn: Samimi, gündelik bir dil kullan. Onur eklerini (-san, -kun) çevirme. Küfürleri yumuşatma."></textarea>
+      </label>
+      <p class="note">Sahneyi ve önceki satırları dikkate alarak çevirir; kalite en yüksektir. 24 dakikalık bölüm başına kabaca: Opus 5 ≈ 0,30–0,45 $, Sonnet 5 ≈ 0,12–0,18 $, Haiku 4.5 ≈ 0,06 $. Çeviriler önbelleğe alınır, aynı bölüm için tekrar ödeme yapılmaz.</p>
+    </div>
+
+    <div class="perm-notice" id="permNotice" hidden>
+      <span id="permText">Bu servis için izin gerekiyor.</span>
+      <button type="button" class="btn" id="permGrant">İzin ver</button>
+    </div>
+
+    <div class="row">
+      <button type="button" class="btn" id="testProvider">Servisi test et</button>
+      <span class="test-result" id="testResult"></span>
+    </div>
+  </section>
+
+  <details class="card">
+    <summary><h2>Görünüm</h2></summary>
+    <label class="check"><input type="checkbox" data-setting="showOriginal"><span>Orijinal satırı göster</span></label>
+    <label class="check"><input type="checkbox" data-setting="showTranslation"><span>Çeviri satırını göster <kbd>Alt+Shift+Y</kbd></span></label>
+    <label class="check"><input type="checkbox" data-setting="translationOnTop"><span>Çeviri orijinalin üstünde</span></label>
+    <label class="check"><input type="checkbox" data-setting="showSigns"><span>Tabela / ekran yazılarını da göster</span></label>
+
+    <label class="range">
+      <span>Yazı boyutu <output data-for="fontScale"></output></span>
+      <input type="range" data-setting="fontScale" min="0.5" max="2.5" step="0.05">
+    </label>
+    <label class="range">
+      <span>Çeviri boyutu <output data-for="translationScale"></output></span>
+      <input type="range" data-setting="translationScale" min="0.5" max="1.5" step="0.05">
+    </label>
+    <label class="range">
+      <span>Arka plan koyuluğu <output data-for="bgOpacity"></output></span>
+      <input type="range" data-setting="bgOpacity" min="0" max="1" step="0.05">
+    </label>
+    <label class="range">
+      <span>Alttan boşluk <output data-for="bottomOffset"></output></span>
+      <input type="range" data-setting="bottomOffset" min="0" max="30" step="1">
+    </label>
+    <div class="colors">
+      <label><input type="color" data-setting="originalColor"><span>Orijinal rengi</span></label>
+      <label><input type="color" data-setting="translationColor"><span>Çeviri rengi</span></label>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary><h2>Crunchyroll oynatıcısı</h2></summary>
+    <label class="check">
+      <input type="checkbox" data-setting="stripHardsubs">
+      <span>Videoya gömülü altyazıyı kaldır <small>(bir sonraki bölümde ya da sayfa yenilenince geçerli olur)</small></span>
+    </label>
+    <label class="check">
+      <input type="checkbox" data-setting="hideNativeSubs">
+      <span>Oynatıcının kendi altyazı katmanını gizle</span>
+    </label>
+    <label class="check">
+      <input type="checkbox" data-setting="liftWithControls">
+      <span>Kontroller görünürken altyazıyı yukarı kaydır</span>
+    </label>
+  </details>
+
+  <footer class="bottom">
+    <button type="button" class="btn ghost" id="clearCache">Çeviri önbelleğini temizle</button>
+    <span class="muted" id="footerNote"><kbd>Alt+Shift+S</kbd> aç/kapat</span>
+  </footer>
+
+  <script src="../shared/languages.js"></script>
+  <script src="../shared/settings.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

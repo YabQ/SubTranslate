@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "Crunchyroll için Çift Altyazı",
+  "short_name": "Çift Altyazı",
+  "version": "1.0.0",
+  "description": "Crunchyroll'da orijinal altyazıyla birlikte Türkçe ya da seçtiğin dildeki çevirisini aynı anda gösterir.",
+  "minimum_chrome_version": "111",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Crunchyroll için Çift Altyazı",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background/background.js",
+    "type": "module"
+  },
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://*.crunchyroll.com/*",
+    "https://translate.googleapis.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://api-free.deepl.com/*",
+    "https://api.deepl.com/*",
+    "https://api.anthropic.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://*.crunchyroll.com/*"],
+      "js": ["src/page/hook.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://*.crunchyroll.com/*"],
+      "js": [
+        "src/shared/languages.js",
+        "src/shared/settings.js",
+        "src/content/subtitles.js",
+        "src/content/overlay.js",
+        "src/content/content.js"
+      ],
+      "css": ["src/content/page.css"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "commands": {
+    "toggle-overlay": {
+      "suggested_key": { "default": "Alt+Shift+S" },
+      "description": "Çift altyazıyı aç / kapat"
+    },
+    "toggle-translation": {
+      "suggested_key": { "default": "Alt+Shift+Y" },
+      "description": "Çeviri satırını göster / gizle"
+    }
+  }
+}

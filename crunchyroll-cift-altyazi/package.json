@@ -1,0 +1,16 @@
+{
+  "name": "crunchyroll-cift-altyazi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Crunchyroll için çift altyazı (orijinal + çeviri) Chrome eklentisi",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\"",
+    "package": "node tools/package.mjs",
+    "vendor": "esbuild tools/anthropic-entry.js --bundle --format=esm --platform=browser --target=chrome111 --minify --legal-comments=eof --outfile=src/background/vendor/anthropic-sdk.mjs"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "0.127.0",
+    "esbuild": "0.28.2"
+  }
+}

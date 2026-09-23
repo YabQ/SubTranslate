@@ -1,0 +1,36 @@
+[Script Info]
+; Crunchyroll biçimine benzer örnek altyazı (testler ve deneme sayfası için)
+Title: English (US)
+ScriptType: v4.00+
+WrapStyle: 0
+PlayResX: 1920
+PlayResY: 1080
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,70,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3.6,0,2,0,0,52,1
+Style: Italics,Arial,70,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,-1,0,0,100,100,0,0,1,3.6,0,2,0,0,52,1
+Style: On Top,Arial,70,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3.6,0,8,0,0,52,1
+Style: sign_1182_12_The_Journey_s_End,Georgia,60,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.00,0:00:03.50,Default,Himmel,0000,0000,0000,,We defeated the Demon King.
+Dialogue: 0,0:00:04.00,0:00:06.00,Default,Frieren,0000,0000,0000,,I don't know if
+Dialogue: 0,0:00:06.10,0:00:08.20,Default,Frieren,0000,0000,0000,,he will come back.
+Dialogue: 0,0:00:09.00,0:00:11.00,Italics,Narrator,0000,0000,0000,,Fifty years passed after that.
+Dialogue: 0,0:00:11.50,0:00:14.00,Default,Heiter,0000,0000,0000,,Well, well,\Nit's been a while, Frieren.
+Dialogue: 0,0:00:14.50,0:00:17.00,Default,Frieren,0000,0000,0000,,{\i1}Himmel{\i0} was always like that.
+Dialogue: 0,0:00:17.50,0:00:19.50,On Top,Eisen,0000,0000,0000,,Are you coming with us?
+Dialogue: 0,0:00:17.50,0:00:19.50,Default,Frieren,0000,0000,0000,,- Hey!\N- What?
+Comment: 0,0:00:18.00,0:00:19.00,Default,,0000,0000,0000,,Bu satır bir yorumdur ve görünmemeli
+Dialogue: 1,0:00:20.00,0:00:23.00,sign_1182_12_The_Journey_s_End,,0000,0000,0000,,{\fad(300,300)\pos(960,540)}The Journey's End
+Dialogue: 0,0:00:20.00,0:00:23.00,sign_1182_12_The_Journey_s_End,,0000,0000,0000,,{\p1}m 0 0 l 100 0 100 100 0 100{\p0}
+Dialogue: 0,0:00:25.00,0:00:27.00,Default,Frieren,0000,0000,0000,,If we hurry...
+Dialogue: 0,0:00:27.20,0:00:29.00,Default,Frieren,0000,0000,0000,,...we can still catch the meteor shower.
+Dialogue: 0,0:00:31.00,0:00:33.00,Default,,0000,0000,0000,,{\an8}Half a century later
+Dialogue: 0,0:00:24.00,0:00:24.90,Default,Fern,0000,0000,0000,,{\k20}La {\k30}la {\k25}la~
+Dialogue: 0,0:00:34.00,0:00:36.00,Default,,0000,0000,0000,,♪ ♪
+Dialogue: 0,0:00:36.50,0:00:39.00,Default,Stark,0000,0000,0000,,Yes.
+Dialogue: 0,0:00:40.00,0:00:42.00,Default,Fern,0000,0000,0000,,Yes.

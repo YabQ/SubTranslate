@@ -1,0 +1,14 @@
+/* Crunchyroll / Bitmovin oynatıcısının kendi altyazı katmanını gizler.
+   Yalnızca "Oynatıcının kendi altyazısını gizle" ayarı açıkken etkindir
+   (content.js <html data-crds-hide-native="1"> yazar). */
+html[data-crds-hide-native="1"] .bmpui-ui-subtitle-overlay,
+html[data-crds-hide-native="1"] .bmpui-subtitle-region-container,
+html[data-crds-hide-native="1"] .bmpui-ui-subtitle-label,
+html[data-crds-hide-native="1"] .libassjs-canvas-parent,
+html[data-crds-hide-native="1"] .libassjs-canvas {
+  display: none !important;
+}
+
+html[data-crds-hide-native="1"] video::cue {
+  visibility: hidden !important;
+}
