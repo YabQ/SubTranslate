@@ -64,6 +64,54 @@
         return { ok: false, error: String(err.message || err), retryable: err.retryable !== false, fatal: !!err.fatal };
       }
     },
+    async 'lookup-word'(msg) {
+      if (document.querySelector('#provider').value === 'fake') {
+        await new Promise((r) => setTimeout(r, 150));
+        return { word: msg.word, meanings: [`[TR] ${msg.word}`, `[TR] ${msg.word} (2)`] };
+      }
+      try {
+        const { lookupWord } = await import('../src/background/translate.js');
+        const res = await lookupWord(msg);
+        log(`sözlük: ${msg.word} → ${res.meanings.slice(0, 2).join(', ') || 'karşılık yok'}`);
+        return res;
+      } catch (err) {
+        log(`sözlük hatası: ${err.message || err}`);
+        return { word: msg.word, meanings: [] };
+      }
+    },
+    async 'save-word'(msg) {
+      const Vocab = globalThis.CRDS.vocab;
+      const { rankExamples, translate } = await import('../src/background/translate.js');
+      const found = (await background['lookup-word'](msg)) || { meanings: [] };
+      // Arka plandaki seçimin aynısı: örneğin çevirisi cümledeki anlamı taşımalı
+      const candidates = rankExamples(found.examples, msg.word, msg.line).slice(0, 3);
+      let example = '';
+      let exampleTr = '';
+      if (candidates.length) {
+        try {
+          const list = await translate({ provider: 'google', texts: candidates, source: msg.source, target: msg.target, settings: {}, keys: {} });
+          for (let i = 0; i < candidates.length; i++) {
+            if (msg.sense && !globalThis.CRDS.words.bestMatch(list[i] || '', [msg.sense])) continue;
+            example = candidates[i];
+            exampleTr = list[i];
+            break;
+          }
+        } catch (_) {
+          example = '';
+        }
+      }
+      const entry = Vocab.buildEntry({
+        ...msg,
+        meanings: globalThis.CRDS.words.orderBySense(found.meanings || [], msg.sense),
+        pos: Vocab.pickPos(found.entries, msg.sense),
+        example,
+        exampleTr,
+      });
+      const { list, added, count } = Vocab.merge(await Vocab.load(), entry);
+      await Vocab.save(list);
+      log(`deftere kaydedildi: ${entry.word} (${entry.pos || 'tür yok'}) · ${count} kez`);
+      return { ok: true, added, count, word: entry.word, pos: entry.pos };
+    },
     async 'cache-get'(msg) {
       return cache.get(msg.key) || null;
     },

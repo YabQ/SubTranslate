@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Kelime Defteri — Crunchyroll için Çift Altyazı</title>
+  <link rel="stylesheet" href="notebook.css">
+</head>
+<body>
+  <header class="top">
+    <img src="../../icons/icon48.png" width="34" height="34" alt="">
+    <div class="titles">
+      <h1>Kelime Defteri</h1>
+      <p id="summary">Yükleniyor…</p>
+    </div>
+  </header>
+
+  <div class="filters">
+    <input type="search" id="search" placeholder="Kelime, anlam ya da cümlede ara" autocomplete="off">
+    <select id="show"><option value="">Tüm animeler</option></select>
+    <select id="pos"><option value="">Tüm türler</option></select>
+    <select id="sort">
+      <option value="new">Önce en yeni</option>
+      <option value="old">Önce en eski</option>
+      <option value="az">Alfabetik</option>
+      <option value="count">En çok karşılaşılan</option>
+    </select>
+  </div>
+
+  <main id="list"></main>
+
+  <p id="empty" class="empty" hidden>
+    Defter boş. Crunchyroll'da çift altyazı açıkken bir kelimenin üzerine gelip tıkladığında burada birikir.
+  </p>
+
+  <footer class="bottom">
+    <div class="export">
+      <button type="button" id="exportJson">JSON olarak indir</button>
+      <button type="button" id="exportCsv">CSV olarak indir</button>
+    </div>
+    <button type="button" id="clearAll" class="danger">Defteri tamamen sil</button>
+  </footer>
+
+  <!-- Kelimeye tıklayınca çıkan küçük menü -->
+  <div id="menu" class="menu" hidden>
+    <button type="button" data-action="copy">Kopyala</button>
+    <button type="button" data-action="delete">Sil</button>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="../shared/vocab.js"></script>
+  <script src="notebook.js"></script>
+</body>
+</html>

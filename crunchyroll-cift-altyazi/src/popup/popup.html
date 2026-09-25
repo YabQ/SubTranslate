@@ -30,8 +30,15 @@
     <button type="button" class="btn retry" id="retry" hidden>Yeniden dene</button>
   </section>
 
-  <section class="card">
-    <h2>Diller</h2>
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="diller">Diller</button>
+    <button type="button" role="tab" data-tab="servis">Servis</button>
+    <button type="button" role="tab" data-tab="gorunum">Görünüm</button>
+    <button type="button" role="tab" data-tab="oynatici">Oynatıcı</button>
+    <button type="button" role="tab" data-tab="defter">Defter</button>
+  </nav>
+
+  <section class="card page" data-page="diller" role="tabpanel" hidden>
     <label class="field">
       <span>Orijinal altyazı</span>
       <select data-setting="primaryLang" id="primaryLang"></select>
@@ -50,11 +57,11 @@
     </label>
   </section>
 
-  <section class="card">
-    <h2>Çeviri servisi</h2>
+  <section class="card page" data-page="servis" role="tabpanel" hidden>
     <div class="segmented" role="radiogroup">
       <label><input type="radio" name="provider" value="google"><span>Google</span></label>
       <label><input type="radio" name="provider" value="deepl"><span>DeepL</span></label>
+      <label><input type="radio" name="provider" value="gemini"><span>Gemini</span></label>
       <label><input type="radio" name="provider" value="claude"><span>Claude</span></label>
     </div>
 
@@ -70,6 +77,18 @@
       <p class="note">Ücretsiz DeepL API hesabı ayda 500.000 karakter verir (bir bölüm ≈ 15–20 bin). Ücretsiz anahtarlar <code>:fx</code> ile biter.</p>
     </div>
 
+    <div class="provider-panel" data-provider="gemini">
+      <label class="field">
+        <span>Gemini API anahtarı</span>
+        <input type="password" id="geminiKey" autocomplete="off" spellcheck="false" placeholder="AIza…">
+      </label>
+      <label class="field">
+        <span>Model</span>
+        <select data-setting="geminiModel" id="geminiModel"></select>
+      </label>
+      <p class="note">Anahtarı <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">Google AI Studio</a>'dan ücretsiz alırsın. Sahneyi ve önceki satırları dikkate alır, Google Çeviri'den belirgin biçimde iyidir. Ücretsiz katmanda istek sınırı vardır; hangi modelin açık olduğunu ve sınırları AI Studio gösterir. Google, ücretsiz katmanda gönderilen içeriği ürünlerini geliştirmek için kullanabiliyor.</p>
+    </div>
+
     <div class="provider-panel" data-provider="claude">
       <label class="field">
         <span>Anthropic API anahtarı</span>
@@ -79,12 +98,13 @@
         <span>Model</span>
         <select data-setting="claudeModel" id="claudeModel"></select>
       </label>
-      <label class="field">
-        <span>Çeviri talimatların <em>(isteğe bağlı)</em></span>
-        <textarea data-setting="claudeInstructions" rows="3" maxlength="1500" placeholder="Örn: Samimi, gündelik bir dil kullan. Onur eklerini (-san, -kun) çevirme. Küfürleri yumuşatma."></textarea>
-      </label>
       <p class="note">Sahneyi ve önceki satırları dikkate alarak çevirir; kalite en yüksektir. 24 dakikalık bölüm başına kabaca: Opus 5 ≈ 0,30–0,45 $, Sonnet 5 ≈ 0,12–0,18 $, Haiku 4.5 ≈ 0,06 $. Çeviriler önbelleğe alınır, aynı bölüm için tekrar ödeme yapılmaz.</p>
     </div>
+
+    <label class="field" id="llmBox" hidden>
+      <span>Çeviri talimatların <em>(isteğe bağlı)</em></span>
+      <textarea data-setting="llmInstructions" rows="3" maxlength="1500" placeholder="Örn: Samimi, gündelik bir dil kullan. Onur eklerini (-san, -kun) çevirme. Küfürleri yumuşatma."></textarea>
+    </label>
 
     <div class="perm-notice" id="permNotice" hidden>
       <span id="permText">Bu servis için izin gerekiyor.</span>
@@ -97,8 +117,15 @@
     </div>
   </section>
 
-  <details class="card">
-    <summary><h2>Görünüm</h2></summary>
+  <section class="card page" data-page="gorunum" role="tabpanel" hidden>
+    <!-- Ayarlar değiştikçe güncellenen canlı örnek -->
+    <div class="preview" id="preview">
+      <div class="pv-stack" id="previewStack">
+        <span class="pv-line pv-sec" id="previewSec">Acele edersek hâlâ meteor <b>yağmurunu</b> yakalayabiliriz.</span>
+        <span class="pv-line pv-prim" id="previewPrim">…we can still catch the meteor <b>shower</b>.</span>
+      </div>
+    </div>
+
     <label class="check"><input type="checkbox" data-setting="showOriginal"><span>Orijinal satırı göster</span></label>
     <label class="check"><input type="checkbox" data-setting="showTranslation"><span>Çeviri satırını göster <kbd>Alt+Shift+Y</kbd></span></label>
     <label class="check"><input type="checkbox" data-setting="translationOnTop"><span>Çeviri orijinalin üstünde</span></label>
@@ -121,13 +148,13 @@
       <input type="range" data-setting="bottomOffset" min="0" max="30" step="1">
     </label>
     <div class="colors">
-      <label><input type="color" data-setting="originalColor"><span>Orijinal rengi</span></label>
-      <label><input type="color" data-setting="translationColor"><span>Çeviri rengi</span></label>
+      <label><input type="color" data-setting="originalColor"><span>Orijinal</span></label>
+      <label><input type="color" data-setting="translationColor"><span>Çeviri</span></label>
+      <label><input type="color" data-setting="lookupColor"><span>Kelime</span></label>
     </div>
-  </details>
+  </section>
 
-  <details class="card">
-    <summary><h2>Crunchyroll oynatıcısı</h2></summary>
+  <section class="card page" data-page="oynatici" role="tabpanel" hidden>
     <label class="check">
       <input type="checkbox" data-setting="stripHardsubs">
       <span>Videoya gömülü altyazıyı kaldır <small>(bir sonraki bölümde ya da sayfa yenilenince geçerli olur)</small></span>
@@ -140,7 +167,20 @@
       <input type="checkbox" data-setting="liftWithControls">
       <span>Kontroller görünürken altyazıyı yukarı kaydır</span>
     </label>
-  </details>
+  </section>
+
+  <section class="card page" data-page="defter" role="tabpanel" hidden>
+    <label class="check">
+      <input type="checkbox" data-setting="wordLookup">
+      <span>Kelimenin üzerine gelince anlamını göster <small>(çift altyazıda; karşılığı çeviri satırında da renklenir)</small></span>
+    </label>
+    <label class="check">
+      <input type="checkbox" data-setting="notebook">
+      <span>Kelimeye tıklayınca kelime defterine kaydet <small>(anlamı, türü, cümlesi ve bölümüyle birlikte)</small></span>
+    </label>
+    <p class="note" id="vocabCount">Defter okunuyor…</p>
+    <button type="button" class="btn ghost wide" id="openNotebook">Kelime defterini aç</button>
+  </section>
 
   <footer class="bottom">
     <button type="button" class="btn ghost" id="clearCache">Çeviri önbelleğini temizle</button>

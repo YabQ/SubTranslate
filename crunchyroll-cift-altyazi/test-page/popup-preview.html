@@ -29,13 +29,14 @@
         },
       };
       const local = { settings: { provider } };
-      if (provider === 'claude') {
+      if (provider === 'claude' || provider === 'gemini') {
         local.claudeKey = 'sk-ant-api03-ornek-anahtar';
-        local.settings.claudeInstructions = 'Samimi, gündelik bir dil kullan. Onur eklerini (-san, -kun) çevirme.';
+        local.geminiKey = 'AIzaSyOrnekAnahtar';
+        local.settings.llmInstructions = 'Samimi, gündelik bir dil kullan. Onur eklerini (-san, -kun) çevirme.';
       }
       const listeners = [];
       // Hata senaryosu dışında seçili servisin izni verilmiş sayılır
-      const granted = new Set(scenario === 'error' ? [] : ['https://api-free.deepl.com/*', 'https://api.deepl.com/*', 'https://api.anthropic.com/*']);
+      const granted = new Set(scenario === 'error' ? [] : ['https://api-free.deepl.com/*', 'https://api.deepl.com/*', 'https://api.anthropic.com/*', 'https://generativelanguage.googleapis.com/*']);
       const pick = (src, keys) => {
         const list = keys == null ? Object.keys(src) : [].concat(keys);
         return Object.fromEntries(list.filter((k) => k in src).map((k) => [k, src[k]]));

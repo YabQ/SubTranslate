@@ -102,6 +102,78 @@ async function google(texts, source, target) {
   return out;
 }
 
+/* ---------- Kelime sözlüğü ----------
+   Tek kelimenin karşılıklarını Google'ın sözlük uç noktasından alır
+   (dt=bd). Seçili çeviri servisinden bağımsızdır: ücretsiz, anahtarsız
+   ve zaten izin verilmiş tek adres burasıdır. */
+
+const DICT_MAX = 12;
+
+export async function lookupWord({ word, source, target }) {
+  const clean = String(word || '').trim();
+  if (!clean || clean.length > 40) return { word: clean, meanings: [] };
+  const sl = googleCode(source);
+  const tl = googleCode(target);
+  // dt=t düz çeviri, dt=bd sözlük (tür + karşılıklar), dt=ex örnek cümleler
+  const url = `${GOOGLE_URL}?client=gtx&dt=t&dt=bd&dt=ex&dj=1&ie=UTF-8&oe=UTF-8&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}`;
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+      body: `q=${encodeURIComponent(clean)}`,
+      credentials: 'omit',
+    });
+  } catch (_) {
+    throw new TranslateError('Sözlüğe bağlanılamadı');
+  }
+  if (res.status === 429) throw new TranslateError('Sözlük istek sınırına ulaşıldı', { retryAfter: 8000 });
+  if (!res.ok) throw new TranslateError(`Sözlük hatası (HTTP ${res.status})`, { retryable: res.status >= 500 });
+  const data = await res.json();
+  const meanings = [];
+  const add = (value) => {
+    const text = String(value || '').trim();
+    if (!text || meanings.length >= DICT_MAX) return;
+    if (!meanings.some((m) => m.toLowerCase() === text.toLowerCase())) meanings.push(text);
+  };
+  // Bağlamsız düz çeviri ilk sırada, sözlük karşılıkları sıklık sırasıyla arkasında
+  add((data.sentences || []).map((s) => s.trans || '').join(''));
+  for (const entry of data.dict || []) for (const term of entry.terms || []) add(term);
+  // Kelime türleri: hangi karşılık hangi türden (kelime defteri bunu kullanır)
+  const entries = (data.dict || [])
+    .map((entry) => ({ pos: String(entry.pos || '').trim(), terms: (entry.terms || []).map((t) => String(t).trim()).filter(Boolean) }))
+    .filter((entry) => entry.terms.length);
+  const examples = (data.examples && data.examples.example ? data.examples.example : [])
+    .map((ex) => String(ex.text || '').replace(/<\/?b>/g, '').trim())
+    .filter(Boolean)
+    .slice(0, 5);
+  return { word: clean, meanings, entries, examples };
+}
+
+// Google'ın örnek havuzu çoğu zaman kitaplardan kesilmiş parçalar verir.
+// Kelimeyi içeren, altyazının kendisi olmayan ve cümleye en çok benzeyen
+// (büyük harfle başlayıp noktalama ile biten, makul uzunlukta) örnek seçilir.
+export function rankExamples(examples, word, line) {
+  const needle = String(word || '').toLowerCase();
+  const seen = String(line || '').trim().toLowerCase();
+  const scored = [];
+  for (const candidate of examples || []) {
+    const text = String(candidate || '').trim();
+    if (!text || text.length > 160 || !text.toLowerCase().includes(needle)) continue;
+    if (seen && text.toLowerCase() === seen) continue;
+    let score = 0;
+    if (/^[A-ZÀ-ÝĞİŞÇÖÜ"'“]/.test(text)) score += 2;
+    if (/[.!?…"'”]$/.test(text)) score += 2;
+    if (text.length >= 25 && text.length <= 120) score += 1;
+    scored.push({ text, score });
+  }
+  return scored.sort((a, b) => b.score - a.score).map((item) => item.text);
+}
+
+export function pickExample(examples, word, line) {
+  return rankExamples(examples, word, line)[0] || '';
+}
+
 /* ---------- DeepL ---------- */
 
 const DEEPL_SOURCES = new Set(['AR', 'BG', 'CS', 'DA', 'DE', 'EL', 'EN', 'ES', 'ET', 'FI', 'FR', 'HE', 'HU', 'ID', 'IT', 'JA', 'KO', 'LT', 'LV', 'NB', 'NL', 'PL', 'PT', 'RO', 'RU', 'SK', 'SL', 'SV', 'TH', 'TR', 'UK', 'VI', 'ZH']);
@@ -147,6 +219,86 @@ async function deepl(texts, source, target, apiKey, context) {
   return out;
 }
 
+/* ---------- Gemini (Google AI Studio) ----------
+   Ücretsiz katmanı olan tek bağlam duyarlı servis. İstek doğrudan
+   Google'a gider, anahtar kullanıcının tarayıcısında kalır. */
+
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+const GEMINI_SCHEMA = {
+  type: 'OBJECT',
+  properties: { translations: { type: 'ARRAY', items: { type: 'STRING' } } },
+  required: ['translations'],
+};
+// Anime diyalogları (kavga, argo, tehdit) güvenlik süzgecine takılabiliyor;
+// çeviri işi olduğu için engelleme kapatılır, yoksa satırlar boş döner.
+const GEMINI_SAFETY = [
+  'HARM_CATEGORY_HARASSMENT',
+  'HARM_CATEGORY_HATE_SPEECH',
+  'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+  'HARM_CATEGORY_DANGEROUS_CONTENT',
+].map((category) => ({ category, threshold: 'BLOCK_NONE' }));
+
+function geminiError(status, body) {
+  const message = String((body && body.error && body.error.message) || '').slice(0, 160);
+  if (status === 400 && /api[ _-]?key/i.test(message)) return new TranslateError('Gemini API anahtarı geçersiz', { retryable: false, fatal: true });
+  if (status === 401 || status === 403) return new TranslateError('Gemini API anahtarı kabul edilmedi', { retryable: false, fatal: true });
+  if (status === 404) return new TranslateError('Seçilen Gemini modeli bu anahtarla kullanılamıyor', { retryable: false, fatal: true });
+  if (status === 429) return new TranslateError('Gemini istek sınırına ulaşıldı, birazdan tekrar denenecek', { retryAfter: 20000 });
+  if (status >= 500) return new TranslateError('Gemini sunucusu yanıt vermedi');
+  return new TranslateError(`Gemini hatası (HTTP ${status})${message ? `: ${message}` : ''}`, { retryable: false });
+}
+
+async function geminiChunk(texts, source, target, opts, depth) {
+  const body = {
+    systemInstruction: { parts: [{ text: subtitleSystem(source, target, opts.title, opts.instructions) }] },
+    contents: [{ role: 'user', parts: [{ text: subtitleUser(texts, opts.context) }] }],
+    generationConfig: { temperature: 0.3, responseMimeType: 'application/json', responseSchema: GEMINI_SCHEMA },
+    safetySettings: GEMINI_SAFETY,
+  };
+  let res;
+  try {
+    res = await fetch(`${GEMINI_URL}/${encodeURIComponent(opts.model)}:generateContent`, {
+      method: 'POST',
+      // Anahtar başlıkta gider, adres satırında değil
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': opts.apiKey },
+      body: JSON.stringify(body),
+      credentials: 'omit',
+    });
+  } catch (_) {
+    throw new TranslateError('Gemini sunucusuna bağlanılamadı');
+  }
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw geminiError(res.status, data);
+
+  const candidate = (data && data.candidates && data.candidates[0]) || null;
+  const text = candidate && candidate.content ? (candidate.content.parts || []).map((part) => part.text || '').join('') : '';
+  let list = null;
+  try {
+    list = JSON.parse(text).translations;
+  } catch (_) {
+    list = null;
+  }
+  if (Array.isArray(list) && list.length === texts.length && list.every((x) => typeof x === 'string')) return list;
+
+  // Satır sayısı tutmadıysa, yanıt kesildiyse ya da süzgece takıldıysa ikiye bölüp yeniden dene
+  if (texts.length > 1 && depth < 3) {
+    const mid = Math.ceil(texts.length / 2);
+    const first = await geminiChunk(texts.slice(0, mid), source, target, opts, depth + 1);
+    const context = [...(opts.context || []), ...texts.slice(0, mid)].slice(-6);
+    const second = await geminiChunk(texts.slice(mid), source, target, { ...opts, context }, depth + 1);
+    return first.concat(second);
+  }
+  const blocked = (data && data.promptFeedback && data.promptFeedback.blockReason) || (candidate && candidate.finishReason === 'SAFETY');
+  if (blocked) throw new TranslateError('Gemini bu satırları çevirmeyi reddetti', { retryable: false });
+  throw new TranslateError('Gemini beklenmeyen bir yanıt döndürdü');
+}
+
+async function gemini(texts, source, target, opts) {
+  const apiKey = (opts.apiKey || '').trim();
+  if (!apiKey) throw new TranslateError('Gemini API anahtarı girilmemiş (eklenti menüsünden ekleyin)', { retryable: false, fatal: true });
+  return geminiChunk(texts, source, target, { ...opts, apiKey }, 0);
+}
+
 /* ---------- Claude (Anthropic API) ---------- */
 
 const EFFORT_MODELS = new Set(['claude-opus-5', 'claude-sonnet-5']);
@@ -158,7 +310,7 @@ const CLAUDE_SCHEMA = {
   additionalProperties: false,
 };
 
-function claudeSystem(source, target, title, instructions) {
+function subtitleSystem(source, target, title, instructions) {
   const src = source && source !== 'auto' ? englishName(source) : 'the original language';
   const tgt = englishName(target);
   return [
@@ -172,7 +324,7 @@ function claudeSystem(source, target, title, instructions) {
   ].filter(Boolean).join('\n');
 }
 
-function claudeUser(texts, context) {
+function subtitleUser(texts, context) {
   const parts = [];
   if (context && context.length) parts.push(`Earlier lines, for context only (do not translate them):\n${JSON.stringify(context)}`);
   parts.push(`Translate these ${texts.length} lines:\n${JSON.stringify(texts)}`);
@@ -197,8 +349,8 @@ async function claudeChunk(client, texts, source, target, opts, depth) {
   const params = {
     model: opts.model,
     max_tokens: 16000,
-    system: claudeSystem(source, target, opts.title, opts.instructions),
-    messages: [{ role: 'user', content: claudeUser(texts, opts.context) }],
+    system: subtitleSystem(source, target, opts.title, opts.instructions),
+    messages: [{ role: 'user', content: subtitleUser(texts, opts.context) }],
     output_config: { format: { type: 'json_schema', schema: CLAUDE_SCHEMA } },
   };
   // Çeviri basit ve yüksek hacimli bir iş: düşük "effort" yeterli ve ucuz
@@ -255,7 +407,16 @@ export async function translate({ provider, texts, source, target, context, titl
     return claude(clean, source, target, {
       apiKey: keys.claudeKey,
       model: settings.claudeModel,
-      instructions: settings.claudeInstructions,
+      instructions: settings.llmInstructions,
+      context,
+      title,
+    });
+  }
+  if (provider === 'gemini') {
+    return gemini(clean, source, target, {
+      apiKey: keys.geminiKey,
+      model: settings.geminiModel,
+      instructions: settings.llmInstructions,
       context,
       title,
     });

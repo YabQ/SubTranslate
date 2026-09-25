@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Kelime defteri önizleme</title>
+  <link rel="stylesheet" href="../src/notebook/notebook.css">
+</head>
+<body>
+  <!-- Kelime defteri sayfasını sahte "chrome" API'siyle normal bir sayfada gösterir.
+       ?s=empty parametresi boş defteri gösterir. -->
+  <script>
+    (() => {
+      const empty = new URLSearchParams(location.search).get('s') === 'empty';
+      const now = Date.now();
+      const day = 86400000;
+      const entries = empty ? [] : [
+        {
+          id: 'catch|en-us|tr', word: 'catch', source: 'en-US', target: 'tr', pos: 'fiil',
+          meanings: ['yakalamak', 'tutmak'], sense: 'yakalamak',
+          line: '...we can still catch the meteor shower.',
+          lineTr: 'Acele edersek hâlâ meteor yağmurunu yakalayabiliriz.',
+          example: 'He ran fast enough to catch the last train.',
+          exampleTr: 'Son treni yakalayacak kadar hızlı koştu.',
+          show: 'Frieren', episode: 'Bölüm 12', url: 'https://www.crunchyroll.com/watch/GG1U2J3XV',
+          time: 1729, count: 3, firstAt: now - 6 * day, at: now - 2 * 3600000,
+        },
+        {
+          id: 'letter|en-us|tr', word: 'letter', source: 'en-US', target: 'tr', pos: 'isim',
+          meanings: ['mektup', 'harf'], sense: 'mektup',
+          line: 'She left this letter for you.',
+          lineTr: 'Bu mektubu sana bıraktı.',
+          example: 'I wrote a letter to my grandmother.',
+          exampleTr: 'Büyükanneme bir mektup yazdım.',
+          show: 'Frieren', episode: 'Bölüm 12', url: 'https://www.crunchyroll.com/watch/GG1U2J3XV',
+          time: 402, count: 1, firstAt: now - day, at: now - day,
+        },
+        {
+          id: 'stubborn|en-us|tr', word: 'stubborn', source: 'en-US', target: 'tr', pos: 'sıfat',
+          meanings: ['inatçı', 'dik kafalı'], sense: 'inatçı',
+          line: "You're as stubborn as ever.",
+          lineTr: 'Her zamanki gibi inatçısın.',
+          example: 'The stubborn child refused to eat.',
+          exampleTr: 'İnatçı çocuk yemek yemeyi reddetti.',
+          show: 'Dandadan', episode: 'Bölüm 3', url: 'https://www.crunchyroll.com/watch/GTEST0002',
+          time: 88, count: 2, firstAt: now - 3 * day, at: now - 3 * day,
+        },
+      ];
+
+      const store = { vocab: entries };
+      const listeners = [];
+      window.chrome = {
+        storage: {
+          local: {
+            async get(keys) {
+              if (keys == null) return { ...store };
+              const list = typeof keys === 'string' ? [keys] : Array.isArray(keys) ? keys : Object.keys(keys);
+              return Object.fromEntries(list.filter((k) => k in store).map((k) => [k, structuredClone(store[k])]));
+            },
+            async set(obj) {
+              Object.assign(store, structuredClone(obj));
+              const changes = Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, { newValue: v }]));
+              listeners.forEach((fn) => fn(changes, 'local'));
+            },
+            async remove(keys) {
+              for (const k of [].concat(keys)) delete store[k];
+            },
+          },
+          onChanged: { addListener: (fn) => listeners.push(fn) },
+        },
+      };
+    })();
+  </script>
+  <header class="top">
+    <img src="../icons/icon48.png" width="34" height="34" alt="">
+    <div class="titles">
+      <h1>Kelime Defteri</h1>
+      <p id="summary">Yükleniyor…</p>
+    </div>
+  </header>
+
+  <div class="filters">
+    <input type="search" id="search" placeholder="Kelime, anlam ya da cümlede ara" autocomplete="off">
+    <select id="show"><option value="">Tüm animeler</option></select>
+    <select id="pos"><option value="">Tüm türler</option></select>
+    <select id="sort">
+      <option value="new">Önce en yeni</option>
+      <option value="old">Önce en eski</option>
+      <option value="az">Alfabetik</option>
+      <option value="count">En çok karşılaşılan</option>
+    </select>
+  </div>
+
+  <main id="list"></main>
+
+  <p id="empty" class="empty" hidden></p>
+
+  <footer class="bottom">
+    <div class="export">
+      <button type="button" id="exportJson">JSON olarak indir</button>
+      <button type="button" id="exportCsv">CSV olarak indir</button>
+    </div>
+    <button type="button" id="clearAll" class="danger">Defteri tamamen sil</button>
+  </footer>
+
+  <div id="menu" class="menu" hidden>
+    <button type="button" data-action="copy">Kopyala</button>
+    <button type="button" data-action="delete">Sil</button>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="../src/shared/vocab.js"></script>
+  <script src="../src/notebook/notebook.js"></script>
+</body>
+</html>

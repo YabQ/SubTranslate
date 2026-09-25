@@ -8,11 +8,11 @@
   if (globalThis.__crdsContent) return;
   globalThis.__crdsContent = true;
 
-  const { settings: Settings, lang: L, subtitles: Subs, Overlay } = globalThis.CRDS;
+  const { settings: Settings, lang: L, subtitles: Subs, words: Words, Overlay } = globalThis.CRDS;
 
-  const CHUNK_SIZE = { google: 60, deepl: 50, claude: 60 };
-  const CONCURRENCY = { google: 2, deepl: 2, claude: 3 };
-  const PROVIDER_NAMES = { google: 'Google Çeviri', deepl: 'DeepL', claude: 'Claude' };
+  const CHUNK_SIZE = { google: 60, deepl: 50, claude: 60, gemini: 60 };
+  const CONCURRENCY = { google: 2, deepl: 2, claude: 3, gemini: 2 };
+  const PROVIDER_NAMES = { google: 'Google Çeviri', deepl: 'DeepL', claude: 'Claude', gemini: 'Gemini' };
   const VIDEO_EVENTS = ['play', 'playing', 'pause', 'seeked', 'timeupdate', 'loadedmetadata'];
 
   const state = {
@@ -27,7 +27,27 @@
     lastPointer: 0,
     statusTimer: 0,
     hardsubsStripped: false,
+    transLine: '',       // o an gösterilen çeviri satırı (kelime eşleştirmesi için)
   };
+
+  // Fareyle üzerine gelinen kelime: orijinaldeki konumu, anlamları ve
+  // çeviri satırında eşleşen kelimelerin konumları
+  const lookup = {
+    word: '',
+    origText: '',
+    index: -1,
+    meanings: [],
+    shown: [],
+    sense: '',
+    transText: '',
+    transHot: [],
+    seq: 0,
+    raf: 0,
+    x: 0,
+    y: 0,
+    cache: new Map(),
+  };
+  const LOOKUP_CACHE_MAX = 300;
 
   /* ---------- Yardımcılar ---------- */
 
@@ -59,6 +79,7 @@
     if (!state.overlay) {
       state.overlay = new Overlay();
       state.overlay.applySettings(state.settings);
+      state.overlay.onWordClick = saveWord;
     }
     state.overlay.attach(state.video);
     return state.overlay;
@@ -334,7 +355,8 @@
       return;
     }
 
-    const variant = s.provider === 'claude' ? `${s.claudeModel}~${hash(s.claudeInstructions)}` : '';
+    const model = s.provider === 'claude' ? s.claudeModel : s.provider === 'gemini' ? s.geminiModel : '';
+    const variant = model ? `${model}~${hash(s.llmInstructions)}` : '';
     job.cacheKey = ['v1', s.provider, variant, source, s.targetLang, s.mergeSentences ? 'm' : 's', uniq.length, hash(uniq.join('\u0001'))].join('|');
     const cached = await send({ type: 'cache-get', key: job.cacheKey });
     if (!jobAlive(sess, job)) return;
@@ -443,6 +465,134 @@
     pushStatus();
   }
 
+  /* ---------- Kelime sözlüğü ----------
+     Fare altyazıdaki bir kelimenin üzerine gelince o kelime renklenir,
+     anlamları balonda gösterilir ve çeviri satırındaki karşılığı aynı
+     renge boyanır. Karşılık arama Türkçe eklere dayanıklıdır (words.js). */
+
+  function clearLookup(render = true) {
+    if (!lookup.origText) return;
+    lookup.word = '';
+    lookup.origText = '';
+    lookup.index = -1;
+    lookup.meanings = [];
+    lookup.shown = [];
+    lookup.sense = '';
+    lookup.transText = '';
+    lookup.transHot = [];
+    lookup.seq++;
+    if (state.overlay) state.overlay.hideTip();
+    if (render) renderNow();
+  }
+
+  async function runLookup(word, origText, index) {
+    const sess = state.session;
+    const source = (sess && sess.primary && sess.primary.lang) || state.settings.primaryLang;
+    const target = state.settings.targetLang;
+    const key = `${source}|${target}|${word.toLowerCase()}`;
+    const seq = ++lookup.seq;
+    let res = lookup.cache.get(key);
+    if (!res) {
+      res = await send({ type: 'lookup-word', word, source, target });
+      if (res && Array.isArray(res.meanings)) {
+        if (lookup.cache.size >= LOOKUP_CACHE_MAX) lookup.cache.delete(lookup.cache.keys().next().value);
+        lookup.cache.set(key, res);
+      }
+    }
+    // Bu sırada fare başka kelimeye geçtiyse sonucu at
+    if (seq !== lookup.seq || lookup.origText !== origText || lookup.index !== index) return;
+    const meanings = (res && res.meanings) || [];
+    lookup.meanings = meanings;
+    const match = meanings.length && state.transLine ? Words.bestMatch(state.transLine, meanings) : null;
+    lookup.transText = match ? state.transLine : '';
+    lookup.transHot = match ? match.indexes : [];
+    // Cümlede kullanılan anlam: çeviri satırında karşılığı tutan aday
+    lookup.sense = match ? match.meaning : meanings[0] || '';
+    renderNow();
+    const shown = Words.orderBySense(meanings, lookup.sense).slice(0, 2);
+    lookup.shown = shown;
+    if (state.overlay) state.overlay.showTip(word, shown, tipNote(meanings));
+  }
+
+  function tipNote(meanings) {
+    if (!meanings.length) return 'Karşılık bulunamadı';
+    return state.settings.notebook ? 'Kaydetmek için tıkla' : '';
+  }
+
+  // Sekme başlığından dizi adı ve bölüm numarası
+  function episodeInfo() {
+    const raw = document.title
+      .replace(/\s*[-|–—]\s*Watch on Crunchyroll.*$/i, '')
+      .replace(/\s*[-|–—]\s*Crunchyroll.*$/i, '')
+      .replace(/^\s*Watch\s+/i, '')
+      .trim();
+    const m = /\b(?:Episode|Bölüm|Folge|Episodio|Épisode|Ep\.?)\s*([0-9]+[A-Za-z]?)/i.exec(raw);
+    const show = raw
+      .replace(/\s*[-–—:]?\s*(?:Season\s*[0-9]+)?\s*(?:Episode|Bölüm|Folge|Episodio|Épisode|Ep\.?)\s*[0-9].*$/i, '')
+      .trim();
+    return { show: show || raw, episode: m ? `Bölüm ${m[1]}` : '' };
+  }
+
+  // Kelimeye tıklandığında deftere kaydeder; katman tıklamayı oynatıcıya geçirmez
+  async function saveWord(word, index) {
+    const s = state.settings;
+    const overlay = state.overlay;
+    if (!s.notebook || !overlay || !lookup.origText || index !== lookup.index) return;
+    const sess = state.session;
+    const source = (sess && sess.primary && sess.primary.lang) || s.primaryLang;
+    const meanings = lookup.shown.length ? lookup.shown : lookup.meanings.slice(0, 2);
+    const info = episodeInfo();
+    overlay.showTip(word, meanings, 'Kaydediliyor…');
+    const res = await send({
+      type: 'save-word',
+      word,
+      source,
+      target: s.targetLang,
+      sense: lookup.sense,
+      line: lookup.origText,
+      lineTr: lookup.transText || state.transLine,
+      show: info.show,
+      episode: info.episode,
+      url: location.href,
+      time: state.video ? Math.floor(state.video.currentTime) : 0,
+    });
+    // Bu sırada fare başka kelimeye geçtiyse balonu geri getirme
+    if (lookup.index !== index || lookup.word !== word) return;
+    if (res && res.ok) {
+      overlay.showTip(word, meanings, res.count > 1 ? `Deftere eklendi · ${res.count}. kez` : 'Deftere eklendi');
+    } else {
+      overlay.showTip(word, meanings, 'Kaydedilemedi');
+    }
+  }
+
+  function updateHover(x, y) {
+    const overlay = state.overlay;
+    if (!overlay || !state.settings.enabled || !state.settings.wordLookup) {
+      clearLookup();
+      return;
+    }
+    const hit = overlay.hitTest(x, y);
+    if (!hit || !hit.word) {
+      clearLookup();
+      return;
+    }
+    if (hit.lineText === lookup.origText && hit.index === lookup.index) {
+      overlay.placeTip();
+      return;
+    }
+    lookup.word = hit.word;
+    lookup.origText = hit.lineText;
+    lookup.index = hit.index;
+    lookup.meanings = [];
+    lookup.shown = [];
+    lookup.sense = '';
+    lookup.transText = '';
+    lookup.transHot = [];
+    overlay.hideTip();
+    renderNow(); // kelime, anlamı beklenmeden renklensin
+    runLookup(hit.word, hit.lineText, hit.index);
+  }
+
   /* ---------- Çizim ---------- */
 
   function buildModel() {
@@ -483,7 +633,28 @@
 
     const arrange = (a, b) => (s.translationOnTop ? [...b, ...a] : [...a, ...b]);
     const isBottom = (l) => l.kind === 'dialogue';
-    const bottom = arrange(orig.filter(isBottom), trans.filter(isBottom));
+    const origBottom = orig.filter(isBottom);
+    const transBottom = trans.filter(isBottom);
+
+    // Kelime sözlüğü yalnızca çift altyazıda çalışır: orijinal ve çeviri birlikteyken
+    if (s.wordLookup && origBottom.length && transBottom.length) {
+      const target = transBottom[0];
+      state.transLine = target.text;
+      for (const line of origBottom) {
+        line.words = true;
+        line.hover = true;
+        line.savable = s.notebook;
+        line.hot = line.text === lookup.origText ? [lookup.index] : [];
+      }
+      for (const line of transBottom) {
+        line.words = true;
+        line.hot = line === target && target.text === lookup.transText ? lookup.transHot : [];
+      }
+    } else {
+      state.transLine = '';
+    }
+
+    const bottom = arrange(origBottom, transBottom);
     const top = arrange(orig.filter((l) => !isBottom(l)).slice(-3), trans.filter((l) => !isBottom(l)).slice(-3))
       .map((l) => (l.kind === 'sign' ? { ...l, cls: `${l.cls} sign` } : l));
     return { top, bottom };
@@ -495,7 +666,13 @@
     const s = state.settings;
     overlay.setVisible(s.enabled);
     if (!s.enabled) return;
-    overlay.render(buildModel());
+    const model = buildModel();
+    overlay.render(model);
+    // Üzerinde durulan satır geçtiyse (replik değişti) seçim düşer
+    if (lookup.origText) {
+      if (model && model.bottom.some((l) => l.hover && l.text === lookup.origText)) overlay.placeTip();
+      else clearLookup(false);
+    }
     let lift = false;
     if (s.liftWithControls && state.video) {
       const native = overlay.nativeControlsVisible();
@@ -567,6 +744,7 @@
     state.settings = next;
     state.loaded = true;
     applyPageFlags();
+    if (!next.enabled || !next.wordLookup || !next.showOriginal || !next.showTranslation) clearLookup(false);
     if (state.overlay) state.overlay.applySettings(next);
     if (!next.enabled) {
       stopSession();
@@ -594,7 +772,19 @@
   const onPointer = () => {
     state.lastPointer = Date.now();
   };
-  document.addEventListener('pointermove', onPointer, { passive: true, capture: true });
+  // Kelime sınaması her karede en fazla bir kez yapılır
+  const onPointerMove = (event) => {
+    state.lastPointer = Date.now();
+    if (!state.overlay || !state.settings.enabled || !state.settings.wordLookup) return;
+    lookup.x = event.clientX;
+    lookup.y = event.clientY;
+    if (lookup.raf) return;
+    lookup.raf = requestAnimationFrame(() => {
+      lookup.raf = 0;
+      updateHover(lookup.x, lookup.y);
+    });
+  };
+  document.addEventListener('pointermove', onPointerMove, { passive: true, capture: true });
   document.addEventListener('touchstart', onPointer, { passive: true, capture: true });
   document.addEventListener('loadedmetadata', (e) => {
     if (e.target instanceof HTMLVideoElement) checkVideo();

@@ -77,11 +77,48 @@ code, kbd {
   color: var(--muted);
 }
 section.card h2 { display: block; margin-bottom: 8px; }
-details.card summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; }
-details.card summary::-webkit-details-marker { display: none; }
-details.card summary::after { content: "▾"; color: var(--muted); transition: transform .2s; }
-details.card:not([open]) summary::after { transform: rotate(-90deg); }
-details.card[open] summary { margin-bottom: 8px; }
+
+/* ---------- Sekmeler ---------- */
+
+.tabs {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
+  background: var(--card-2); padding: 3px; border-radius: 9px; margin-bottom: 10px;
+}
+.tabs button {
+  background: none; border: 0; border-radius: 7px; cursor: pointer; padding: 7px 2px;
+  font: 600 11.5px/1 inherit; color: var(--muted); transition: background .15s, color .15s;
+}
+.tabs button:hover { color: var(--text); }
+.tabs button[aria-selected="true"] { background: var(--accent); color: #fff; }
+.tabs button:focus-visible { outline: 2px solid var(--accent-2); }
+
+.page[hidden] { display: none; }
+
+/* ---------- Görünüm önizlemesi ---------- */
+
+.preview {
+  --base: 13px; --prim: #fff; --sec: #ffd84d; --hot: #4dd2ff; --bg: .35; --sec-scale: 1;
+  position: relative; height: 104px; margin: -2px 0 12px; border-radius: 8px; overflow: hidden;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: linear-gradient(180deg, #16193a 0%, #4a3360 58%, #9a6248 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+.pv-stack {
+  display: flex; flex-direction: column; align-items: center; gap: .14em;
+  width: 100%; padding: 0 8px 7px; text-align: center;
+  font: 600 var(--base)/1.28 "Noto Sans", "Segoe UI", sans-serif;
+}
+.pv-stack.flip { flex-direction: column-reverse; }
+.pv-line {
+  display: inline-block; max-width: 100%; padding: .04em .32em; border-radius: .18em;
+  background: rgba(0, 0, 0, var(--bg));
+  text-shadow: 0 0 .08em #000, .045em .045em .06em #000, -.045em -.045em .06em #000;
+}
+.pv-line[hidden] { display: none; }
+.pv-prim { color: var(--prim); }
+.pv-sec { color: var(--sec); font-size: calc(var(--sec-scale) * 1em); }
+.preview.lookup b { color: var(--hot); font-weight: inherit; }
+.preview:not(.lookup) b { font-weight: inherit; }
 
 /* ---------- Durum ---------- */
 
@@ -134,10 +171,10 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 .colors label { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; cursor: pointer; }
 .colors input { width: 28px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 5px; background: none; cursor: pointer; }
 
-.segmented { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--card-2); padding: 3px; border-radius: 8px; margin-bottom: 8px; }
+.segmented { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--card-2); padding: 3px; border-radius: 8px; margin-bottom: 8px; }
 .segmented label { position: relative; cursor: pointer; }
 .segmented input { position: absolute; opacity: 0; }
-.segmented span { display: block; text-align: center; padding: 5px 0; border-radius: 6px; color: var(--muted); font-weight: 600; transition: background .15s, color .15s; }
+.segmented span { display: block; text-align: center; padding: 5px 2px; font-size: 12px; border-radius: 6px; color: var(--muted); font-weight: 600; transition: background .15s, color .15s; }
 .segmented input:checked + span { background: var(--accent); color: #fff; }
 .segmented input:focus-visible + span { outline: 2px solid var(--accent-2); }
 
@@ -160,6 +197,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 .btn:disabled { opacity: .6; cursor: default; }
 .btn.ghost { background: transparent; }
 .btn.retry { margin-top: 8px; }
+.btn.wide { width: 100%; margin-top: 10px; }
 .btn[hidden] { display: none; }
 .test-result { font-size: 12px; color: var(--muted); min-width: 0; overflow-wrap: anywhere; }
 .test-result.ok { color: var(--ok); }

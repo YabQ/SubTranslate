@@ -7,9 +7,13 @@
    ========================================================= */
 import '../shared/languages.js';
 import '../shared/settings.js';
-import { translate } from './translate.js';
+import '../shared/vocab.js';
+import '../shared/words.js';
+import { translate, lookupWord, rankExamples } from './translate.js';
 
 const Settings = globalThis.CRDS.settings;
+const Vocab = globalThis.CRDS.vocab;
+const Words = globalThis.CRDS.words;
 
 const TAB_PREFIX = 'tab:';
 const CACHE_PREFIX = 'tc:';
@@ -129,7 +133,7 @@ async function doTranslate(msg, sender) {
         retryAfter: 0,
       };
     }
-    const [settings, keys] = await Promise.all([Settings.load(), chrome.storage.local.get(['deeplKey', 'claudeKey'])]);
+    const [settings, keys] = await Promise.all([Settings.load(), chrome.storage.local.get(['deeplKey', 'claudeKey', 'geminiKey'])]);
     const translations = await translate({
       provider: msg.provider,
       texts: msg.texts,
@@ -190,6 +194,80 @@ async function cacheClear() {
   return keys.filter((k) => k !== CACHE_INDEX).length;
 }
 
+/* ---------- Kelime sözlüğü ----------
+   Aynı kelimeye fareyle tekrar gelindiğinde istek gitmesin diye
+   servis çalışanı ayakta kaldığı sürece bellekte tutulur. */
+
+const WORD_CACHE_MAX = 400;
+const wordCache = new Map();
+
+async function doLookup(msg) {
+  const key = `${msg.source}|${msg.target}|${String(msg.word || '').toLowerCase()}`;
+  if (wordCache.has(key)) return wordCache.get(key);
+  let result;
+  try {
+    result = await lookupWord(msg);
+  } catch (err) {
+    return { word: msg.word, meanings: [], error: err.message };
+  }
+  if (wordCache.size >= WORD_CACHE_MAX) wordCache.delete(wordCache.keys().next().value);
+  wordCache.set(key, result);
+  return result;
+}
+
+/* ---------- Kelime defteri ----------
+   İçerik betiği kelimeye tıklayınca buraya gelir. Anlamlar zaten
+   sözlük önbelleğinde; buradaki ek iş, kelimenin türünü seçmek ve
+   örnek cümleyi çevirmektir. Kayıtlar kendiliğinden silinmez. */
+
+// Google'ın örnekleri anlama göre ayrılmış değildir: "a good catch" (av) ile
+// "catch the train" (yakalamak) aynı torbadadır. Bu yüzden en iyi üç aday
+// çevrilir ve çevirisinde cümledeki anlamı taşıyan ilk örnek seçilir.
+// Hiçbiri tutmazsa örnek yazılmaz; yanlış anlamlı örnek öğretici olmaz.
+async function exampleFor(found, msg) {
+  const sense = String(msg.sense || '').trim();
+  if (found.exampleFor === sense) return { example: found.example, exampleTr: found.exampleTr };
+  const candidates = rankExamples(found.examples, msg.word, msg.line).slice(0, 3);
+  let example = '';
+  let exampleTr = '';
+  if (candidates.length) {
+    try {
+      const translations = await translate({
+        provider: 'google', texts: candidates, source: msg.source, target: msg.target, settings: {}, keys: {},
+      });
+      for (let i = 0; i < candidates.length; i++) {
+        const translated = translations[i] || '';
+        if (sense && !Words.bestMatch(translated, [sense])) continue;
+        example = candidates[i];
+        exampleTr = translated;
+        break;
+      }
+    } catch (_) {
+      example = '';
+    }
+  }
+  Object.assign(found, { exampleFor: sense, example, exampleTr });
+  return { example, exampleTr };
+}
+
+async function saveWord(msg) {
+  const found = await doLookup(msg);
+  const meanings = found.meanings || [];
+  const { example, exampleTr } = await exampleFor(found, msg);
+  const entry = Vocab.buildEntry({
+    ...msg,
+    meanings: Words.orderBySense(meanings, msg.sense),
+    pos: Vocab.pickPos(found.entries, msg.sense || meanings[0]),
+    example,
+    exampleTr,
+  });
+  return withLock(Vocab.KEY, async () => {
+    const { list, added, count } = Vocab.merge(await Vocab.load(), entry);
+    await Vocab.save(list);
+    return { ok: true, added, count, word: entry.word, pos: entry.pos };
+  });
+}
+
 /* ---------- Mesajlar ---------- */
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -214,6 +292,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     case 'test-provider':
       doTranslate({ provider: msg.provider, texts: ['Hey, long time no see! How have you been?'], source: 'en-US', target: msg.target }, sender).then(sendResponse);
       return true;
+    case 'lookup-word':
+      doLookup(msg).then(sendResponse, () => sendResponse({ word: msg.word, meanings: [] }));
+      return true;
+    case 'save-word':
+      saveWord(msg).then(sendResponse, (err) => sendResponse({ ok: false, error: err.message }));
+      return true;
+    case 'open-notebook':
+      chrome.tabs.create({ url: chrome.runtime.getURL('src/notebook/notebook.html') });
+      return false;
     case 'cache-get':
       cacheGet(msg.key).then(sendResponse, () => sendResponse(null));
       return true;

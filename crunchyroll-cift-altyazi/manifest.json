@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Crunchyroll için Çift Altyazı",
   "short_name": "Çift Altyazı",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Crunchyroll'da orijinal altyazıyla birlikte Türkçe ya da seçtiğin dildeki çevirisini aynı anda gösterir.",
   "minimum_chrome_version": "111",
   "icons": {
@@ -31,7 +31,8 @@
   "optional_host_permissions": [
     "https://api-free.deepl.com/*",
     "https://api.deepl.com/*",
-    "https://api.anthropic.com/*"
+    "https://api.anthropic.com/*",
+    "https://generativelanguage.googleapis.com/*"
   ],
   "content_scripts": [
     {
@@ -47,6 +48,7 @@
         "src/shared/languages.js",
         "src/shared/settings.js",
         "src/content/subtitles.js",
+        "src/shared/words.js",
         "src/content/overlay.js",
         "src/content/content.js"
       ],

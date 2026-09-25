@@ -3,7 +3,7 @@ import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 import '../src/shared/settings.js';
-import { translate } from '../src/background/translate.js';
+import { translate, pickExample } from '../src/background/translate.js';
 
 const DEFAULTS = globalThis.CRDS.settings.DEFAULTS;
 let calls = [];
@@ -93,6 +93,51 @@ test('deepl: pro anahtar, 50 satırlık paketler; hatalar sınıflandırılır',
   await assert.rejects(run('deepl', ['x']), (e) => e.fatal && /anahtar/.test(e.message));
 });
 
+/* ---------- Gemini ---------- */
+
+const geminiReply = (list) => json({ candidates: [{ content: { parts: [{ text: JSON.stringify({ translations: list }) }] }, finishReason: 'STOP' }] });
+
+test('gemini: anahtar başlıkta gider, yapılandırılmış çıktı istenir', async () => {
+  handler = (req) => geminiReply(JSON.parse(req.body).contents[0].parts[0].text.match(/[.*]/s) ? ['Merhaba.', 'Görüşürüz.'] : []);
+  const out = await run('gemini', ['Hello.', 'Bye.'], { keys: { geminiKey: 'AIza-test' } });
+  assert.deepEqual(out, ['Merhaba.', 'Görüşürüz.']);
+
+  const call = calls[0];
+  assert.equal(call.url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent');
+  assert.equal(call.headers['x-goog-api-key'], 'AIza-test', 'anahtar başlıkta olmalı, adreste değil');
+  assert.ok(!call.url.includes('AIza'), 'anahtar adres satırına yazılmamalı');
+  const body = JSON.parse(call.body);
+  assert.equal(body.generationConfig.responseMimeType, 'application/json');
+  assert.deepEqual(body.generationConfig.responseSchema.required, ['translations']);
+  assert.equal(body.safetySettings.length, 4);
+  assert.match(body.systemInstruction.parts[0].text, /Frieren/);
+});
+
+test('gemini: satır sayısı tutmazsa ikiye bölünür, model ayardan gelir', async () => {
+  handler = (req) => {
+    const text = JSON.parse(req.body).contents[0].parts[0].text;
+    const count = (text.match(/Translate these (\d+) lines/) || [])[1];
+    return geminiReply(count === '4' ? ['tek satır'] : Array.from({ length: Number(count) }, (_, i) => 'T' + i));
+  };
+  const out = await run('gemini', ['a', 'b', 'c', 'd'], { keys: { geminiKey: 'k' }, settings: { geminiModel: 'gemini-3.8-flash' } });
+  assert.deepEqual(out, ['T0', 'T1', 'T0', 'T1']);
+  assert.ok(calls[0].url.includes('gemini-3.8-flash'));
+  assert.equal(calls.length, 3);
+});
+
+test('gemini: hatalar Türkçe ve doğru sınıfta', async () => {
+  handler = () => json({ error: { code: 400, message: 'API key not valid. Please pass a valid API key.' } }, 400);
+  await assert.rejects(run('gemini', ['x'], { keys: { geminiKey: 'bad' } }), (e) => e.fatal && /anahtar/.test(e.message));
+
+  handler = () => json({ error: { code: 429, message: 'Quota exceeded' } }, 429);
+  await assert.rejects(run('gemini', ['x'], { keys: { geminiKey: 'k' } }), (e) => e.retryable && e.retryAfter > 0);
+
+  handler = () => json({ error: { code: 503 } }, 503);
+  await assert.rejects(run('gemini', ['x'], { keys: { geminiKey: 'k' } }), (e) => e.retryable);
+
+  await assert.rejects(run('gemini', ['x']), (e) => e.fatal && /anahtar/.test(e.message));
+});
+
 /* ---------- Claude ---------- */
 
 function claudeReply(translations, stop = 'end_turn') {
@@ -105,7 +150,7 @@ function claudeReply(translations, stop = 'end_turn') {
 
 test('claude (Opus 5): yapılandırılmış çıktı, düşük effort ve yedek model', async () => {
   handler = (req) => claudeReply(JSON.parse(JSON.parse(req.body).messages[0].content.split('\n').pop()).map((t) => `TR:${t}`));
-  const out = await run('claude', ['Hello.', 'Bye.'], { keys: { claudeKey: 'sk-ant-test' }, settings: { claudeInstructions: 'Samimi ol.' } });
+  const out = await run('claude', ['Hello.', 'Bye.'], { keys: { claudeKey: 'sk-ant-test' }, settings: { llmInstructions: 'Samimi ol.' } });
   assert.deepEqual(out, ['TR:Hello.', 'TR:Bye.']);
 
   const req = calls[0];
@@ -155,3 +200,23 @@ test('claude: hatalar Türkçe ve doğru sınıfta', async () => {
 
   await assert.rejects(run('claude', ['x']), (e) => e.fatal && /anahtar/.test(e.message));
 });
+
+test('pickExample: tam cümleye benzeyen örnek seçilir', () => {
+  const examples = [
+    "he bellowed something Jess couldn't catch",
+    'He ran fast enough to catch the last train.',
+    'catch',
+    'She will catch the ball.',
+  ];
+  assert.equal(
+    pickExample(examples, 'catch', ''),
+    'He ran fast enough to catch the last train.',
+    'büyük harfle başlayıp noktayla biten ve makul uzunlukta olan kazanır',
+  );
+  assert.equal(pickExample(examples, 'letter', ''), '', 'kelimeyi içermeyen örnek seçilmez');
+  assert.equal(
+    pickExample(['He ran fast enough to catch the last train.'], 'catch', 'he ran fast enough to catch the last train.'),
+    '',
+    'altyazı satırının kendisi örnek olarak verilmez',
+  );
+})

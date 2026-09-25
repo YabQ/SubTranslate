@@ -7,8 +7,8 @@
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => [...document.querySelectorAll(sel)];
 
-  const PROVIDER_NAMES = { google: 'Google Çeviri', deepl: 'DeepL', claude: 'Claude' };
-  const KEY_FIELDS = ['deeplKey', 'claudeKey'];
+  const PROVIDER_NAMES = { google: 'Google Çeviri', deepl: 'DeepL', claude: 'Claude', gemini: 'Gemini' };
+  const KEY_FIELDS = ['deeplKey', 'claudeKey', 'geminiKey'];
   const FORMATTERS = {
     fontScale: (v) => `%${Math.round(v * 100)}`,
     translationScale: (v) => `%${Math.round(v * 100)}`,
@@ -73,6 +73,7 @@
     const targets = [...new Set([...L.TARGET_LANGS, current.targetLang])];
     $('#targetLang').replaceChildren(...targets.map((c) => option(c, L.displayName(c))));
     $('#claudeModel').replaceChildren(...S.CLAUDE_MODELS.map((m) => option(m.id, m.label)));
+    $('#geminiModel').replaceChildren(...S.GEMINI_MODELS.map((m) => option(m.id, m.label)));
   }
 
   function updateOutput(key, value) {
@@ -82,6 +83,8 @@
 
   function showProviderPanel(provider) {
     for (const panel of $$('.provider-panel')) panel.classList.toggle('active', panel.dataset.provider === provider);
+    // Talimat kutusu iki yapay zekâ servisinde de aynı ayarı kullanır
+    $('#llmBox').hidden = provider !== 'claude' && provider !== 'gemini';
   }
 
   function applyToForm(s) {
@@ -93,6 +96,56 @@
     }
     for (const radio of $$('input[name="provider"]')) radio.checked = radio.value === s.provider;
     showProviderPanel(s.provider);
+    updatePreview(s);
+  }
+
+  /* ---------- Sekmeler ---------- */
+
+  const TAB_KEY = 'popupTab';
+
+  function showTab(name) {
+    const tabs = $$('.tabs button');
+    const known = tabs.some((b) => b.dataset.tab === name) ? name : 'diller';
+    for (const button of tabs) button.setAttribute('aria-selected', String(button.dataset.tab === known));
+    for (const page of $$('.page')) page.hidden = page.dataset.page !== known;
+    if (known === 'defter') showVocabCount();
+    chrome.storage.local.set({ [TAB_KEY]: known }).catch(() => {});
+  }
+
+  async function showVocabCount() {
+    let list = [];
+    try {
+      const data = await chrome.storage.local.get('vocab');
+      list = Array.isArray(data.vocab) ? data.vocab : [];
+    } catch (_) {
+      list = [];
+    }
+    const total = list.reduce((sum, item) => sum + (Number(item.count) || 1), 0);
+    $('#vocabCount').textContent = list.length
+      ? `Defterde ${list.length} kelime, ${total} karşılaşma var. Kayıtlar kendiliğinden silinmez.`
+      : 'Defter henüz boş. Çift altyazı açıkken bir kelimenin üzerine gelip tıkladığında burada birikir.';
+  }
+
+  /* ---------- Görünüm önizlemesi ---------- */
+
+  // Altyazının küçük bir örneği: ayar değiştikçe anında güncellenir.
+  // Gerçek puntoyu videonun yüksekliği belirlediği için burada okunabilir
+  // bir taban kullanılır; değişimin oranı aynı kalır.
+  function updatePreview(s) {
+    const box = $('#preview');
+    if (!box) return;
+    const base = Math.min(24, Math.max(8, 13 * s.fontScale));
+    box.style.setProperty('--base', `${base.toFixed(1)}px`);
+    box.style.setProperty('--prim', s.originalColor);
+    box.style.setProperty('--sec', s.translationColor);
+    box.style.setProperty('--hot', s.lookupColor);
+    box.style.setProperty('--bg', String(s.bgOpacity));
+    box.style.setProperty('--sec-scale', String(s.translationScale));
+    box.classList.toggle('lookup', Boolean(s.wordLookup));
+    $('#previewStack').classList.toggle('flip', !s.translationOnTop);
+    $('#previewStack').style.paddingBottom = `${Math.round((s.bottomOffset / 100) * 104) + 4}px`;
+    $('#previewPrim').hidden = !s.showOriginal;
+    $('#previewSec').hidden = !s.showTranslation;
   }
 
   function readValue(el) {
@@ -112,6 +165,7 @@
         if (live) later(key, () => save({ [key]: value }), el.tagName === 'TEXTAREA' ? 700 : 250);
         else save({ [key]: value });
         if (key === 'enabled') renderStatus();
+        updatePreview(current);
       });
     }
 
@@ -155,7 +209,15 @@
 
     $('#testProvider').addEventListener('click', testProvider);
     $('#clearCache').addEventListener('click', clearCache);
+    $('#openNotebook').addEventListener('click', () => {
+      chrome.runtime.sendMessage({ type: 'open-notebook' }).catch(() => {});
+      window.close();
+    });
     $('#retry').addEventListener('click', () => save({ retryToken: Date.now() }));
+
+    for (const button of $$('.tabs button')) {
+      button.addEventListener('click', () => showTab(button.dataset.tab));
+    }
   }
 
   /* ---------- İsteğe bağlı izinler (DeepL, Claude) ---------- */
@@ -335,7 +397,7 @@
   /* ---------- Başlangıç ---------- */
 
   (async () => {
-    const [settings, keys] = await Promise.all([S.load(), chrome.storage.local.get(KEY_FIELDS)]);
+    const [settings, keys] = await Promise.all([S.load(), chrome.storage.local.get([...KEY_FIELDS, TAB_KEY])]);
     current = settings;
     for (const id of KEY_FIELDS) $(`#${id}`).value = keys[id] || '';
     await watchActiveTab().catch(() => {});
@@ -343,6 +405,8 @@
     fillPrimary();
     applyToForm(current);
     bindForm();
+    // Menü en son bırakıldığı sekmeyle açılır
+    showTab(keys[TAB_KEY] || 'diller');
     renderStatus();
     updatePermissionNotice();
   })();

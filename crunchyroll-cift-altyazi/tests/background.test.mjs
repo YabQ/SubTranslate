@@ -137,3 +137,15 @@ test('klavye kısayolları ayarları değiştirir', async () => {
   await listeners.command('toggle-overlay');
   assert.equal(chrome.storage.local.data.settings.enabled, true);
 });
+
+test('ayarlar: eski claudeInstructions kaydı yeni ada taşınır', () => {
+  const S = globalThis.CRDS.settings;
+  const migrated = S.sanitize({ claudeInstructions: 'Samimi ol.' });
+  assert.equal(migrated.llmInstructions, 'Samimi ol.');
+
+  const both = S.sanitize({ claudeInstructions: 'eski', llmInstructions: 'yeni' });
+  assert.equal(both.llmInstructions, 'yeni', 'yeni kayıt varsa eskisi üzerine yazmaz');
+
+  assert.equal(S.sanitize({ provider: 'gemini' }).provider, 'gemini');
+  assert.equal(S.sanitize({ geminiModel: 'uydurma-model' }).geminiModel, S.DEFAULTS.geminiModel);
+})
