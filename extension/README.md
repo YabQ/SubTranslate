@@ -43,7 +43,7 @@ By hand:
 
 1. Open `chrome://extensions` (`edge://extensions` in Edge).
 2. Turn on **Developer mode** in the top right.
-3. Press **Load unpacked** and pick this folder (`crunchyroll-cift-altyazi`).
+3. Press **Load unpacked** and pick this folder (`extension`).
 4. Pin the extension from the puzzle icon in the toolbar.
 5. If a Crunchyroll tab is already open, **reload it once.**
 
@@ -118,7 +118,7 @@ By hand:
 ## Development
 
 ```
-crunchyroll-cift-altyazi/
+extension/
 ├── manifest.json
 ├── _locales/                   Interface strings (en, tr)
 ├── src/
@@ -138,7 +138,7 @@ crunchyroll-cift-altyazi/
 
 - **Tests:** `npm test` (Node 20+). 52 tests covering the parsers, the hook, the translation services, stem matching, notebook records, the background worker and packaging.
 - **Package:** `npm run package` writes the store package and the manual-install package (with `KURULUM.txt` inside) into `dist/`.
-- **Try-out page:** serve the folder over HTTP (`npx http-server crunchyroll-cift-altyazi -p 5612`) and open `http://localhost:5612/test-page/index.html`. The real scripts run against a fake Bitmovin player and a fake `chrome` API. `test-page/popup-preview.html` shows the menu (`?lang=en|tr`, `?tab=…`), `test-page/notebook-preview.html` the notebook (`?s=empty` for the empty state). The store images are screenshots of `store-shot.html?view=altyazi|tabela|menu|servisler` at 1280×800 (and `tile` / `marquee` at 440×280 and 1400×560). The Opera store wants 612×408 on a white background, so its images come from `opera-shot.html?view=altyazi|tabela|menu|servisler|tanitim`.
+- **Try-out page:** serve the folder over HTTP (`npx http-server extension -p 5612`) and open `http://localhost:5612/test-page/index.html`. The real scripts run against a fake Bitmovin player and a fake `chrome` API. `test-page/popup-preview.html` shows the menu (`?lang=en|tr`, `?tab=…`), `test-page/notebook-preview.html` the notebook (`?s=empty` for the empty state). The store images are screenshots of `store-shot.html?view=altyazi|tabela|menu|servisler` at 1280×800 (and `tile` / `marquee` at 440×280 and 1400×560). The Opera store wants 612×408 on a white background, so its images come from `opera-shot.html?view=altyazi|tabela|menu|servisler|tanitim`.
 - **Updating the Anthropic SDK:** `npm install`, then `npm run vendor`.
 - **Icons:** `powershell -ExecutionPolicy Bypass -File tools\make-icons.ps1`
 

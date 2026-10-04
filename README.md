@@ -2,7 +2,7 @@
 
 A Chrome extension that shows the **original Crunchyroll subtitle and its translation at the same time**, as two lines over the video — for watching a show in a language your Crunchyroll account has no subtitles for.
 
-![The original subtitle and its translation over the video](crunchyroll-cift-altyazi/store/gorseller/1-cift-altyazi.png)
+![The original subtitle and its translation over the video](extension/store/gorseller/1-cift-altyazi.png)
 
 ## What it does
 
@@ -12,17 +12,17 @@ A Chrome extension that shows the **original Crunchyroll subtitle and its transl
 - **Word notebook:** click that word to file it with its part of speech, the sentence it came from, an example and the episode. Exports as an Anki deck, CSV or JSON.
 - **Interface in English or Turkish**, following the browser and switchable in the menu.
 
-![The menu in English and in Turkish](crunchyroll-cift-altyazi/store/gorseller/3-menu.png)
+![The menu in English and in Turkish](extension/store/gorseller/3-menu.png)
 
 ## Install
 
-The extension lives in [`crunchyroll-cift-altyazi/`](crunchyroll-cift-altyazi/). To run it from source: open `chrome://extensions`, turn on Developer mode, press **Load unpacked** and pick that folder.
+The extension lives in [`extension/`](extension/). To run it from source: open `chrome://extensions`, turn on Developer mode, press **Load unpacked** and pick that folder.
 
-Everything else — features, settings, how it reads the player, troubleshooting — is in the [extension's README](crunchyroll-cift-altyazi/README.md).
+Everything else — features, settings, how it reads the player, troubleshooting — is in the [extension's README](extension/README.md).
 
 ## Privacy
 
-Subtitle text is sent only to the translation service you select; nothing goes to the developer, and there is no analytics or tracking code. API keys stay in your browser. The full policy, in English and Turkish, is at [gizlilik-politikasi.html](https://yabq.github.io/SubTranslate/gizlilik-politikasi.html).
+Subtitle text is sent only to the translation service you select; nothing goes to the developer, and there is no analytics or tracking code. API keys stay in your browser. The full policy, in English and Turkish, is at [privacy-policy.html](https://yabq.github.io/SubTranslate/privacy-policy.html).
 
 ## Notes
 

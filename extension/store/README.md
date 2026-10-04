@@ -4,7 +4,7 @@ Bu klasör, eklentiyi Chrome Web Mağazası'na yüklerken gereken her şeyi içe
 
 | Dosya | Ne işe yarar |
 |---|---|
-| `../dist/crunchyroll-cift-altyazi-<sürüm>-magaza.zip` | Mağazaya yüklenecek paket (`npm run package` ile üretilir) |
+| `../dist/extension-<sürüm>-magaza.zip` | Mağazaya yüklenecek paket (`npm run package` ile üretilir) |
 | `gizlilik-politikasi.html` | Gizlilik politikası sayfası. Herkese açık bir adrese yüklenmeli |
 | `gorseller/magaza-simgesi-128.png` | Mağaza simgesi (128×128) |
 | `gorseller/1-…png` – `4-…png` | Ekran görüntüleri (1280×800). Her kare iki dili birden gösterir: solda İngilizce, sağda Türkçe |
@@ -31,8 +31,8 @@ npm run package
 ```
 
 Komut `dist/` klasörüne iki dosya üretir:
-- `crunchyroll-cift-altyazi-<sürüm>-magaza.zip`: mağazaya bunu yükle.
-- `crunchyroll-cift-altyazi-<sürüm>.zip`: arkadaşlarına elle kurulum için. İçinde `KURULUM.txt` var.
+- `extension-<sürüm>-magaza.zip`: mağazaya bunu yükle.
+- `extension-<sürüm>.zip`: arkadaşlarına elle kurulum için. İçinde `KURULUM.txt` var.
 
 ## 3. Yükleme
 
@@ -178,7 +178,7 @@ Aynı `…-magaza.zip` dosyası Opera ve Edge mağazalarına da yüklenebilir; i
 
 ### Opera Eklentileri
 
-1. [addons.opera.com/developer](https://addons.opera.com/developer/) adresinde hesap aç, **Upload** ile `dist/crunchyroll-cift-altyazi-<sürüm>-magaza.zip` dosyasını yükle.
+1. [addons.opera.com/developer](https://addons.opera.com/developer/) adresinde hesap aç, **Upload** ile `dist/extension-<sürüm>-magaza.zip` dosyasını yükle.
 2. **General** sekmesi:
    - **Category:** Entertainment. Listede yoksa Fun.
    - **I want my extension to be available for auto-publishing:** işaretle. Otomatik analizden geçerse elle inceleme kuyruğunu beklemeden yayınlanır.
@@ -207,7 +207,7 @@ and shipped unmodified.
 Requirements: Node.js 20 or newer, npm.
 
 1. Download the source from the link above.
-2. cd crunchyroll-cift-altyazi
+2. cd extension
 3. npm install
    (installs @anthropic-ai/sdk 0.127.0 and esbuild 0.28.2 as dev dependencies)
 4. npm run vendor
