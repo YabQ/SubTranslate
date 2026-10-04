@@ -49,6 +49,7 @@
       const store = { vocab: entries };
       const listeners = [];
       window.chrome = {
+        runtime: { getURL: (path) => '../' + path },
         storage: {
           local: {
             async get(keys) {
@@ -96,8 +97,9 @@
 
   <footer class="bottom">
     <div class="export">
-      <button type="button" id="exportJson">JSON olarak indir</button>
+      <button type="button" id="exportAnki">Anki destesi indir</button>
       <button type="button" id="exportCsv">CSV olarak indir</button>
+      <button type="button" id="exportJson">JSON olarak indir</button>
     </div>
     <button type="button" id="clearAll" class="danger">Defteri tamamen sil</button>
   </footer>
@@ -109,6 +111,8 @@
 
   <div id="toast" class="toast"></div>
 
+  <script src="../src/shared/i18n.js"></script>
+  <script src="../src/shared/settings.js"></script>
   <script src="../src/shared/vocab.js"></script>
   <script src="../src/notebook/notebook.js"></script>
 </body>

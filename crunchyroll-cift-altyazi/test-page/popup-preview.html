@@ -28,7 +28,10 @@
             primary: { lang: 'en-US', kind: 'subtitles', format: 'ass', cues: 312 }, secondary } },
         },
       };
-      const local = { settings: { provider } };
+      // ?lang=en|tr menüyü o dilde gösterir (mağaza görselleri için)
+      const lang = params.get('lang') || 'auto';
+      // ?tab=diller|servis|gorunum|oynatici|defter menüyü o sekmede açar
+      const local = { settings: { provider, uiLang: lang }, popupTab: params.get('tab') || 'diller' };
       if (provider === 'claude' || provider === 'gemini') {
         local.claudeKey = 'sk-ant-api03-ornek-anahtar';
         local.geminiKey = 'AIzaSyOrnekAnahtar';
@@ -56,6 +59,7 @@
           request: async ({ origins }) => { origins.forEach((o) => granted.add(o)); return true; },
         },
         runtime: {
+          getURL: (path) => '../' + path,
           sendMessage: async (msg) => {
             if (msg.type === 'test-provider') return { ok: true, translations: ['Hey, uzun zamandır görüşemedik! Nasılsın?'] };
             if (msg.type === 'cache-clear') return 3;
@@ -69,7 +73,7 @@
       const doc = new DOMParser().parseFromString(html, 'text/html');
       doc.querySelectorAll('script').forEach((s) => s.remove());
       document.body.insertAdjacentHTML('beforeend', doc.body.innerHTML);
-      for (const src of ['../src/shared/languages.js', '../src/shared/settings.js', '../src/popup/popup.js']) {
+      for (const src of ['../src/shared/i18n.js', '../src/shared/languages.js', '../src/shared/settings.js', '../src/popup/popup.js']) {
         await new Promise((resolve) => {
           const s = document.createElement('script');
           s.src = src;

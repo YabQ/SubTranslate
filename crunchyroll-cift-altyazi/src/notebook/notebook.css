@@ -27,7 +27,7 @@ body {
 /* ---------- Başlık ---------- */
 
 .top { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.top img { border-radius: 8px; }
+.top img { border-radius: 2px; }
 .titles h1 { margin: 0; font-size: 20px; letter-spacing: -.01em; }
 .titles p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
 
@@ -36,7 +36,7 @@ body {
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .filters input, .filters select {
   background: var(--card); color: var(--text); border: 1px solid var(--line);
-  border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 13px;
+  border-radius: 2px; padding: 8px 10px; font: inherit; font-size: 13px;
 }
 .filters input { flex: 1; min-width: 220px; }
 .filters input:focus-visible, .filters select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
@@ -44,7 +44,7 @@ body {
 /* ---------- Kayıtlar ---------- */
 
 .card {
-  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 2px;
   padding: 14px 16px; margin-bottom: 12px;
 }
 .head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; }
@@ -56,20 +56,20 @@ body {
 }
 .word:hover, .word:focus-visible { text-decoration: underline; outline: none; }
 
-.pos { font-size: 12px; color: var(--muted); background: var(--card-2); border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px; }
+.pos { font-size: 12px; color: var(--muted); background: var(--card-2); border: 1px solid var(--line); border-radius: 2px; padding: 2px 9px; }
 .count { font-size: 12px; color: var(--accent-2); }
 .meanings { margin: 8px 0 12px; font-size: 15px; color: var(--text); }
 .meanings .sense { color: var(--hot); font-weight: 600; }
 .meanings .sep { color: var(--muted); margin: 0 7px; }
 
 .lines { display: grid; gap: 6px; }
-.row { display: flex; align-items: flex-start; gap: 8px; background: var(--card-2); border-radius: 8px; padding: 7px 9px; }
+.row { display: flex; align-items: flex-start; gap: 8px; background: var(--card-2); border-radius: 2px; padding: 7px 9px; }
 .row p { margin: 0; flex: 1; font-size: 13px; }
 .row.tr p { color: var(--accent-2); }
 .row .tag { font-size: 11px; color: var(--muted); padding-top: 2px; min-width: 44px; }
 
 .copy {
-  flex: none; background: none; border: 1px solid var(--line); border-radius: 6px;
+  flex: none; background: none; border: 1px solid var(--line); border-radius: 2px;
   color: var(--muted); cursor: pointer; font: 600 11px/1 inherit; padding: 5px 7px;
 }
 .copy:hover { color: var(--text); border-color: var(--muted); }
@@ -88,7 +88,7 @@ body {
 .export { display: flex; gap: 8px; }
 .bottom button {
   background: var(--card); color: var(--text); border: 1px solid var(--line);
-  border-radius: 8px; padding: 8px 12px; font: 600 13px/1 inherit; cursor: pointer;
+  border-radius: 2px; padding: 8px 12px; font: 600 13px/1 inherit; cursor: pointer;
 }
 .bottom button:hover { border-color: var(--muted); }
 .bottom .danger { color: var(--err); border-color: transparent; background: none; font-weight: 600; }
@@ -98,12 +98,12 @@ body {
 
 .menu {
   position: absolute; z-index: 5; display: flex; flex-direction: column; min-width: 128px;
-  background: var(--card-2); border: 1px solid var(--line); border-radius: 9px; padding: 4px;
+  background: var(--card-2); border: 1px solid var(--line); border-radius: 2px; padding: 4px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, .5);
 }
 .menu[hidden] { display: none; }
 .menu button {
-  background: none; border: 0; border-radius: 6px; color: var(--text);
+  background: none; border: 0; border-radius: 2px; color: var(--text);
   cursor: pointer; font: 600 13px/1 inherit; padding: 8px 10px; text-align: left;
 }
 .menu button:hover { background: var(--card); }
@@ -114,7 +114,13 @@ body {
 .toast {
   position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 8px);
   background: var(--card-2); border: 1px solid var(--line); border-left: 3px solid var(--accent);
-  border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 600;
+  border-radius: 2px; padding: 9px 14px; font-size: 13px; font-weight: 600;
   opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- Crunchyroll dili: keskin köşeler, büyük harf düğmeler ---------- */
+
+.copy, .bottom button, .menu button { text-transform: uppercase; letter-spacing: .05em; }
+.card { border-left: 2px solid var(--accent); }
+.pos { text-transform: uppercase; letter-spacing: .06em; font-weight: 700; font-size: 11px; }

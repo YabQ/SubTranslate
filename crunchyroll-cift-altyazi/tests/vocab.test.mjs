@@ -11,18 +11,26 @@ const entries = [
   { pos: 'noun', terms: ['av', 'yakalama'] },
 ];
 
-test('posLabel: Google türleri Türkçeye çevrilir', () => {
-  assert.equal(V.posLabel('verb'), 'fiil');
-  assert.equal(V.posLabel('Noun'), 'isim');
-  assert.equal(V.posLabel('adjective'), 'sıfat');
-  assert.equal(V.posLabel(''), '');
-  assert.equal(V.posLabel('particle'), 'particle', 'bilinmeyen tür olduğu gibi kalır');
+test('posKey: tür İngilizce anahtar olarak saklanır', () => {
+  assert.equal(V.posKey('verb'), 'verb');
+  assert.equal(V.posKey('Noun'), 'noun');
+  assert.equal(V.posKey('particle'), 'particle', 'bilinmeyen tür olduğu gibi kalır');
+  assert.equal(V.posKey(''), '');
+});
+
+test('posLabel: ekranda arayüz diline çevrilir, eski kayıtlar bozulmaz', () => {
+  const t = (key) => ({ pos_verb: 'fiil', pos_noun: 'isim' })[key] || '';
+  assert.equal(V.posLabel('verb', t), 'fiil');
+  assert.equal(V.posLabel('noun', t), 'isim');
+  assert.equal(V.posLabel('fiil', t), 'fiil', 'eski kayıttaki Türkçe etiket olduğu gibi gösterilir');
+  assert.equal(V.posLabel('verb'), 'verb', 'çevirmen verilmezse anahtar döner');
+  assert.equal(V.posLabel('', t), '');
 });
 
 test('pickPos: cümlede kullanılan anlam hangi türdeyse o seçilir', () => {
-  assert.equal(V.pickPos(entries, 'tutmak'), 'fiil');
-  assert.equal(V.pickPos(entries, 'av'), 'isim');
-  assert.equal(V.pickPos(entries, 'bilinmeyen'), 'fiil', 'eşleşme yoksa en sık tür');
+  assert.equal(V.pickPos(entries, 'tutmak'), 'verb');
+  assert.equal(V.pickPos(entries, 'av'), 'noun');
+  assert.equal(V.pickPos(entries, 'bilinmeyen'), 'verb', 'eşleşme yoksa en sık tür');
   assert.equal(V.pickPos([], 'tutmak'), '');
 });
 

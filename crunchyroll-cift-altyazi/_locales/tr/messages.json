@@ -1,0 +1,641 @@
+{
+  "app_name": {
+    "message": "Crunchyroll için Çift Altyazı"
+  },
+  "app_short_name": {
+    "message": "Çift Altyazı"
+  },
+  "app_desc": {
+    "message": "Crunchyroll'da orijinal altyazıyla birlikte Türkçe ya da seçtiğin dildeki çevirisini aynı anda gösterir."
+  },
+  "cmd_toggle_overlay": {
+    "message": "Çift altyazıyı aç / kapat"
+  },
+  "cmd_toggle_translation": {
+    "message": "Çeviri satırını göster / gizle"
+  },
+  "ui_lang": {
+    "message": "Menü dili"
+  },
+  "ui_lang_auto": {
+    "message": "Tarayıcıyla aynı"
+  },
+  "ui_lang_en": {
+    "message": "English"
+  },
+  "ui_lang_tr": {
+    "message": "Türkçe"
+  },
+  "popup_toggle_title": {
+    "message": "Çift altyazıyı aç / kapat (Alt+Shift+S)"
+  },
+  "status_reading": {
+    "message": "Durum okunuyor…"
+  },
+  "retry": {
+    "message": "Yeniden dene"
+  },
+  "tab_languages": {
+    "message": "Diller"
+  },
+  "tab_service": {
+    "message": "Servis"
+  },
+  "tab_look": {
+    "message": "Görünüm"
+  },
+  "tab_player": {
+    "message": "Oynatıcı"
+  },
+  "tab_notebook": {
+    "message": "Defter"
+  },
+  "lang_primary": {
+    "message": "Orijinal altyazı"
+  },
+  "lang_target": {
+    "message": "Çeviri dili"
+  },
+  "lang_in_episode": {
+    "message": "  •  bu bölümde var"
+  },
+  "prefer_official": {
+    "message": "Crunchyroll'da bu dilde resmi altyazı varsa onu kullan"
+  },
+  "merge_sentences": {
+    "message": "Satırlara bölünmüş cümleleri bütün olarak çevir"
+  },
+  "model": {
+    "message": "Model"
+  },
+  "note_google": {
+    "message": "Ücretsizdir, anahtar gerekmez. Hızlıdır ama çeviri satır satır ve bağlamdan bağımsızdır."
+  },
+  "deepl_key": {
+    "message": "DeepL API anahtarı"
+  },
+  "note_deepl": {
+    "message": "Ücretsiz DeepL API hesabı ayda 500.000 karakter verir (bir bölüm ≈ 15–20 bin). Ücretsiz anahtarlar :fx ile biter."
+  },
+  "gemini_key": {
+    "message": "Gemini API anahtarı"
+  },
+  "gemini_key_link": {
+    "message": "Google AI Studio'dan ücretsiz anahtar al"
+  },
+  "note_gemini": {
+    "message": "Sahneyi ve önceki satırları dikkate alır, Google Çeviri'den belirgin biçimde iyidir. Ücretsiz katmanda istek sınırı vardır; hangi modelin açık olduğunu ve sınırları AI Studio gösterir. Google, ücretsiz katmanda gönderilen içeriği ürünlerini geliştirmek için kullanabiliyor."
+  },
+  "claude_key": {
+    "message": "Anthropic API anahtarı"
+  },
+  "note_claude": {
+    "message": "Sahneyi ve önceki satırları dikkate alarak çevirir; kalite en yüksektir. 24 dakikalık bölüm başına kabaca: Opus 5 ≈ 0,30–0,45 $, Sonnet 5 ≈ 0,12–0,18 $, Haiku 4.5 ≈ 0,06 $. Çeviriler önbelleğe alınır, aynı bölüm için tekrar ödeme yapılmaz."
+  },
+  "instructions": {
+    "message": "Çeviri talimatların (isteğe bağlı)"
+  },
+  "instructions_ph": {
+    "message": "Örn: Samimi, gündelik bir dil kullan. Onur eklerini (-san, -kun) çevirme. Küfürleri yumuşatma."
+  },
+  "claude_opus": {
+    "message": "Claude Opus 5 — en iyi kalite"
+  },
+  "claude_sonnet": {
+    "message": "Claude Sonnet 5 — dengeli"
+  },
+  "claude_haiku": {
+    "message": "Claude Haiku 4.5 — en hızlı / ucuz"
+  },
+  "gemini_38": {
+    "message": "Gemini 3.8 Flash — en iyi kalite"
+  },
+  "gemini_35": {
+    "message": "Gemini 3.5 Flash — dengeli"
+  },
+  "gemini_35_lite": {
+    "message": "Gemini 3.5 Flash-Lite — en hızlı, en geniş kota"
+  },
+  "perm_needed_generic": {
+    "message": "Bu servis için izin gerekiyor."
+  },
+  "perm_needed": {
+    "message": "$1 kullanmak için izin gerekiyor."
+  },
+  "perm_grant": {
+    "message": "İzin ver"
+  },
+  "perm_denied": {
+    "message": "✗ $1 için izin verilmedi"
+  },
+  "perm_denied_keep": {
+    "message": "✗ $1 için izin verilmedi; önceki servis kullanılmaya devam ediyor."
+  },
+  "test_service": {
+    "message": "Servisi test et"
+  },
+  "test_no_answer": {
+    "message": "Yanıt alınamadı"
+  },
+  "presets": {
+    "message": "Hazır ayar"
+  },
+  "preset_desktop": {
+    "message": "Bilgisayar"
+  },
+  "preset_tv": {
+    "message": "TV modu"
+  },
+  "preset_tv_title": {
+    "message": "Uzaktan izlemek için: büyük punto, koyu zemin, yukarıda"
+  },
+  "preview_orig_before": {
+    "message": "…we can still catch the meteor "
+  },
+  "preview_orig_word": {
+    "message": "shower"
+  },
+  "preview_orig_after": {
+    "message": "."
+  },
+  "preview_tr_before": {
+    "message": "Acele edersek hâlâ meteor "
+  },
+  "preview_tr_word": {
+    "message": "yağmurunu"
+  },
+  "preview_tr_after": {
+    "message": " yakalayabiliriz."
+  },
+  "show_original": {
+    "message": "Orijinal satırı göster"
+  },
+  "show_translation": {
+    "message": "Çeviri satırını göster"
+  },
+  "translation_on_top": {
+    "message": "Çeviri orijinalin üstünde"
+  },
+  "show_signs": {
+    "message": "Tabela / ekran yazılarını da göster"
+  },
+  "font_size": {
+    "message": "Yazı boyutu"
+  },
+  "translation_size": {
+    "message": "Çeviri boyutu"
+  },
+  "bg_opacity": {
+    "message": "Arka plan koyuluğu"
+  },
+  "bottom_offset": {
+    "message": "Alttan boşluk"
+  },
+  "color_original": {
+    "message": "Orijinal"
+  },
+  "color_translation": {
+    "message": "Çeviri"
+  },
+  "color_word": {
+    "message": "Kelime"
+  },
+  "strip_hardsubs": {
+    "message": "Videoya gömülü altyazıyı kaldır"
+  },
+  "strip_hardsubs_hint": {
+    "message": "(bir sonraki bölümde ya da sayfa yenilenince geçerli olur)"
+  },
+  "hide_native": {
+    "message": "Oynatıcının kendi altyazı katmanını gizle"
+  },
+  "lift_with_controls": {
+    "message": "Kontroller görünürken altyazıyı yukarı kaydır"
+  },
+  "word_lookup": {
+    "message": "Kelimenin üzerine gelince anlamını göster"
+  },
+  "word_lookup_hint": {
+    "message": "(çift altyazıda; karşılığı çeviri satırında da renklenir)"
+  },
+  "notebook_save": {
+    "message": "Kelimeye tıklayınca kelime defterine kaydet"
+  },
+  "notebook_save_hint": {
+    "message": "(anlamı, türü, cümlesi ve bölümüyle birlikte)"
+  },
+  "vocab_loading": {
+    "message": "Defter okunuyor…"
+  },
+  "vocab_count": {
+    "message": "Defterde $1 kelime, $2 karşılaşma var. Kayıtlar kendiliğinden silinmez."
+  },
+  "vocab_empty": {
+    "message": "Defter henüz boş. Çift altyazı açıkken bir kelimenin üzerine gelip tıkladığında burada birikir."
+  },
+  "open_notebook": {
+    "message": "Kelime defterini aç"
+  },
+  "clear_cache": {
+    "message": "Çeviri önbelleğini temizle"
+  },
+  "cache_cleared": {
+    "message": "$1 bölümün çevirisi silindi"
+  },
+  "footer_hint": {
+    "message": " aç/kapat"
+  },
+  "st_off": {
+    "message": "Kapalı"
+  },
+  "st_off_body": {
+    "message": "Sağ üstteki anahtarla açabilirsin."
+  },
+  "st_not_crunchyroll": {
+    "message": "Crunchyroll sekmesi değil"
+  },
+  "st_not_crunchyroll_body": {
+    "message": "Crunchyroll'da bir bölüm açınca durum burada görünür."
+  },
+  "st_waiting": {
+    "message": "Altyazı bilgisi bekleniyor"
+  },
+  "st_waiting_body": {
+    "message": "Bir bölümü oynatmaya başla. Eklentiyi yeni kurduysan sayfayı bir kez yenile."
+  },
+  "st_loading": {
+    "message": "Altyazı yükleniyor…"
+  },
+  "st_failed": {
+    "message": "Altyazı yüklenemedi"
+  },
+  "st_ready": {
+    "message": "Hazır"
+  },
+  "st_preparing": {
+    "message": "Hazırlanıyor…"
+  },
+  "st_translating": {
+    "message": "Çevriliyor…"
+  },
+  "st_partial": {
+    "message": "Çeviri yarım kaldı"
+  },
+  "st_none": {
+    "message": "Çeviri yapılamadı"
+  },
+  "st_primary": {
+    "message": "Orijinal: $1 · $2 satır"
+  },
+  "st_official": {
+    "message": "Çeviri: Crunchyroll'un kendi $1 altyazısı"
+  },
+  "st_same_lang": {
+    "message": "Çeviri dili orijinalle aynı; ikinci satır gösterilmiyor."
+  },
+  "st_translation_off": {
+    "message": "Çeviri satırı kapalı."
+  },
+  "st_progress": {
+    "message": "$1 · $2 · $3/$4"
+  },
+  "st_done": {
+    "message": "Çeviri: $1 · $2"
+  },
+  "st_cached": {
+    "message": " (önbellekten)"
+  },
+  "st_stripped": {
+    "message": "Videoya gömülü altyazı kaldırıldı."
+  },
+  "st_unknown_format": {
+    "message": "biçim bilinmiyor"
+  },
+  "provider_google": {
+    "message": "Google Çeviri"
+  },
+  "service_fallback": {
+    "message": "$1 → $2 (yedek)"
+  },
+  "ov_no_tracks": {
+    "message": "Bu bölümde kullanılabilir altyazı yok"
+  },
+  "ov_download_failed": {
+    "message": "Altyazı dosyası indirilemedi$1"
+  },
+  "ov_parse_failed": {
+    "message": "Altyazı dosyası okunamadı ($1)"
+  },
+  "ov_session_error": {
+    "message": "Çift altyazı: $1"
+  },
+  "ov_preparing": {
+    "message": "Çeviri hazırlanıyor… ($1)"
+  },
+  "ov_fallback": {
+    "message": "$1 durdu: $2. Kalanı Google Çeviri tamamlıyor."
+  },
+  "ov_translate_unreachable": {
+    "message": "Çeviri servisine ulaşılamadı"
+  },
+  "ov_translate_stopped": {
+    "message": "Çeviri durdu: $1"
+  },
+  "ov_translate_error": {
+    "message": "Çeviri hatası: $1"
+  },
+  "ov_no_meaning": {
+    "message": "Karşılık bulunamadı"
+  },
+  "ov_click_to_save": {
+    "message": "Kaydetmek için tıkla"
+  },
+  "ov_saving": {
+    "message": "Kaydediliyor…"
+  },
+  "ov_saved": {
+    "message": "Deftere eklendi"
+  },
+  "ov_saved_again": {
+    "message": "Deftere eklendi · $1. kez"
+  },
+  "ov_save_failed": {
+    "message": "Kaydedilemedi"
+  },
+  "ov_episode": {
+    "message": "Bölüm $1"
+  },
+  "err_bad_url": {
+    "message": "geçersiz adres"
+  },
+  "err_blocked_host": {
+    "message": "izin verilmeyen alan adı: $1"
+  },
+  "err_no_permission": {
+    "message": "$1 için izin verilmemiş. Eklenti menüsünde servisi seçip izin ver."
+  },
+  "err_google_rate": {
+    "message": "Google Çeviri istek sınırına ulaşıldı, birazdan tekrar denenecek"
+  },
+  "err_google_unreachable": {
+    "message": "Google Çeviri'ye bağlanılamadı"
+  },
+  "err_google_http": {
+    "message": "Google Çeviri hatası (HTTP $1)"
+  },
+  "err_dict_unreachable": {
+    "message": "Sözlüğe bağlanılamadı"
+  },
+  "err_dict_rate": {
+    "message": "Sözlük istek sınırına ulaşıldı"
+  },
+  "err_dict_http": {
+    "message": "Sözlük hatası (HTTP $1)"
+  },
+  "err_deepl_nokey": {
+    "message": "DeepL API anahtarı girilmemiş (eklenti menüsünden ekleyin)"
+  },
+  "err_deepl_unreachable": {
+    "message": "DeepL sunucusuna bağlanılamadı"
+  },
+  "err_deepl_badkey": {
+    "message": "DeepL API anahtarı geçersiz"
+  },
+  "err_deepl_quota": {
+    "message": "DeepL karakter kotası doldu"
+  },
+  "err_deepl_rate": {
+    "message": "DeepL istek sınırına ulaşıldı, birazdan tekrar denenecek"
+  },
+  "err_deepl_http": {
+    "message": "DeepL hatası (HTTP $1)"
+  },
+  "err_deepl_shape": {
+    "message": "DeepL beklenmeyen bir yanıt döndürdü"
+  },
+  "err_gemini_nokey": {
+    "message": "Gemini API anahtarı girilmemiş (eklenti menüsünden ekleyin)"
+  },
+  "err_gemini_badkey": {
+    "message": "Gemini API anahtarı geçersiz"
+  },
+  "err_gemini_rejected_key": {
+    "message": "Gemini anahtarı kabul edilmedi (HTTP $1)$2"
+  },
+  "err_gemini_model": {
+    "message": "Seçilen Gemini modeli bu anahtarla kullanılamıyor$1"
+  },
+  "err_gemini_rate": {
+    "message": "Gemini istek sınırına ulaşıldı, birazdan tekrar denenecek$1"
+  },
+  "err_gemini_busy": {
+    "message": "Gemini modeli şu an yoğun (HTTP 503)$1"
+  },
+  "err_gemini_server": {
+    "message": "Gemini sunucusu hata verdi (HTTP $1)$2"
+  },
+  "err_gemini_http": {
+    "message": "Gemini hatası (HTTP $1)$2"
+  },
+  "err_gemini_unreachable": {
+    "message": "Gemini sunucusuna bağlanılamadı"
+  },
+  "err_gemini_refused": {
+    "message": "Gemini bu satırları çevirmeyi reddetti"
+  },
+  "err_gemini_shape": {
+    "message": "Gemini beklenmeyen bir yanıt döndürdü"
+  },
+  "err_claude_nokey": {
+    "message": "Claude API anahtarı girilmemiş (eklenti menüsünden ekleyin)"
+  },
+  "err_claude_badkey": {
+    "message": "Claude API anahtarı geçersiz"
+  },
+  "err_claude_model_denied": {
+    "message": "Bu API anahtarının seçilen modele erişimi yok"
+  },
+  "err_claude_model_missing": {
+    "message": "Seçilen Claude modeli bulunamadı"
+  },
+  "err_claude_rate": {
+    "message": "Claude istek sınırına ulaşıldı, birazdan tekrar denenecek"
+  },
+  "err_claude_badrequest": {
+    "message": "Claude isteği kabul etmedi: $1"
+  },
+  "err_claude_unreachable": {
+    "message": "Claude sunucusuna bağlanılamadı"
+  },
+  "err_claude_credit": {
+    "message": "Anthropic hesabında yeterli kredi yok"
+  },
+  "err_claude_http": {
+    "message": "Claude API hatası ($1)"
+  },
+  "err_claude_refused": {
+    "message": "Claude bu satırları çevirmeyi reddetti"
+  },
+  "err_claude_shape": {
+    "message": "Claude beklenmeyen bir yanıt döndürdü"
+  },
+  "nb_title": {
+    "message": "Kelime Defteri"
+  },
+  "nb_search_ph": {
+    "message": "Kelime, anlam ya da cümlede ara"
+  },
+  "nb_all_shows": {
+    "message": "Tüm animeler"
+  },
+  "nb_all_types": {
+    "message": "Tüm türler"
+  },
+  "nb_sort_new": {
+    "message": "Önce en yeni"
+  },
+  "nb_sort_old": {
+    "message": "Önce en eski"
+  },
+  "nb_sort_az": {
+    "message": "Alfabetik"
+  },
+  "nb_sort_count": {
+    "message": "En çok karşılaşılan"
+  },
+  "nb_empty": {
+    "message": "Defter boş. Crunchyroll'da çift altyazı açıkken bir kelimenin üzerine gelip tıkladığında burada birikir."
+  },
+  "nb_empty_filtered": {
+    "message": "Bu süzgeçlere uyan kayıt yok."
+  },
+  "nb_summary": {
+    "message": "$1 kelime · $2 karşılaşma · $3 anime"
+  },
+  "nb_summary_empty": {
+    "message": "Henüz kelime yok"
+  },
+  "nb_export_anki": {
+    "message": "Anki destesi indir"
+  },
+  "nb_export_csv": {
+    "message": "CSV olarak indir"
+  },
+  "nb_export_json": {
+    "message": "JSON olarak indir"
+  },
+  "nb_clear_all": {
+    "message": "Defteri tamamen sil"
+  },
+  "nb_copy": {
+    "message": "Kopyala"
+  },
+  "nb_delete": {
+    "message": "Sil"
+  },
+  "nb_copy_sentence": {
+    "message": "Cümleyi kopyala"
+  },
+  "nb_label_line": {
+    "message": "Cümle"
+  },
+  "nb_label_tr": {
+    "message": "Çeviri"
+  },
+  "nb_label_example": {
+    "message": "Örnek"
+  },
+  "nb_word": {
+    "message": "Kelime"
+  },
+  "nb_sentence": {
+    "message": "Cümle"
+  },
+  "nb_copied": {
+    "message": "$1 kopyalandı"
+  },
+  "nb_copy_failed": {
+    "message": "Kopyalanamadı"
+  },
+  "nb_met_times": {
+    "message": "$1 kez karşılaştın"
+  },
+  "nb_go_to": {
+    "message": "bölüme git ($1)"
+  },
+  "nb_deleted": {
+    "message": "\"$1\" silindi"
+  },
+  "nb_cleared": {
+    "message": "Defter temizlendi"
+  },
+  "nb_confirm_clear": {
+    "message": "$1 kelimenin hepsi silinecek. Bu geri alınamaz, emin misin?"
+  },
+  "nb_anki_deck": {
+    "message": "Çift Altyazı"
+  },
+  "nb_anki_done": {
+    "message": "Anki dosyası indirildi"
+  },
+  "nb_csv_done": {
+    "message": "CSV indirildi"
+  },
+  "nb_json_done": {
+    "message": "JSON indirildi"
+  },
+  "nb_word_title": {
+    "message": "Kopyala ya da sil"
+  },
+  "pos_noun": {
+    "message": "isim"
+  },
+  "pos_verb": {
+    "message": "fiil"
+  },
+  "pos_adjective": {
+    "message": "sıfat"
+  },
+  "pos_adverb": {
+    "message": "zarf"
+  },
+  "pos_pronoun": {
+    "message": "zamir"
+  },
+  "pos_preposition": {
+    "message": "edat"
+  },
+  "pos_conjunction": {
+    "message": "bağlaç"
+  },
+  "pos_interjection": {
+    "message": "ünlem"
+  },
+  "pos_exclamation": {
+    "message": "ünlem"
+  },
+  "pos_determiner": {
+    "message": "belirteç"
+  },
+  "pos_article": {
+    "message": "tanımlık"
+  },
+  "pos_numeral": {
+    "message": "sayı"
+  },
+  "pos_number": {
+    "message": "sayı"
+  },
+  "pos_abbreviation": {
+    "message": "kısaltma"
+  },
+  "pos_phrase": {
+    "message": "deyim"
+  },
+  "pos_prefix": {
+    "message": "ön ek"
+  },
+  "pos_suffix": {
+    "message": "son ek"
+  }
+}

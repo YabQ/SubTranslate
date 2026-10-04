@@ -8,33 +8,30 @@
   const CRDS = (globalThis.CRDS = globalThis.CRDS || {});
   const KEY = 'vocab';
 
-  // Google'ın sözlük yanıtındaki kelime türleri
-  const POS = {
-    noun: 'isim',
-    verb: 'fiil',
-    adjective: 'sıfat',
-    adverb: 'zarf',
-    pronoun: 'zamir',
-    preposition: 'edat',
-    conjunction: 'bağlaç',
-    interjection: 'ünlem',
-    exclamation: 'ünlem',
-    determiner: 'belirteç',
-    article: 'tanımlık',
-    numeral: 'sayı',
-    number: 'sayı',
-    abbreviation: 'kısaltma',
-    phrase: 'deyim',
-    prefix: 'ön ek',
-    suffix: 'son ek',
-  };
+  // Google'ın sözlük yanıtındaki kelime türleri. Kayda İngilizce anahtar yazılır,
+  // ekranda arayüz diline çevrilir; menü dili sonradan değişince etiket de değişir.
+  const POS_KEYS = new Set([
+    'noun', 'verb', 'adjective', 'adverb', 'pronoun', 'preposition', 'conjunction',
+    'interjection', 'exclamation', 'determiner', 'article', 'numeral', 'number',
+    'abbreviation', 'phrase', 'prefix', 'suffix',
+  ]);
 
   const clean = (value) => String(value == null ? '' : value).trim();
   const lower = (value) => clean(value).toLocaleLowerCase('tr');
 
-  function posLabel(pos) {
+  // Bilinen tür İngilizce anahtar olarak saklanır; tanımadığımız bir şey gelirse
+  // olduğu gibi yazılır (eski kayıtlardaki Türkçe etiketler de böyle korunur).
+  function posKey(pos) {
     const key = clean(pos).toLowerCase();
-    return POS[key] || (key ? key : '');
+    return POS_KEYS.has(key) ? key : clean(pos);
+  }
+
+  // Ekranda gösterilecek etiket; t, i18n'in çeviri işlevidir
+  function posLabel(pos, t) {
+    const key = clean(pos);
+    if (!key) return '';
+    if (!POS_KEYS.has(key) || typeof t !== 'function') return key;
+    return t(`pos_${key}`) || key;
   }
 
   function entryId({ word, source, target }) {
@@ -48,10 +45,10 @@
     const want = lower(sense);
     if (want) {
       for (const entry of list) {
-        if ((entry.terms || []).some((term) => lower(term) === want)) return posLabel(entry.pos);
+        if ((entry.terms || []).some((term) => lower(term) === want)) return posKey(entry.pos);
       }
     }
-    return list.length ? posLabel(list[0].pos) : '';
+    return list.length ? posKey(list[0].pos) : '';
   }
 
   function buildEntry(input) {
@@ -136,5 +133,5 @@
     });
   }
 
-  CRDS.vocab = { KEY, POS, posLabel, entryId, pickPos, buildEntry, merge, load, save, remove, clear, onChange };
+  CRDS.vocab = { KEY, POS_KEYS, posKey, posLabel, entryId, pickPos, buildEntry, merge, load, save, remove, clear, onChange };
 })();

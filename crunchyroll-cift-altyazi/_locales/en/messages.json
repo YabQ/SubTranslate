@@ -1,0 +1,641 @@
+{
+  "app_name": {
+    "message": "Dual Subtitles for Crunchyroll"
+  },
+  "app_short_name": {
+    "message": "Dual Subtitles"
+  },
+  "app_desc": {
+    "message": "Shows the original Crunchyroll subtitle and its translation into the language you choose at the same time."
+  },
+  "cmd_toggle_overlay": {
+    "message": "Turn the dual subtitles on or off"
+  },
+  "cmd_toggle_translation": {
+    "message": "Show or hide the translation line"
+  },
+  "ui_lang": {
+    "message": "Menu language"
+  },
+  "ui_lang_auto": {
+    "message": "Same as the browser"
+  },
+  "ui_lang_en": {
+    "message": "English"
+  },
+  "ui_lang_tr": {
+    "message": "Türkçe"
+  },
+  "popup_toggle_title": {
+    "message": "Turn the dual subtitles on or off (Alt+Shift+S)"
+  },
+  "status_reading": {
+    "message": "Reading status…"
+  },
+  "retry": {
+    "message": "Try again"
+  },
+  "tab_languages": {
+    "message": "Language"
+  },
+  "tab_service": {
+    "message": "Service"
+  },
+  "tab_look": {
+    "message": "Look"
+  },
+  "tab_player": {
+    "message": "Player"
+  },
+  "tab_notebook": {
+    "message": "Notebook"
+  },
+  "lang_primary": {
+    "message": "Original subtitle"
+  },
+  "lang_target": {
+    "message": "Translate into"
+  },
+  "lang_in_episode": {
+    "message": "  •  in this episode"
+  },
+  "prefer_official": {
+    "message": "Use Crunchyroll's own subtitle in that language when it exists"
+  },
+  "merge_sentences": {
+    "message": "Translate sentences split across lines as a whole"
+  },
+  "model": {
+    "message": "Model"
+  },
+  "note_google": {
+    "message": "Free and needs no key. Fast, but it translates line by line without seeing the scene."
+  },
+  "deepl_key": {
+    "message": "DeepL API key"
+  },
+  "note_deepl": {
+    "message": "A free DeepL API account gives 500,000 characters a month (an episode is roughly 15–20 thousand). Free keys end in :fx."
+  },
+  "gemini_key": {
+    "message": "Gemini API key"
+  },
+  "gemini_key_link": {
+    "message": "Get a free key from Google AI Studio"
+  },
+  "note_gemini": {
+    "message": "Reads the scene and the previous lines, so it is clearly better than Google Translate. The free tier has request limits; AI Studio shows which model you can use and what the limits are. Google may use content submitted on the free tier to improve its products."
+  },
+  "claude_key": {
+    "message": "Anthropic API key"
+  },
+  "note_claude": {
+    "message": "Translates with the scene and the previous lines in mind; the highest quality. Roughly per 24-minute episode: Opus 5 ≈ $0.30–0.45, Sonnet 5 ≈ $0.12–0.18, Haiku 4.5 ≈ $0.06. Translations are cached, so the same episode is never paid for twice."
+  },
+  "instructions": {
+    "message": "Your translation notes (optional)"
+  },
+  "instructions_ph": {
+    "message": "e.g. Keep it casual. Leave honorifics like -san and -kun. Do not soften swearing."
+  },
+  "claude_opus": {
+    "message": "Claude Opus 5 — best quality"
+  },
+  "claude_sonnet": {
+    "message": "Claude Sonnet 5 — balanced"
+  },
+  "claude_haiku": {
+    "message": "Claude Haiku 4.5 — fastest and cheapest"
+  },
+  "gemini_38": {
+    "message": "Gemini 3.8 Flash — best quality"
+  },
+  "gemini_35": {
+    "message": "Gemini 3.5 Flash — balanced"
+  },
+  "gemini_35_lite": {
+    "message": "Gemini 3.5 Flash-Lite — fastest, largest quota"
+  },
+  "perm_needed_generic": {
+    "message": "This service needs permission."
+  },
+  "perm_needed": {
+    "message": "$1 needs permission before it can be used."
+  },
+  "perm_grant": {
+    "message": "Allow"
+  },
+  "perm_denied": {
+    "message": "✗ permission for $1 was not given"
+  },
+  "perm_denied_keep": {
+    "message": "✗ permission for $1 was not given; the previous service stays in use."
+  },
+  "test_service": {
+    "message": "Test the service"
+  },
+  "test_no_answer": {
+    "message": "No answer"
+  },
+  "presets": {
+    "message": "Preset"
+  },
+  "preset_desktop": {
+    "message": "Desktop"
+  },
+  "preset_tv": {
+    "message": "TV mode"
+  },
+  "preset_tv_title": {
+    "message": "For watching across a room: bigger text, darker backdrop, higher up"
+  },
+  "preview_orig_before": {
+    "message": "…we can still catch the meteor "
+  },
+  "preview_orig_word": {
+    "message": "shower"
+  },
+  "preview_orig_after": {
+    "message": "."
+  },
+  "preview_tr_before": {
+    "message": "Hurry and we can still catch the meteor "
+  },
+  "preview_tr_word": {
+    "message": "shower"
+  },
+  "preview_tr_after": {
+    "message": "."
+  },
+  "show_original": {
+    "message": "Show the original line"
+  },
+  "show_translation": {
+    "message": "Show the translation line"
+  },
+  "translation_on_top": {
+    "message": "Translation above the original"
+  },
+  "show_signs": {
+    "message": "Show signs and on-screen text too"
+  },
+  "font_size": {
+    "message": "Text size"
+  },
+  "translation_size": {
+    "message": "Translation size"
+  },
+  "bg_opacity": {
+    "message": "Backdrop opacity"
+  },
+  "bottom_offset": {
+    "message": "Distance from the bottom"
+  },
+  "color_original": {
+    "message": "Original"
+  },
+  "color_translation": {
+    "message": "Translation"
+  },
+  "color_word": {
+    "message": "Word"
+  },
+  "strip_hardsubs": {
+    "message": "Remove the subtitle burned into the video"
+  },
+  "strip_hardsubs_hint": {
+    "message": "(applies to the next episode, or after the page is reloaded)"
+  },
+  "hide_native": {
+    "message": "Hide the player's own subtitle layer"
+  },
+  "lift_with_controls": {
+    "message": "Lift the subtitle while the controls are showing"
+  },
+  "word_lookup": {
+    "message": "Show a word's meaning on hover"
+  },
+  "word_lookup_hint": {
+    "message": "(with dual subtitles; its counterpart in the translation is coloured too)"
+  },
+  "notebook_save": {
+    "message": "Click a word to file it in the notebook"
+  },
+  "notebook_save_hint": {
+    "message": "(with its meaning, part of speech, sentence and episode)"
+  },
+  "vocab_loading": {
+    "message": "Reading the notebook…"
+  },
+  "vocab_count": {
+    "message": "$1 words, met $2 times. Nothing is ever removed on its own."
+  },
+  "vocab_empty": {
+    "message": "The notebook is empty. With dual subtitles on, hover a word and click it to file it here."
+  },
+  "open_notebook": {
+    "message": "Open the word notebook"
+  },
+  "clear_cache": {
+    "message": "Clear the translation cache"
+  },
+  "cache_cleared": {
+    "message": "the translation of $1 episode(s) was deleted"
+  },
+  "footer_hint": {
+    "message": " on/off"
+  },
+  "st_off": {
+    "message": "Off"
+  },
+  "st_off_body": {
+    "message": "Turn it on with the switch in the top right."
+  },
+  "st_not_crunchyroll": {
+    "message": "Not a Crunchyroll tab"
+  },
+  "st_not_crunchyroll_body": {
+    "message": "When you open an episode on Crunchyroll, its status appears here."
+  },
+  "st_waiting": {
+    "message": "Waiting for the subtitle list"
+  },
+  "st_waiting_body": {
+    "message": "Start playing an episode. If you just installed the extension, reload the page once."
+  },
+  "st_loading": {
+    "message": "Loading the subtitle…"
+  },
+  "st_failed": {
+    "message": "The subtitle could not be loaded"
+  },
+  "st_ready": {
+    "message": "Ready"
+  },
+  "st_preparing": {
+    "message": "Preparing…"
+  },
+  "st_translating": {
+    "message": "Translating…"
+  },
+  "st_partial": {
+    "message": "The translation stopped halfway"
+  },
+  "st_none": {
+    "message": "The translation could not be made"
+  },
+  "st_primary": {
+    "message": "Original: $1 · $2 lines"
+  },
+  "st_official": {
+    "message": "Translation: Crunchyroll's own $1 subtitle"
+  },
+  "st_same_lang": {
+    "message": "The target language is the same as the original; the second line is not shown."
+  },
+  "st_translation_off": {
+    "message": "The translation line is off."
+  },
+  "st_progress": {
+    "message": "$1 · $2 · $3/$4"
+  },
+  "st_done": {
+    "message": "Translation: $1 · $2"
+  },
+  "st_cached": {
+    "message": " (from cache)"
+  },
+  "st_stripped": {
+    "message": "The subtitle burned into the video was removed."
+  },
+  "st_unknown_format": {
+    "message": "unknown format"
+  },
+  "provider_google": {
+    "message": "Google Translate"
+  },
+  "service_fallback": {
+    "message": "$1 → $2 (backup)"
+  },
+  "ov_no_tracks": {
+    "message": "This episode has no usable subtitle"
+  },
+  "ov_download_failed": {
+    "message": "The subtitle file could not be downloaded$1"
+  },
+  "ov_parse_failed": {
+    "message": "The subtitle file could not be read ($1)"
+  },
+  "ov_session_error": {
+    "message": "Dual subtitles: $1"
+  },
+  "ov_preparing": {
+    "message": "Preparing the translation… ($1)"
+  },
+  "ov_fallback": {
+    "message": "$1 stopped: $2. Google Translate is finishing the rest."
+  },
+  "ov_translate_unreachable": {
+    "message": "The translation service could not be reached"
+  },
+  "ov_translate_stopped": {
+    "message": "Translation stopped: $1"
+  },
+  "ov_translate_error": {
+    "message": "Translation error: $1"
+  },
+  "ov_no_meaning": {
+    "message": "No meaning found"
+  },
+  "ov_click_to_save": {
+    "message": "Click to file it"
+  },
+  "ov_saving": {
+    "message": "Filing…"
+  },
+  "ov_saved": {
+    "message": "Filed in the notebook"
+  },
+  "ov_saved_again": {
+    "message": "Filed in the notebook · $1 times"
+  },
+  "ov_save_failed": {
+    "message": "Could not be filed"
+  },
+  "ov_episode": {
+    "message": "Episode $1"
+  },
+  "err_bad_url": {
+    "message": "invalid address"
+  },
+  "err_blocked_host": {
+    "message": "host not allowed: $1"
+  },
+  "err_no_permission": {
+    "message": "$1 has not been allowed. Pick the service in the extension menu and grant permission."
+  },
+  "err_google_rate": {
+    "message": "Google Translate's request limit was reached, it will be retried shortly"
+  },
+  "err_google_unreachable": {
+    "message": "The Google Translate server could not be reached"
+  },
+  "err_google_http": {
+    "message": "Google Translate error (HTTP $1)"
+  },
+  "err_dict_unreachable": {
+    "message": "The dictionary could not be reached"
+  },
+  "err_dict_rate": {
+    "message": "The dictionary's request limit was reached"
+  },
+  "err_dict_http": {
+    "message": "Dictionary error (HTTP $1)"
+  },
+  "err_deepl_nokey": {
+    "message": "No DeepL API key (add one in the extension menu)"
+  },
+  "err_deepl_unreachable": {
+    "message": "The DeepL server could not be reached"
+  },
+  "err_deepl_badkey": {
+    "message": "The DeepL API key is not valid"
+  },
+  "err_deepl_quota": {
+    "message": "The DeepL character quota is used up"
+  },
+  "err_deepl_rate": {
+    "message": "DeepL's request limit was reached, it will be retried shortly"
+  },
+  "err_deepl_http": {
+    "message": "DeepL error (HTTP $1)"
+  },
+  "err_deepl_shape": {
+    "message": "DeepL returned an unexpected answer"
+  },
+  "err_gemini_nokey": {
+    "message": "No Gemini API key (add one in the extension menu)"
+  },
+  "err_gemini_badkey": {
+    "message": "The Gemini API key is not valid"
+  },
+  "err_gemini_rejected_key": {
+    "message": "The Gemini key was rejected (HTTP $1)$2"
+  },
+  "err_gemini_model": {
+    "message": "This key cannot use the selected Gemini model$1"
+  },
+  "err_gemini_rate": {
+    "message": "Gemini's request limit was reached, it will be retried shortly$1"
+  },
+  "err_gemini_busy": {
+    "message": "The Gemini model is busy right now (HTTP 503)$1"
+  },
+  "err_gemini_server": {
+    "message": "The Gemini server returned an error (HTTP $1)$2"
+  },
+  "err_gemini_http": {
+    "message": "Gemini error (HTTP $1)$2"
+  },
+  "err_gemini_unreachable": {
+    "message": "The Gemini server could not be reached"
+  },
+  "err_gemini_refused": {
+    "message": "Gemini refused to translate these lines"
+  },
+  "err_gemini_shape": {
+    "message": "Gemini returned an unexpected answer"
+  },
+  "err_claude_nokey": {
+    "message": "No Claude API key (add one in the extension menu)"
+  },
+  "err_claude_badkey": {
+    "message": "The Claude API key is not valid"
+  },
+  "err_claude_model_denied": {
+    "message": "This API key has no access to the selected model"
+  },
+  "err_claude_model_missing": {
+    "message": "The selected Claude model was not found"
+  },
+  "err_claude_rate": {
+    "message": "Claude's request limit was reached, it will be retried shortly"
+  },
+  "err_claude_badrequest": {
+    "message": "Claude did not accept the request: $1"
+  },
+  "err_claude_unreachable": {
+    "message": "The Claude server could not be reached"
+  },
+  "err_claude_credit": {
+    "message": "The Anthropic account has no credit left"
+  },
+  "err_claude_http": {
+    "message": "Claude API error ($1)"
+  },
+  "err_claude_refused": {
+    "message": "Claude refused to translate these lines"
+  },
+  "err_claude_shape": {
+    "message": "Claude returned an unexpected answer"
+  },
+  "nb_title": {
+    "message": "Word Notebook"
+  },
+  "nb_search_ph": {
+    "message": "Search a word, a meaning or a sentence"
+  },
+  "nb_all_shows": {
+    "message": "All shows"
+  },
+  "nb_all_types": {
+    "message": "All types"
+  },
+  "nb_sort_new": {
+    "message": "Newest first"
+  },
+  "nb_sort_old": {
+    "message": "Oldest first"
+  },
+  "nb_sort_az": {
+    "message": "Alphabetical"
+  },
+  "nb_sort_count": {
+    "message": "Met most often"
+  },
+  "nb_empty": {
+    "message": "The notebook is empty. With dual subtitles on, hover a word and click it to file it here."
+  },
+  "nb_empty_filtered": {
+    "message": "No entry matches these filters."
+  },
+  "nb_summary": {
+    "message": "$1 words · met $2 times · $3 shows"
+  },
+  "nb_summary_empty": {
+    "message": "No words yet"
+  },
+  "nb_export_anki": {
+    "message": "Download an Anki deck"
+  },
+  "nb_export_csv": {
+    "message": "Download as CSV"
+  },
+  "nb_export_json": {
+    "message": "Download as JSON"
+  },
+  "nb_clear_all": {
+    "message": "Delete the whole notebook"
+  },
+  "nb_copy": {
+    "message": "Copy"
+  },
+  "nb_delete": {
+    "message": "Delete"
+  },
+  "nb_copy_sentence": {
+    "message": "Copy the sentence"
+  },
+  "nb_label_line": {
+    "message": "Line"
+  },
+  "nb_label_tr": {
+    "message": "Translation"
+  },
+  "nb_label_example": {
+    "message": "Example"
+  },
+  "nb_word": {
+    "message": "Word"
+  },
+  "nb_sentence": {
+    "message": "Sentence"
+  },
+  "nb_copied": {
+    "message": "$1 copied"
+  },
+  "nb_copy_failed": {
+    "message": "Could not copy"
+  },
+  "nb_met_times": {
+    "message": "met $1 times"
+  },
+  "nb_go_to": {
+    "message": "go to the episode ($1)"
+  },
+  "nb_deleted": {
+    "message": "\"$1\" deleted"
+  },
+  "nb_cleared": {
+    "message": "The notebook was cleared"
+  },
+  "nb_confirm_clear": {
+    "message": "All $1 words will be deleted. This cannot be undone, are you sure?"
+  },
+  "nb_anki_deck": {
+    "message": "Dual Subtitles"
+  },
+  "nb_anki_done": {
+    "message": "Anki file downloaded"
+  },
+  "nb_csv_done": {
+    "message": "CSV downloaded"
+  },
+  "nb_json_done": {
+    "message": "JSON downloaded"
+  },
+  "nb_word_title": {
+    "message": "Copy or delete"
+  },
+  "pos_noun": {
+    "message": "noun"
+  },
+  "pos_verb": {
+    "message": "verb"
+  },
+  "pos_adjective": {
+    "message": "adjective"
+  },
+  "pos_adverb": {
+    "message": "adverb"
+  },
+  "pos_pronoun": {
+    "message": "pronoun"
+  },
+  "pos_preposition": {
+    "message": "preposition"
+  },
+  "pos_conjunction": {
+    "message": "conjunction"
+  },
+  "pos_interjection": {
+    "message": "interjection"
+  },
+  "pos_exclamation": {
+    "message": "interjection"
+  },
+  "pos_determiner": {
+    "message": "determiner"
+  },
+  "pos_article": {
+    "message": "article"
+  },
+  "pos_numeral": {
+    "message": "numeral"
+  },
+  "pos_number": {
+    "message": "numeral"
+  },
+  "pos_abbreviation": {
+    "message": "abbreviation"
+  },
+  "pos_phrase": {
+    "message": "phrase"
+  },
+  "pos_prefix": {
+    "message": "prefix"
+  },
+  "pos_suffix": {
+    "message": "suffix"
+  }
+}

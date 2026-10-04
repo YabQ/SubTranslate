@@ -1,53 +1,54 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Kelime Defteri — Crunchyroll için Çift Altyazı</title>
+  <title>Word Notebook</title>
   <link rel="stylesheet" href="notebook.css">
 </head>
 <body>
   <header class="top">
     <img src="../../icons/icon48.png" width="34" height="34" alt="">
     <div class="titles">
-      <h1>Kelime Defteri</h1>
-      <p id="summary">Yükleniyor…</p>
+      <h1 data-i18n="nb_title">Word Notebook</h1>
+      <p id="summary" data-i18n="vocab_loading">Reading the notebook…</p>
     </div>
   </header>
 
   <div class="filters">
-    <input type="search" id="search" placeholder="Kelime, anlam ya da cümlede ara" autocomplete="off">
-    <select id="show"><option value="">Tüm animeler</option></select>
-    <select id="pos"><option value="">Tüm türler</option></select>
+    <input type="search" id="search" data-i18n-ph="nb_search_ph" autocomplete="off">
+    <select id="show"><option value="" data-i18n="nb_all_shows">All shows</option></select>
+    <select id="pos"><option value="" data-i18n="nb_all_types">All types</option></select>
     <select id="sort">
-      <option value="new">Önce en yeni</option>
-      <option value="old">Önce en eski</option>
-      <option value="az">Alfabetik</option>
-      <option value="count">En çok karşılaşılan</option>
+      <option value="new" data-i18n="nb_sort_new">Newest first</option>
+      <option value="old" data-i18n="nb_sort_old">Oldest first</option>
+      <option value="az" data-i18n="nb_sort_az">Alphabetical</option>
+      <option value="count" data-i18n="nb_sort_count">Met most often</option>
     </select>
   </div>
 
   <main id="list"></main>
 
-  <p id="empty" class="empty" hidden>
-    Defter boş. Crunchyroll'da çift altyazı açıkken bir kelimenin üzerine gelip tıkladığında burada birikir.
-  </p>
+  <p id="empty" class="empty" hidden></p>
 
   <footer class="bottom">
     <div class="export">
-      <button type="button" id="exportJson">JSON olarak indir</button>
-      <button type="button" id="exportCsv">CSV olarak indir</button>
+      <button type="button" id="exportAnki" data-i18n="nb_export_anki">Download an Anki deck</button>
+      <button type="button" id="exportCsv" data-i18n="nb_export_csv">Download as CSV</button>
+      <button type="button" id="exportJson" data-i18n="nb_export_json">Download as JSON</button>
     </div>
-    <button type="button" id="clearAll" class="danger">Defteri tamamen sil</button>
+    <button type="button" id="clearAll" class="danger" data-i18n="nb_clear_all">Delete the whole notebook</button>
   </footer>
 
   <!-- Kelimeye tıklayınca çıkan küçük menü -->
   <div id="menu" class="menu" hidden>
-    <button type="button" data-action="copy">Kopyala</button>
-    <button type="button" data-action="delete">Sil</button>
+    <button type="button" data-action="copy" data-i18n="nb_copy">Copy</button>
+    <button type="button" data-action="delete" data-i18n="nb_delete">Delete</button>
   </div>
 
   <div id="toast" class="toast"></div>
 
+  <script src="../shared/i18n.js"></script>
+  <script src="../shared/settings.js"></script>
   <script src="../shared/vocab.js"></script>
   <script src="notebook.js"></script>
 </body>

@@ -28,7 +28,7 @@ code, kbd {
   font: 11px/1 ui-monospace, Consolas, monospace;
   background: var(--card-2);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 1px 4px;
 }
 
@@ -40,7 +40,7 @@ code, kbd {
   gap: 10px;
   margin-bottom: 10px;
 }
-.logo { border-radius: 7px; }
+.logo { border-radius: 2px; }
 .brand { display: flex; flex-direction: column; flex: 1; line-height: 1.2; }
 .brand strong { font-size: 15px; }
 .brand span { color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
@@ -63,7 +63,7 @@ code, kbd {
 .card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 2px;
   padding: 10px 12px;
   margin-bottom: 10px;
 }
@@ -81,12 +81,13 @@ section.card h2 { display: block; margin-bottom: 8px; }
 /* ---------- Sekmeler ---------- */
 
 .tabs {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
-  background: var(--card-2); padding: 3px; border-radius: 9px; margin-bottom: 10px;
+  display: flex; justify-content: space-between; gap: 2px;
+  background: var(--card-2); padding: 3px; border-radius: 2px; margin-bottom: 10px;
 }
 .tabs button {
-  background: none; border: 0; border-radius: 7px; cursor: pointer; padding: 7px 2px;
-  font: 600 11.5px/1 inherit; color: var(--muted); transition: background .15s, color .15s;
+  background: none; border: 0; border-radius: 2px; cursor: pointer; padding: 7px 2px;
+  font: 700 10px/1 inherit; color: var(--muted); transition: color .15s, border-color .15s;
+  flex: 0 1 auto; min-width: 0; white-space: nowrap;
 }
 .tabs button:hover { color: var(--text); }
 .tabs button[aria-selected="true"] { background: var(--accent); color: #fff; }
@@ -94,11 +95,15 @@ section.card h2 { display: block; margin-bottom: 8px; }
 
 .page[hidden] { display: none; }
 
+.presets { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+.presets span { font-size: 12px; color: var(--muted); margin-right: auto; }
+.presets .btn { padding: 5px 10px; font-size: 12px; }
+
 /* ---------- Görünüm önizlemesi ---------- */
 
 .preview {
   --base: 13px; --prim: #fff; --sec: #ffd84d; --hot: #4dd2ff; --bg: .35; --sec-scale: 1;
-  position: relative; height: 104px; margin: -2px 0 12px; border-radius: 8px; overflow: hidden;
+  position: relative; height: 104px; margin: -2px 0 12px; border-radius: 2px; overflow: hidden;
   display: flex; align-items: flex-end; justify-content: center;
   background: linear-gradient(180deg, #16193a 0%, #4a3360 58%, #9a6248 100%);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
@@ -135,7 +140,7 @@ section.card h2 { display: block; margin-bottom: 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
 .chips:empty { display: none; }
 .chip {
-  font-size: 11px; padding: 1px 7px; border-radius: 999px; background: var(--card-2);
+  font-size: 11px; padding: 1px 7px; border-radius: 2px; background: var(--card-2);
   border: 1px solid var(--line); color: var(--muted);
 }
 .chip.active { color: var(--text); border-color: var(--accent); }
@@ -151,7 +156,7 @@ select, input[type="password"], input[type="text"], textarea {
   background: var(--card-2);
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 6px 8px;
   font: inherit;
 }
@@ -169,18 +174,18 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
 .colors { display: flex; gap: 16px; margin-top: 8px; }
 .colors label { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; cursor: pointer; }
-.colors input { width: 28px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 5px; background: none; cursor: pointer; }
+.colors input { width: 28px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 2px; background: none; cursor: pointer; }
 
-.segmented { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--card-2); padding: 3px; border-radius: 8px; margin-bottom: 8px; }
+.segmented { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--card-2); padding: 3px; border-radius: 2px; margin-bottom: 8px; }
 .segmented label { position: relative; cursor: pointer; }
 .segmented input { position: absolute; opacity: 0; }
-.segmented span { display: block; text-align: center; padding: 5px 2px; font-size: 12px; border-radius: 6px; color: var(--muted); font-weight: 600; transition: background .15s, color .15s; }
+.segmented span { display: block; text-align: center; padding: 5px 2px; font-size: 12px; border-radius: 2px; color: var(--muted); font-weight: 600; transition: background .15s, color .15s; }
 .segmented input:checked + span { background: var(--accent); color: #fff; }
 .segmented input:focus-visible + span { outline: 2px solid var(--accent-2); }
 
 .perm-notice {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  margin: 0 0 8px; padding: 6px 8px; border-radius: 7px; font-size: 12px; color: var(--warn);
+  margin: 0 0 8px; padding: 6px 8px; border-radius: 2px; font-size: 12px; color: var(--warn);
   background: rgba(255, 200, 87, .08); border: 1px solid rgba(255, 200, 87, .35);
 }
 .perm-notice[hidden] { display: none; }
@@ -191,7 +196,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 .row { display: flex; align-items: center; gap: 8px; }
 .btn {
   background: var(--card-2); color: var(--text); border: 1px solid var(--line);
-  border-radius: 7px; padding: 6px 10px; font: inherit; font-weight: 600; cursor: pointer; flex: none;
+  border-radius: 2px; padding: 6px 10px; font: inherit; font-weight: 600; cursor: pointer; flex: none;
 }
 .btn:hover { border-color: var(--accent); }
 .btn:disabled { opacity: .6; cursor: default; }
@@ -205,3 +210,20 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 
 .bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .muted { color: var(--muted); font-size: 12px; }
+
+/* ---------- Crunchyroll dili: keskin köşeler, büyük harf düğmeler ---------- */
+
+/* lang="tr" olduğu için tarayıcı i → İ dönüşümünü Türkçeye göre yapar */
+.tabs button, .segmented span, .btn, .presets .btn { text-transform: uppercase; letter-spacing: .05em; }
+.tabs button { letter-spacing: 0; }
+.tabs button { font-weight: 700; }
+.segmented span { font-weight: 700; letter-spacing: .03em; }
+/* Seçili sekmenin altında Crunchyroll'un turuncu çizgisi */
+.tabs { padding: 0; background: none; gap: 0; border-bottom: 1px solid var(--line); }
+.tabs button { border-radius: 0; border-bottom: 2px solid transparent; padding: 8px 5px; }
+.tabs button[aria-selected="true"] { background: none; color: var(--accent); border-bottom-color: var(--accent); }
+.card { border-left: 2px solid var(--line); }
+.card.status { border-left-color: var(--accent); }
+
+/* Bağlantı kendi satırında dursun, metne yapışmasın */
+.note a { display: block; margin-bottom: 4px; color: var(--accent-2); }

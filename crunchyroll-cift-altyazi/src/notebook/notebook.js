@@ -6,6 +6,9 @@
    ========================================================= */
 (() => {
   const Vocab = globalThis.CRDS.vocab;
+  const Settings = globalThis.CRDS.settings;
+  const I18n = globalThis.CRDS.i18n;
+  const T = (key, subs) => I18n.t(key, subs);
   const $ = (sel) => document.querySelector(sel);
 
   const el = {
@@ -24,8 +27,8 @@
   let menuFor = null;
   let toastTimer = 0;
 
-  const fold = (value) => String(value || '').toLocaleLowerCase('tr');
-  const dateText = (ms) => new Date(Number(ms) || 0).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const fold = (value) => String(value || '').toLocaleLowerCase(I18n.lang);
+  const dateText = (ms) => new Date(Number(ms) || 0).toLocaleDateString(I18n.lang, { day: 'numeric', month: 'long', year: 'numeric' });
 
   function clock(seconds) {
     const total = Math.max(0, Math.floor(Number(seconds) || 0));
@@ -44,9 +47,9 @@
   async function copy(text, label) {
     try {
       await navigator.clipboard.writeText(text);
-      toast(`${label} kopyalandı`);
+      toast(T('nb_copied', label));
     } catch (_) {
-      toast('Kopyalanamadı');
+      toast(T('nb_copy_failed'));
     }
   }
 
@@ -64,8 +67,8 @@
     button.type = 'button';
     button.className = 'copy';
     button.textContent = 'Kopyala';
-    button.title = 'Cümleyi kopyala';
-    button.addEventListener('click', () => copy(text, 'Cümle'));
+    button.title = T('nb_copy_sentence');
+    button.addEventListener('click', () => copy(text, T('nb_sentence')));
     row.append(label, p, button);
     return row;
   }
@@ -81,19 +84,19 @@
     word.type = 'button';
     word.className = 'word';
     word.textContent = entry.word;
-    word.title = 'Kopyala ya da sil';
+    word.title = T('nb_word_title');
     word.addEventListener('click', (event) => openMenu(event.currentTarget, entry));
     head.append(word);
     if (entry.pos) {
       const pos = document.createElement('span');
       pos.className = 'pos';
-      pos.textContent = entry.pos;
+      pos.textContent = Vocab.posLabel(entry.pos, T);
       head.append(pos);
     }
     if (Number(entry.count) > 1) {
       const count = document.createElement('span');
       count.className = 'count';
-      count.textContent = `${entry.count} kez karşılaştın`;
+      count.textContent = T('nb_met_times', entry.count);
       head.append(count);
     }
     node.append(head);
@@ -117,10 +120,10 @@
 
     const lines = document.createElement('div');
     lines.className = 'lines';
-    if (entry.line) lines.append(sentenceRow('Cümle', entry.line));
-    if (entry.lineTr) lines.append(sentenceRow('Çeviri', entry.lineTr, 'tr'));
-    if (entry.example) lines.append(sentenceRow('Örnek', entry.example));
-    if (entry.exampleTr) lines.append(sentenceRow('Örnek', entry.exampleTr, 'tr'));
+    if (entry.line) lines.append(sentenceRow(T('nb_label_line'), entry.line));
+    if (entry.lineTr) lines.append(sentenceRow(T('nb_label_tr'), entry.lineTr, 'tr'));
+    if (entry.example) lines.append(sentenceRow(T('nb_label_example'), entry.example));
+    if (entry.exampleTr) lines.append(sentenceRow(T('nb_label_example'), entry.exampleTr, 'tr'));
     node.append(lines);
 
     const meta = document.createElement('p');
@@ -148,7 +151,7 @@
       link.href = entry.url;
       link.target = '_blank';
       link.rel = 'noreferrer';
-      link.textContent = `bölüme git (${clock(entry.time)})`;
+      link.textContent = T('nb_go_to', clock(entry.time));
       meta.append(dot, link);
     }
     node.append(meta);
@@ -168,19 +171,19 @@
     });
     const by = el.sort.value;
     if (by === 'old') list = list.slice().sort((a, b) => (a.at || 0) - (b.at || 0));
-    else if (by === 'az') list = list.slice().sort((a, b) => a.word.localeCompare(b.word, 'tr'));
+    else if (by === 'az') list = list.slice().sort((a, b) => a.word.localeCompare(b.word, I18n.lang));
     else if (by === 'count') list = list.slice().sort((a, b) => (b.count || 1) - (a.count || 1) || (b.at || 0) - (a.at || 0));
     else list = list.slice().sort((a, b) => (b.at || 0) - (a.at || 0));
     return list;
   }
 
-  function fillOptions(select, values, keep) {
+  function fillOptions(select, values, keep, label) {
     const first = select.firstElementChild;
     select.replaceChildren(first);
     for (const value of values) {
       const option = document.createElement('option');
       option.value = value;
-      option.textContent = value;
+      option.textContent = label ? label(value) : value;
       select.append(option);
     }
     select.value = values.includes(keep) ? keep : '';
@@ -192,22 +195,22 @@
     el.empty.hidden = entries.length > 0;
     if (entries.length && !list.length) {
       el.empty.hidden = false;
-      el.empty.textContent = 'Bu süzgeçlere uyan kayıt yok.';
+      el.empty.textContent = T('nb_empty_filtered');
     } else if (!entries.length) {
-      el.empty.textContent = "Defter boş. Crunchyroll'da çift altyazı açıkken bir kelimenin üzerine gelip tıkladığında burada birikir.";
+      el.empty.textContent = T('nb_empty');
     }
     const shows = new Set(entries.map((e) => e.show).filter(Boolean));
     const total = entries.reduce((sum, e) => sum + (Number(e.count) || 1), 0);
     el.summary.textContent = entries.length
-      ? `${entries.length} kelime · ${total} karşılaşma · ${shows.size} anime`
-      : 'Henüz kelime yok';
+      ? T('nb_summary', [entries.length, total, shows.size])
+      : T('nb_summary_empty');
   }
 
   function refreshFilters() {
-    const shows = [...new Set(entries.map((e) => e.show).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'tr'));
-    const poses = [...new Set(entries.map((e) => e.pos).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'tr'));
-    fillOptions(el.show, shows, el.show.value);
-    fillOptions(el.pos, poses, el.pos.value);
+    const shows = [...new Set(entries.map((e) => e.show).filter(Boolean))].sort((a, b) => a.localeCompare(b, I18n.lang));
+    const poses = [...new Set(entries.map((e) => e.pos).filter(Boolean))].sort((a, b) => a.localeCompare(b, I18n.lang));
+    fillOptions(el.show, shows, el.show.value, (value) => Vocab.posLabel(value, T) || value);
+    fillOptions(el.pos, poses, el.pos.value, (value) => Vocab.posLabel(value, T) || value);
   }
 
   /* ---------- Kelime menüsü ---------- */
@@ -231,14 +234,14 @@
     const entry = menuFor;
     closeMenu();
     if (action === 'copy') {
-      await copy(entry.word, 'Kelime');
+      await copy(entry.word, T('nb_word'));
       return;
     }
     await Vocab.remove(entry.id);
     entries = entries.filter((item) => item.id !== entry.id);
     refreshFilters();
     render();
-    toast(`"${entry.word}" silindi`);
+    toast(T('nb_deleted', entry.word));
   });
 
   document.addEventListener('click', (event) => {
@@ -271,24 +274,56 @@
     return `﻿${head.join(',')}\n${rows.join('\n')}`;
   }
 
+  // Anki: sekmeyle ayrılmış iki alan (ön yüz / arka yüz) ve başlıkta içe aktarma
+  // ayarları. Alan içindeki sekme ve satır sonu kartı bozar, ikisi de temizlenir.
+  function anki() {
+    const esc = (value) => String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\t/g, ' ').replace(/\r?\n/g, '<br>').trim();
+    const mark = (sentence, word) => {
+      const text = esc(sentence);
+      if (!word) return text;
+      const safe = esc(word).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return text.replace(new RegExp(`(^|[^\\p{L}])(${safe})(?![\\p{L}])`, 'iu'), '$1<b>$2</b>');
+    };
+    const rows = visible().map((e) => {
+      const front = [`<b>${esc(e.word)}</b>`, e.line ? `<div>${mark(e.line, e.word)}</div>` : ''].filter(Boolean).join('');
+      const back = [
+        (e.meanings || []).map(esc).join(' · '),
+        e.pos ? `<div><i>${esc(e.pos)}</i></div>` : '',
+        e.lineTr ? `<div>${esc(e.lineTr)}</div>` : '',
+        e.example ? `<div>${mark(e.example, e.word)}</div>` : '',
+        e.exampleTr ? `<div>${esc(e.exampleTr)}</div>` : '',
+        e.show ? `<div><small>${esc([e.show, e.episode].filter(Boolean).join(' · '))}</small></div>` : '',
+      ].filter(Boolean).join('');
+      return `${front}\t${back}`;
+    });
+    return ['#separator:tab', '#html:true', '#notetype:Basic', `#deck:${T('nb_anki_deck')}`, ...rows].join('\n');
+  }
+
+  $('#exportAnki').addEventListener('click', () => {
+    download('kelime-defteri-anki.txt', anki(), 'text/plain;charset=utf-8');
+    toast(T('nb_anki_done'));
+  });
+
   $('#exportJson').addEventListener('click', () => {
     download('kelime-defteri.json', JSON.stringify(visible(), null, 2), 'application/json');
-    toast('JSON indirildi');
+    toast(T('nb_json_done'));
   });
   $('#exportCsv').addEventListener('click', () => {
     download('kelime-defteri.csv', csv(), 'text/csv;charset=utf-8');
-    toast('CSV indirildi');
+    toast(T('nb_csv_done'));
   });
 
   $('#clearAll').addEventListener('click', async () => {
     if (!entries.length) return;
-    const ok = confirm(`${entries.length} kelimenin hepsi silinecek. Bu geri alınamaz, emin misin?`);
+    const ok = confirm(T('nb_confirm_clear', entries.length));
     if (!ok) return;
     await Vocab.clear();
     entries = [];
     refreshFilters();
     render();
-    toast('Defter temizlendi');
+    toast(T('nb_cleared'));
   });
 
   for (const node of [el.search, el.show, el.pos, el.sort]) {
@@ -297,8 +332,26 @@
 
   /* ---------- Başlangıç ---------- */
 
-  Vocab.load().then((list) => {
-    entries = list;
+  // Menü dili önce yüklenir, sonra sayfa çizilir; dil değişirse sayfa tazelenir
+  Settings.load()
+    .then((s) => I18n.load(s.uiLang))
+    .catch(() => I18n.load('auto'))
+    .then(() => {
+      I18n.apply(document);
+      document.title = T('nb_title');
+      return Vocab.load();
+    })
+    .then((list) => {
+      entries = list;
+      refreshFilters();
+      render();
+    });
+
+  Settings.onChange(async (next, prev) => {
+    if (next.uiLang === prev.uiLang) return;
+    await I18n.load(next.uiLang);
+    I18n.apply(document);
+    document.title = T('nb_title');
     refreshFilters();
     render();
   });

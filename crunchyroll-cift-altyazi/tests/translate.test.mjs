@@ -2,7 +2,13 @@
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
+import { readFileSync } from 'node:fs';
+
+import '../src/shared/i18n.js';
 import '../src/shared/settings.js';
+
+// Hata metinleri arayüz dilinden gelir; testler varsayılan dili (İngilizce) kullanır
+globalThis.CRDS.i18n.use(JSON.parse(readFileSync(new URL('../_locales/en/messages.json', import.meta.url), 'utf8')), 'en');
 import { translate, pickExample } from '../src/background/translate.js';
 
 const DEFAULTS = globalThis.CRDS.settings.DEFAULTS;
@@ -89,8 +95,8 @@ test('deepl: pro anahtar, 50 satırlık paketler; hatalar sınıflandırılır',
   handler = () => new Response('', { status: 403 });
   await assert.rejects(run('deepl', ['x'], { keys: { deeplKey: 'bad' } }), (e) => e.fatal && !e.retryable);
   handler = () => new Response('', { status: 456 });
-  await assert.rejects(run('deepl', ['x'], { keys: { deeplKey: 'k' } }), (e) => e.fatal && /kota/.test(e.message));
-  await assert.rejects(run('deepl', ['x']), (e) => e.fatal && /anahtar/.test(e.message));
+  await assert.rejects(run('deepl', ['x'], { keys: { deeplKey: 'k' } }), (e) => e.fatal && /quota/.test(e.message));
+  await assert.rejects(run('deepl', ['x']), (e) => e.fatal && /key/i.test(e.message));
 });
 
 /* ---------- Gemini ---------- */
@@ -125,9 +131,9 @@ test('gemini: satır sayısı tutmazsa ikiye bölünür, model ayardan gelir', a
   assert.equal(calls.length, 3);
 });
 
-test('gemini: hatalar Türkçe ve doğru sınıfta', async () => {
+test('gemini: hatalar arayüz dilinde ve doğru sınıfta', async () => {
   handler = () => json({ error: { code: 400, message: 'API key not valid. Please pass a valid API key.' } }, 400);
-  await assert.rejects(run('gemini', ['x'], { keys: { geminiKey: 'bad' } }), (e) => e.fatal && /anahtar/.test(e.message));
+  await assert.rejects(run('gemini', ['x'], { keys: { geminiKey: 'bad' } }), (e) => e.fatal && /key/i.test(e.message));
 
   handler = () => json({ error: { code: 429, message: 'Quota exceeded' } }, 429);
   await assert.rejects(run('gemini', ['x'], { keys: { geminiKey: 'k' } }), (e) => e.retryable && e.retryAfter > 0);
@@ -135,7 +141,7 @@ test('gemini: hatalar Türkçe ve doğru sınıfta', async () => {
   handler = () => json({ error: { code: 503 } }, 503);
   await assert.rejects(run('gemini', ['x'], { keys: { geminiKey: 'k' } }), (e) => e.retryable);
 
-  await assert.rejects(run('gemini', ['x']), (e) => e.fatal && /anahtar/.test(e.message));
+  await assert.rejects(run('gemini', ['x']), (e) => e.fatal && /key/i.test(e.message));
 });
 
 /* ---------- Claude ---------- */
@@ -191,14 +197,14 @@ test('claude: satır sayısı tutmazsa ikiye bölüp yeniden dener', async () =>
   assert.match(JSON.parse(calls[2].body).messages[0].content, /Earlier lines/, 'ikinci yarı bağlam alır');
 });
 
-test('claude: hatalar Türkçe ve doğru sınıfta', async () => {
+test('claude: hatalar arayüz dilinde ve doğru sınıfta', async () => {
   handler = () => json({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }, 401);
-  await assert.rejects(run('claude', ['x'], { keys: { claudeKey: 'bad' } }), (e) => e.fatal && /geçersiz/.test(e.message));
+  await assert.rejects(run('claude', ['x'], { keys: { claudeKey: 'bad' } }), (e) => e.fatal && /not valid/.test(e.message));
 
   handler = () => claudeReply([], 'refusal');
-  await assert.rejects(run('claude', ['x'], { keys: { claudeKey: 'k' } }), (e) => /reddetti/.test(e.message) && !e.retryable);
+  await assert.rejects(run('claude', ['x'], { keys: { claudeKey: 'k' } }), (e) => /refused/.test(e.message) && !e.retryable);
 
-  await assert.rejects(run('claude', ['x']), (e) => e.fatal && /anahtar/.test(e.message));
+  await assert.rejects(run('claude', ['x']), (e) => e.fatal && /key/i.test(e.message));
 });
 
 test('pickExample: tam cümleye benzeyen örnek seçilir', () => {
@@ -218,5 +224,22 @@ test('pickExample: tam cümleye benzeyen örnek seçilir', () => {
     pickExample(['He ran fast enough to catch the last train.'], 'catch', 'he ran fast enough to catch the last train.'),
     '',
     'altyazı satırının kendisi örnek olarak verilmez',
+  );
+})
+
+test('gemini: model yoğunsa bir kez daha denenir, hata metni Google\'ın açıklamasını taşır', async () => {
+  let n = 0;
+  handler = () => (n++ === 0
+    ? json({ error: { code: 503, message: 'The model is overloaded. Please try again later.' } }, 503)
+    : geminiReply(['Merhaba.']));
+  const out = await run('gemini', ['Hello.'], { keys: { geminiKey: 'k' } });
+  assert.deepEqual(out, ['Merhaba.'], '503 sonrası ikinci deneme başarılı olmalı');
+  assert.equal(calls.length, 2);
+
+  handler = () => json({ error: { code: 503, message: 'The model is overloaded. Please try again later.' } }, 503);
+  await assert.rejects(
+    run('gemini', ['Hello.'], { keys: { geminiKey: 'k' } }),
+    (e) => /503/.test(e.message) && /overloaded/.test(e.message),
+    'ikisi de olmazsa hata Google\'ın açıklamasını içermeli',
   );
 })

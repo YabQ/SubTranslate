@@ -19,19 +19,20 @@
 
   // Ücretsiz katmanda hangi modelin açık olduğu ve sınırları Google AI Studio'da görünür
   const GEMINI_MODELS = [
-    { id: 'gemini-3.8-flash', label: 'Gemini 3.8 Flash — en iyi kalite' },
-    { id: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash — dengeli' },
-    { id: 'gemini-3.5-flash-lite', label: 'Gemini 3.5 Flash-Lite — en hızlı, en geniş kota' },
+    { id: 'gemini-3.8-flash', key: 'gemini_38' },
+    { id: 'gemini-3.5-flash', key: 'gemini_35' },
+    { id: 'gemini-3.5-flash-lite', key: 'gemini_35_lite' },
   ];
 
   const CLAUDE_MODELS = [
-    { id: 'claude-opus-5', label: 'Claude Opus 5 — en iyi kalite' },
-    { id: 'claude-sonnet-5', label: 'Claude Sonnet 5 — dengeli' },
-    { id: 'claude-haiku-4-5', label: 'Claude Haiku 4.5 — en hızlı / ucuz' },
+    { id: 'claude-opus-5', key: 'claude_opus' },
+    { id: 'claude-sonnet-5', key: 'claude_sonnet' },
+    { id: 'claude-haiku-4-5', key: 'claude_haiku' },
   ];
 
   const DEFAULTS = Object.freeze({
     enabled: true,
+    uiLang: 'auto',              // Menü dili: auto (tarayıcıyla aynı) ya da bir dil kodu
     primaryLang: 'en-US',        // Üstte gösterilecek orijinal Crunchyroll altyazısı
     targetLang: 'tr',            // Çeviri dili
     preferOfficial: true,        // Hedef dilde resmi CR altyazısı varsa çeviri yerine onu kullan
@@ -82,6 +83,7 @@
       } else if (typeof def === 'string') out[key] = String(val);
     }
     if (!PROVIDERS.includes(out.provider)) out.provider = DEFAULTS.provider;
+    if (out.uiLang !== 'auto' && !/^[a-z]{2}$/.test(out.uiLang)) out.uiLang = DEFAULTS.uiLang;
     if (!CLAUDE_MODELS.some((m) => m.id === out.claudeModel)) out.claudeModel = DEFAULTS.claudeModel;
     if (!GEMINI_MODELS.some((m) => m.id === out.geminiModel)) out.geminiModel = DEFAULTS.geminiModel;
     for (const key of ['originalColor', 'translationColor', 'lookupColor']) {
@@ -93,9 +95,28 @@
     return out;
   }
 
+  // İlk kurulumda çeviri dili tarayıcının diline göre seçilir; Türkçe arayüzlü
+  // bir kullanıcıda Türkçe, Almanca arayüzlü birinde Almanca olur.
+  function firstRunTarget() {
+    let ui = '';
+    try {
+      ui = (chrome.i18n.getUILanguage() || '').toLowerCase();
+    } catch (_) {
+      ui = String(globalThis.navigator ? navigator.language || '' : '').toLowerCase();
+    }
+    const list = (CRDS.lang && CRDS.lang.TARGET_LANGS) || [];
+    const exact = list.find((code) => code.toLowerCase() === ui);
+    if (exact) return exact;
+    const base = ui.split('-')[0];
+    const near = list.find((code) => code.toLowerCase() === base);
+    return near || DEFAULTS.targetLang;
+  }
+
   async function load() {
     try {
       const res = await chrome.storage.local.get(KEY);
+      // Hiç kayıt yoksa ilk kurulumdur: çeviri dili tarayıcıdan gelir
+      if (!res[KEY]) return { ...DEFAULTS, targetLang: firstRunTarget() };
       return sanitize(res[KEY]);
     } catch (_) {
       return { ...DEFAULTS };

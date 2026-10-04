@@ -3,11 +3,12 @@
    etkin Crunchyroll sekmesinin canlı durumu.
    ========================================================= */
 (() => {
-  const { settings: S, lang: L } = globalThis.CRDS;
+  const { settings: S, lang: L, i18n: I18n } = globalThis.CRDS;
+  const T = (key, subs) => I18n.t(key, subs);
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => [...document.querySelectorAll(sel)];
 
-  const PROVIDER_NAMES = { google: 'Google Çeviri', deepl: 'DeepL', claude: 'Claude', gemini: 'Gemini' };
+  const providerName = (id) => (id === 'google' ? T('provider_google') : { deepl: 'DeepL', claude: 'Claude', gemini: 'Gemini' }[id] || id);
   const KEY_FIELDS = ['deeplKey', 'claudeKey', 'geminiKey'];
   const FORMATTERS = {
     fontScale: (v) => `%${Math.round(v * 100)}`,
@@ -64,16 +65,35 @@
     const codes = [...new Set([...detected, ...L.CR_LOCALES, current.primaryLang])];
     codes.sort((a, b) => Number(detected.has(b)) - Number(detected.has(a)));
     $('#primaryLang').replaceChildren(
-      ...codes.map((c) => option(c, `${L.displayName(c)}${detected.has(c) ? '  •  bu bölümde var' : ''}`)),
+      ...codes.map((c) => option(c, `${L.displayName(c)}${detected.has(c) ? T('lang_in_episode') : ''}`)),
     );
     $('#primaryLang').value = current.primaryLang;
+  }
+
+  function fillUiLang() {
+    const options = [option('auto', T('ui_lang_auto')), ...I18n.SUPPORTED.map((code) => option(code, T(`ui_lang_${code}`)))];
+    $('#uiLang').replaceChildren(...options);
+    $('#uiLang').value = current.uiLang;
+  }
+
+  // Menü dili değişince sayfadaki her metin yeniden yazılır
+  async function reloadLanguage(lang) {
+    await I18n.load(lang);
+    I18n.apply(document);
+    document.title = T('app_name');
+    fillStatic();
+    fillUiLang();
+    fillPrimary();
+    renderStatus();
+    updatePermissionNotice();
+    showVocabCount();
   }
 
   function fillStatic() {
     const targets = [...new Set([...L.TARGET_LANGS, current.targetLang])];
     $('#targetLang').replaceChildren(...targets.map((c) => option(c, L.displayName(c))));
-    $('#claudeModel').replaceChildren(...S.CLAUDE_MODELS.map((m) => option(m.id, m.label)));
-    $('#geminiModel').replaceChildren(...S.GEMINI_MODELS.map((m) => option(m.id, m.label)));
+    $('#claudeModel').replaceChildren(...S.CLAUDE_MODELS.map((m) => option(m.id, T(m.key))));
+    $('#geminiModel').replaceChildren(...S.GEMINI_MODELS.map((m) => option(m.id, T(m.key))));
   }
 
   function updateOutput(key, value) {
@@ -99,6 +119,23 @@
     updatePreview(s);
   }
 
+  /* ---------- Hazır görünüm ayarları ---------- */
+
+  // TV modu: iki metre uzaktan okunacak punto, daha koyu zemin ve
+  // kontrol çubuğundan uzak dursun diye biraz yukarıda altyazı
+  const PRESETS = {
+    normal: { fontScale: 1, translationScale: 1, bgOpacity: 0.35, bottomOffset: 7 },
+    tv: { fontScale: 1.65, translationScale: 1, bgOpacity: 0.55, bottomOffset: 11 },
+  };
+
+  function applyPreset(name) {
+    const patch = PRESETS[name];
+    if (!patch) return;
+    Object.assign(current, patch);
+    save(patch);
+    applyToForm(current);
+  }
+
   /* ---------- Sekmeler ---------- */
 
   const TAB_KEY = 'popupTab';
@@ -122,8 +159,8 @@
     }
     const total = list.reduce((sum, item) => sum + (Number(item.count) || 1), 0);
     $('#vocabCount').textContent = list.length
-      ? `Defterde ${list.length} kelime, ${total} karşılaşma var. Kayıtlar kendiliğinden silinmez.`
-      : 'Defter henüz boş. Çift altyazı açıkken bir kelimenin üzerine gelip tıkladığında burada birikir.';
+      ? T('vocab_count', [list.length, total])
+      : T('vocab_empty');
   }
 
   /* ---------- Görünüm önizlemesi ---------- */
@@ -165,6 +202,7 @@
         if (live) later(key, () => save({ [key]: value }), el.tagName === 'TEXTAREA' ? 700 : 250);
         else save({ [key]: value });
         if (key === 'enabled') renderStatus();
+        if (key === 'uiLang') reloadLanguage(value);
         updatePreview(current);
       });
     }
@@ -181,7 +219,7 @@
           } else {
             // İzin verilmezse önceki servisle devam et
             for (const r of $$('input[name="provider"]')) r.checked = r.value === current.provider;
-            setTestResult(`✗ ${PROVIDER_NAMES[provider]} için izin verilmedi; önceki servis kullanılmaya devam ediyor.`, 'err');
+            setTestResult(T('perm_denied_keep', providerName(provider)), 'err');
           }
           updatePermissionNotice();
         });
@@ -215,6 +253,10 @@
     });
     $('#retry').addEventListener('click', () => save({ retryToken: Date.now() }));
 
+    for (const button of $$('[data-preset]')) {
+      button.addEventListener('click', () => applyPreset(button.dataset.preset));
+    }
+
     for (const button of $$('.tabs button')) {
       button.addEventListener('click', () => showTab(button.dataset.tab));
     }
@@ -234,7 +276,7 @@
     const origins = S.PROVIDER_ORIGINS[current.provider];
     const granted = !origins || (await chrome.permissions.contains({ origins }).catch(() => false));
     $('#permNotice').hidden = granted;
-    if (!granted) $('#permText').textContent = `${PROVIDER_NAMES[current.provider]} kullanmak için izin gerekiyor.`;
+    if (!granted) $('#permText').textContent = T('perm_needed', providerName(current.provider));
   }
 
   /* ---------- Servis testi ve önbellek ---------- */
@@ -257,7 +299,7 @@
     updatePermissionNotice();
     if (!granted) {
       btn.disabled = false;
-      setTestResult(`✗ ${PROVIDER_NAMES[current.provider]} için izin verilmedi`, 'err');
+      setTestResult(T('perm_denied', providerName(current.provider)), 'err');
       return;
     }
     await flushKeys();
@@ -266,12 +308,12 @@
       .catch((err) => ({ ok: false, error: String((err && err.message) || err) }));
     btn.disabled = false;
     if (res && res.ok) setTestResult(`✓ ${res.translations[0]}`, 'ok');
-    else setTestResult(`✗ ${(res && res.error) || 'Yanıt alınamadı'}`, 'err');
+    else setTestResult(`✗ ${(res && res.error) || T('test_no_answer')}`, 'err');
   }
 
   async function clearCache() {
     const count = await chrome.runtime.sendMessage({ type: 'cache-clear' }).catch(() => 0);
-    $('#footerNote').textContent = `${count || 0} bölümün çevirisi silindi`;
+    $('#footerNote').textContent = T('cache_cleared', count || 0);
   }
 
   /* ---------- Canlı durum ---------- */
@@ -285,6 +327,13 @@
     return !!tab && /^https:\/\/([a-z0-9-]+\.)*crunchyroll\.com\//i.test(tab.url || '');
   }
 
+  // Kota ya da anahtar yüzünden Google'a düşüldüyse ikisi de yazılır
+  function serviceLabel(sec) {
+    const name = providerName(sec.provider);
+    if (!sec.fellBackFrom) return name;
+    return T('service_fallback', [providerName(sec.fellBackFrom), name]);
+  }
+
   function renderStatus() {
     const st = pickStatus(tabState);
     const tracks = (tabState && tabState.tracks && tabState.tracks.tracks) || (st && st.tracks) || [];
@@ -295,55 +344,55 @@
     let canRetry = false;
 
     if (!current.enabled) {
-      heading = 'Kapalı';
-      lines.push('Sağ üstteki anahtarla açabilirsin.');
+      heading = T('st_off');
+      lines.push(T('st_off_body'));
     } else if (!isCrunchyroll(activeTab)) {
-      heading = 'Crunchyroll sekmesi değil';
-      lines.push("Crunchyroll'da bir bölüm açınca durum burada görünür.");
+      heading = T('st_not_crunchyroll');
+      lines.push(T('st_not_crunchyroll_body'));
     } else if (!st || (!tracks.length && st.phase === 'waiting-tracks')) {
-      heading = 'Altyazı bilgisi bekleniyor';
+      heading = T('st_waiting');
       tone = 'busy';
-      lines.push('Bir bölümü oynatmaya başla. Eklentiyi yeni kurduysan sayfayı bir kez yenile.');
+      lines.push(T('st_waiting_body'));
     } else if (st.phase === 'waiting-video' || st.phase === 'idle') {
       heading = 'Video bekleniyor';
       tone = 'busy';
     } else if (st.phase === 'loading') {
-      heading = 'Altyazı yükleniyor…';
+      heading = T('st_loading');
       tone = 'busy';
     } else if (st.phase === 'error') {
-      heading = 'Altyazı yüklenemedi';
+      heading = T('st_failed');
       tone = 'err';
       lines.push({ error: st.error });
       canRetry = true;
     } else if (st.phase === 'ready' && st.primary) {
       const sec = st.secondary;
-      lines.push(`Orijinal: ${L.displayName(st.primary.lang)} · ${st.primary.cues} satır`);
-      heading = 'Hazır';
+      lines.push(T('st_primary', [L.displayName(st.primary.lang), st.primary.cues]));
+      heading = T('st_ready');
       tone = 'ok';
       if (!sec) {
-        heading = 'Hazırlanıyor…';
+        heading = T('st_preparing');
         tone = 'busy';
       } else if (sec.mode === 'track') {
-        lines.push(`Çeviri: Crunchyroll'un resmi ${L.displayName(sec.lang)} altyazısı`);
+        lines.push(T('st_official', L.displayName(sec.lang)));
       } else if (sec.mode === 'same') {
-        lines.push('Çeviri dili orijinalle aynı; ikinci satır gösterilmiyor.');
+        lines.push(T('st_same_lang'));
       } else if (sec.mode === 'off') {
-        lines.push('Çeviri satırı kapalı.');
+        lines.push(T('st_translation_off'));
       } else if (sec.error) {
-        heading = sec.done ? 'Çeviri yarım kaldı' : 'Çeviri yapılamadı';
+        heading = sec.done ? T('st_partial') : T('st_none');
         tone = 'err';
         lines.push({ error: sec.error });
         if (sec.total) progress = sec.done / sec.total;
         canRetry = true;
       } else if (!sec.finished) {
-        heading = 'Çevriliyor…';
+        heading = T('st_translating');
         tone = 'busy';
         progress = sec.total ? sec.done / sec.total : 0;
-        lines.push(`${L.displayName(sec.lang)} · ${PROVIDER_NAMES[sec.provider] || sec.provider} · ${sec.done}/${sec.total}`);
+        lines.push(T('st_progress', [L.displayName(sec.lang), serviceLabel(sec), sec.done, sec.total]));
       } else {
-        lines.push(`Çeviri: ${L.displayName(sec.lang)} · ${PROVIDER_NAMES[sec.provider] || sec.provider}${sec.cached ? ' (önbellekten)' : ''}`);
+        lines.push(T('st_done', [L.displayName(sec.lang), serviceLabel(sec)]) + (sec.cached ? T('st_cached') : ''));
       }
-      if (st.stripped) lines.push('Videoya gömülü altyazı kaldırıldı.');
+      if (st.stripped) lines.push(T('st_stripped'));
     }
 
     $('#statusDot').className = `dot ${tone}`;
@@ -373,7 +422,7 @@
         const chip = document.createElement('span');
         chip.className = `chip${activeLangs.has(code) ? ' active' : ''}`;
         chip.textContent = `${L.displayName(code)}${t.kind === 'captions' ? ' [CC]' : ''}`;
-        chip.title = `${code} · ${t.format || 'biçim bilinmiyor'}`;
+        chip.title = `${code} · ${t.format || T('st_unknown_format')}`;
         return chip;
       }),
     );
@@ -399,9 +448,13 @@
   (async () => {
     const [settings, keys] = await Promise.all([S.load(), chrome.storage.local.get([...KEY_FIELDS, TAB_KEY])]);
     current = settings;
+    await I18n.load(settings.uiLang);
+    I18n.apply(document);
+    document.title = T('app_name');
     for (const id of KEY_FIELDS) $(`#${id}`).value = keys[id] || '';
     await watchActiveTab().catch(() => {});
     fillStatic();
+    fillUiLang();
     fillPrimary();
     applyToForm(current);
     bindForm();

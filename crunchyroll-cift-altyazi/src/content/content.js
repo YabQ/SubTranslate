@@ -8,11 +8,12 @@
   if (globalThis.__crdsContent) return;
   globalThis.__crdsContent = true;
 
-  const { settings: Settings, lang: L, subtitles: Subs, words: Words, Overlay } = globalThis.CRDS;
+  const { settings: Settings, lang: L, subtitles: Subs, words: Words, i18n: I18n, Overlay } = globalThis.CRDS;
+  const T = (key, subs) => I18n.t(key, subs);
 
   const CHUNK_SIZE = { google: 60, deepl: 50, claude: 60, gemini: 60 };
   const CONCURRENCY = { google: 2, deepl: 2, claude: 3, gemini: 2 };
-  const PROVIDER_NAMES = { google: 'Google Çeviri', deepl: 'DeepL', claude: 'Claude', gemini: 'Gemini' };
+  const providerName = (id) => (id === 'google' ? T('provider_google') : { deepl: 'DeepL', claude: 'Claude', gemini: 'Gemini' }[id] || id);
   const VIDEO_EVENTS = ['play', 'playing', 'pause', 'seeked', 'timeupdate', 'loadedmetadata'];
 
   const state = {
@@ -236,7 +237,7 @@
     }
     const res = await send({ type: 'fetch-text', url });
     if (res && res.ok) return res.text;
-    throw new Error(`Altyazı dosyası indirilemedi${res && res.error ? ` (${res.error})` : ''}`);
+    throw new Error(T('ov_download_failed', res && res.error ? `: ${res.error}` : ''));
   }
 
   async function startSession() {
@@ -253,11 +254,11 @@
     pushStatus();
     try {
       const track = pickPrimary(payload.tracks, s.primaryLang);
-      if (!track) throw new Error('Bu bölümde kullanılabilir altyazı yok');
+      if (!track) throw new Error(T('ov_no_tracks'));
       const text = await fetchText(track.url);
       if (!alive(sess)) return;
       const parsed = Subs.parse(text, track.format);
-      if (!parsed.cues.length) throw new Error(`Altyazı dosyası okunamadı (${parsed.format || track.format || 'bilinmeyen biçim'})`);
+      if (!parsed.cues.length) throw new Error(T('ov_parse_failed', parsed.format || track.format || T('st_unknown_format')));
       sess.primary = { track, cues: parsed.cues, format: parsed.format };
       sess.status = 'ready';
       ensureOverlay();
@@ -268,7 +269,7 @@
       if (!alive(sess)) return;
       sess.status = 'error';
       sess.error = String((err && err.message) || err);
-      toast(`Çift altyazı: ${sess.error}`, 8000);
+      toast(T('ov_session_error', sess.error), 8000);
       pushStatus();
     }
   }
@@ -346,7 +347,7 @@
       mode: 'translate', provider: s.provider, source, target: s.targetLang,
       unitOfCue, unitToUniq, uniq, out: new Array(uniq.length).fill(null),
       chunks: [], queue: [], active: 0, done: 0, failed: 0, error: null,
-      cancelled: false, finished: false, cached: false, cacheKey: '',
+      cancelled: false, finished: false, cached: false, cacheKey: '', fellBack: null,
     };
     sess.secondary = job;
     if (!uniq.length) {
@@ -373,7 +374,7 @@
     const size = CHUNK_SIZE[job.provider] || 50;
     for (let i = 0; i < uniq.length; i += size) job.chunks.push({ start: i, end: Math.min(uniq.length, i + size), tries: 0 });
     job.queue = orderChunks(job, job.chunks);
-    toast(`Çeviri hazırlanıyor… (${PROVIDER_NAMES[job.provider]})`, 4000);
+    toast(T('ov_preparing', providerName(job.provider)), 4000);
     pushStatus();
     pump(sess, job);
   }
@@ -418,6 +419,21 @@
     }
   }
 
+  // DeepL / Gemini / Claude anahtarı ya da kotası biterse bölüm yarım kalmasın:
+  // kalan satırlar Google Çeviri ile tamamlanır. Yedeğe düşen bölüm önbelleğe
+  // yazılmaz; anahtar düzelince bölüm asıl servisle yeniden çevrilsin diye.
+  function useFallback(job, chunk, reason) {
+    if (job.provider === 'google' || job.fellBack) return false;
+    job.fellBack = { from: job.provider, reason };
+    job.provider = 'google';
+    job.error = null;
+    chunk.tries = 0;
+    job.queue.unshift(chunk);
+    toast(T('ov_fallback', [providerName(job.fellBack.from), reason]), 9000);
+    pushStatus();
+    return true;
+  }
+
   async function runChunk(sess, job, chunk) {
     const texts = job.uniq.slice(chunk.start, chunk.end);
     const context = job.uniq.slice(Math.max(0, chunk.start - 6), chunk.start);
@@ -436,14 +452,15 @@
       return;
     }
 
-    const error = (res && res.error) || 'Çeviri servisine ulaşılamadı';
+    const error = (res && res.error) || T('ov_translate_unreachable');
     chunk.tries++;
     if (res && res.fatal) {
-      // Geçersiz anahtar, kota vb.: kalan parçaları deneme
+      // Geçersiz anahtar, kota vb.: yedek servise geç, o da yoksa dur
+      if (useFallback(job, chunk, error)) return;
       job.queue = [];
       job.error = error;
       job.failed = job.uniq.length - job.done;
-      toast(`Çeviri durdu: ${error}`, 9000);
+      toast(T('ov_translate_stopped', error), 9000);
       pushStatus();
       return;
     }
@@ -452,16 +469,18 @@
       if (jobAlive(sess, job)) job.queue.unshift(chunk);
       return;
     }
+    // Tekrar denemeler de tükendi: bölüm yarım kalmasın
+    if (useFallback(job, chunk, error)) return;
     job.failed += texts.length;
     job.error = error;
-    toast(`Çeviri hatası: ${error}`, 8000);
+    toast(T('ov_translate_error', error), 8000);
     pushStatus();
   }
 
   function finishJob(job) {
     if (job.finished) return;
     job.finished = true;
-    if (!job.failed && job.done === job.uniq.length) send({ type: 'cache-put', key: job.cacheKey, value: job.out });
+    if (!job.failed && !job.fellBack && job.done === job.uniq.length) send({ type: 'cache-put', key: job.cacheKey, value: job.out });
     pushStatus();
   }
 
@@ -515,8 +534,8 @@
   }
 
   function tipNote(meanings) {
-    if (!meanings.length) return 'Karşılık bulunamadı';
-    return state.settings.notebook ? 'Kaydetmek için tıkla' : '';
+    if (!meanings.length) return T('ov_no_meaning');
+    return state.settings.notebook ? T('ov_click_to_save') : '';
   }
 
   // Sekme başlığından dizi adı ve bölüm numarası
@@ -530,7 +549,7 @@
     const show = raw
       .replace(/\s*[-–—:]?\s*(?:Season\s*[0-9]+)?\s*(?:Episode|Bölüm|Folge|Episodio|Épisode|Ep\.?)\s*[0-9].*$/i, '')
       .trim();
-    return { show: show || raw, episode: m ? `Bölüm ${m[1]}` : '' };
+    return { show: show || raw, episode: m ? T('ov_episode', m[1]) : '' };
   }
 
   // Kelimeye tıklandığında deftere kaydeder; katman tıklamayı oynatıcıya geçirmez
@@ -542,7 +561,7 @@
     const source = (sess && sess.primary && sess.primary.lang) || s.primaryLang;
     const meanings = lookup.shown.length ? lookup.shown : lookup.meanings.slice(0, 2);
     const info = episodeInfo();
-    overlay.showTip(word, meanings, 'Kaydediliyor…');
+    overlay.showTip(word, meanings, T('ov_saving'));
     const res = await send({
       type: 'save-word',
       word,
@@ -559,9 +578,9 @@
     // Bu sırada fare başka kelimeye geçtiyse balonu geri getirme
     if (lookup.index !== index || lookup.word !== word) return;
     if (res && res.ok) {
-      overlay.showTip(word, meanings, res.count > 1 ? `Deftere eklendi · ${res.count}. kez` : 'Deftere eklendi');
+      overlay.showTip(word, meanings, res.count > 1 ? T('ov_saved_again', res.count) : T('ov_saved'));
     } else {
-      overlay.showTip(word, meanings, 'Kaydedilemedi');
+      overlay.showTip(word, meanings, T('ov_save_failed'));
     }
   }
 
@@ -726,6 +745,7 @@
           error: sec.error || null,
           finished: !!sec.finished,
           cached: !!sec.cached,
+          fellBackFrom: sec.fellBack ? sec.fellBack.from : null,
         }
         : null,
     };
@@ -742,6 +762,7 @@
 
   function onSettingsChanged(next, prev) {
     state.settings = next;
+    if (next.uiLang !== prev.uiLang) I18n.load(next.uiLang).then(renderNow);
     state.loaded = true;
     applyPageFlags();
     if (!next.enabled || !next.wordLookup || !next.showOriginal || !next.showTranslation) clearLookup(false);
@@ -799,7 +820,8 @@
     /* bağlam geçersiz */
   }
 
-  Settings.load().then((s) => {
+  Settings.load().then(async (s) => {
+    await I18n.load(s.uiLang).catch(() => {});
     state.settings = s;
     state.loaded = true;
     applyPageFlags();

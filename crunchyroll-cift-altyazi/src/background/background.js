@@ -5,6 +5,7 @@
    - Bölüm bazlı çeviri önbelleği (chrome.storage.local)
    - Klavye kısayolları ve araç çubuğu rozeti
    ========================================================= */
+import '../shared/i18n.js';
 import '../shared/languages.js';
 import '../shared/settings.js';
 import '../shared/vocab.js';
@@ -12,6 +13,8 @@ import '../shared/words.js';
 import { translate, lookupWord, rankExamples } from './translate.js';
 
 const Settings = globalThis.CRDS.settings;
+const I18n = globalThis.CRDS.i18n;
+const T = (key, subs) => I18n.t(key, subs);
 const Vocab = globalThis.CRDS.vocab;
 const Words = globalThis.CRDS.words;
 
@@ -31,6 +34,17 @@ function withLock(key, fn) {
   locks.set(key, run.catch(() => {}));
   return run;
 }
+
+/* ---------- Arayüz dili ---------- */
+
+let i18nLoaded = null;
+function i18nReady() {
+  if (!i18nLoaded) i18nLoaded = Settings.load().then((s) => I18n.load(s.uiLang)).catch(() => I18n.load('auto'));
+  return i18nLoaded;
+}
+Settings.onChange((next, prev) => {
+  if (next.uiLang !== prev.uiLang) i18nLoaded = I18n.load(next.uiLang);
+});
 
 /* ---------- Sekme durumu ---------- */
 
@@ -93,13 +107,14 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 /* ---------- Altyazı dosyası indirme vekili ---------- */
 
 async function fetchText(url) {
+  await i18nReady();
   let u;
   try {
     u = new URL(url);
   } catch (_) {
-    return { ok: false, error: 'geçersiz adres' };
+    return { ok: false, error: T('err_bad_url') };
   }
-  if (u.protocol !== 'https:' || !FETCH_HOSTS.test(u.hostname)) return { ok: false, error: `izin verilmeyen alan adı: ${u.hostname}` };
+  if (u.protocol !== 'https:' || !FETCH_HOSTS.test(u.hostname)) return { ok: false, error: T('err_blocked_host', u.hostname) };
   try {
     const res = await fetch(u.href, { credentials: 'omit' });
     if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
@@ -121,13 +136,14 @@ function cleanTitle(title) {
 }
 
 async function doTranslate(msg, sender) {
+  await i18nReady();
   try {
     // DeepL ve Claude isteğe bağlı izindir; izin yoksa fetch anlaşılmaz bir ağ hatası verir
     const origins = Settings.PROVIDER_ORIGINS[msg.provider];
     if (origins && !(await chrome.permissions.contains({ origins }))) {
       return {
         ok: false,
-        error: `${PROVIDER_LABELS[msg.provider]} için izin verilmemiş. Eklenti menüsünde servisi seçip izin ver.`,
+        error: T('err_no_permission', PROVIDER_LABELS[msg.provider]),
         retryable: false,
         fatal: true,
         retryAfter: 0,
@@ -202,6 +218,7 @@ const WORD_CACHE_MAX = 400;
 const wordCache = new Map();
 
 async function doLookup(msg) {
+  await i18nReady();
   const key = `${msg.source}|${msg.target}|${String(msg.word || '').toLowerCase()}`;
   if (wordCache.has(key)) return wordCache.get(key);
   let result;

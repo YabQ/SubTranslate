@@ -2,6 +2,12 @@
 // yükler ve mesaj işleyicilerini çağırır (node --test)
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+import '../src/shared/i18n.js';
+
+// Hata metinleri arayüz dilinden gelir; testler varsayılan dili (İngilizce) kullanır
+globalThis.CRDS.i18n.use(JSON.parse(readFileSync(new URL('../_locales/en/messages.json', import.meta.url), 'utf8')), 'en');
 
 const listeners = {};
 const sent = [];
@@ -77,7 +83,7 @@ test('altyazı indirme vekili yalnızca host izni olan crunchyroll.com adresleri
   for (const url of ['https://evil.example/x', 'https://v.vrv.co/evs3/x/en.txt', 'https://crunchyroll.com.evil.example/x']) {
     const bad = await call({ type: 'fetch-text', url });
     assert.equal(bad.ok, false, url);
-    assert.match(bad.error, /izin verilmeyen/);
+    assert.match(bad.error, /host not allowed/);
   }
   assert.equal((await call({ type: 'fetch-text', url: 'http://www.crunchyroll.com/x' })).ok, false, 'http reddedilir');
 });
@@ -92,7 +98,7 @@ test('DeepL ve Claude isteğe bağlı izin verilmeden çağrılmaz', async () =>
     const res = await call({ type: 'translate', provider, texts: ['Hi.'], source: 'en-US', target: 'tr' });
     assert.equal(res.ok, false);
     assert.equal(res.fatal, true);
-    assert.match(res.error, /izin verilmemiş/);
+    assert.match(res.error, /has not been allowed/);
   }
   assert.equal(fetched, 0, 'izin yokken ağ isteği gitmemeli');
 
@@ -100,7 +106,7 @@ test('DeepL ve Claude isteğe bağlı izin verilmeden çağrılmaz', async () =>
   grantedOrigins.add('https://api-free.deepl.com/*');
   grantedOrigins.add('https://api.deepl.com/*');
   const res = await call({ type: 'translate', provider: 'deepl', texts: ['Hi.'], source: 'en-US', target: 'tr' });
-  assert.match(res.error, /anahtarı girilmemiş/);
+  assert.match(res.error, /No DeepL API key/);
 });
 
 test('çeviri isteği ayarlarla birlikte servise gider, hata bilgisi taşınır', async () => {

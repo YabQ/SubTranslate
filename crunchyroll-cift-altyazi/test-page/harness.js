@@ -147,6 +147,7 @@
 
   window.chrome = {
     runtime: {
+      getURL: (path) => '../' + path,
       id: 'harness',
       sendMessage(msg) {
         const fn = background[msg && msg.type];

@@ -1,19 +1,19 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Çift Altyazı</title>
+  <title>Dual Subtitles</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <header class="top">
     <img class="logo" src="../../icons/icon48.png" alt="" width="28" height="28">
     <div class="brand">
-      <strong>Çift Altyazı</strong>
+      <strong data-i18n="app_short_name">Dual Subtitles</strong>
       <span>Crunchyroll</span>
     </div>
-    <label class="switch" title="Çift altyazıyı aç / kapat (Alt+Shift+S)">
+    <label class="switch" data-i18n-title="popup_toggle_title">
       <input type="checkbox" data-setting="enabled">
       <span class="slider"></span>
     </label>
@@ -22,38 +22,42 @@
   <section class="card status" id="status">
     <div class="status-head">
       <span class="dot" id="statusDot"></span>
-      <span id="statusTitle">Durum okunuyor…</span>
+      <span id="statusTitle" data-i18n="status_reading">Reading status…</span>
     </div>
     <div class="status-body" id="statusBody"></div>
     <div class="progress" id="statusProgress" hidden><div class="bar"></div></div>
     <div class="chips" id="statusTracks"></div>
-    <button type="button" class="btn retry" id="retry" hidden>Yeniden dene</button>
+    <button type="button" class="btn retry" id="retry" hidden data-i18n="retry">Try again</button>
   </section>
 
   <nav class="tabs" role="tablist">
-    <button type="button" role="tab" data-tab="diller">Diller</button>
-    <button type="button" role="tab" data-tab="servis">Servis</button>
-    <button type="button" role="tab" data-tab="gorunum">Görünüm</button>
-    <button type="button" role="tab" data-tab="oynatici">Oynatıcı</button>
-    <button type="button" role="tab" data-tab="defter">Defter</button>
+    <button type="button" role="tab" data-tab="diller" data-i18n="tab_languages">Languages</button>
+    <button type="button" role="tab" data-tab="servis" data-i18n="tab_service">Service</button>
+    <button type="button" role="tab" data-tab="gorunum" data-i18n="tab_look">Look</button>
+    <button type="button" role="tab" data-tab="oynatici" data-i18n="tab_player">Player</button>
+    <button type="button" role="tab" data-tab="defter" data-i18n="tab_notebook">Notebook</button>
   </nav>
 
   <section class="card page" data-page="diller" role="tabpanel" hidden>
     <label class="field">
-      <span>Orijinal altyazı</span>
+      <span data-i18n="lang_primary">Original subtitle</span>
       <select data-setting="primaryLang" id="primaryLang"></select>
     </label>
     <label class="field">
-      <span>Çeviri dili</span>
+      <span data-i18n="lang_target">Translate into</span>
       <select data-setting="targetLang" id="targetLang"></select>
     </label>
     <label class="check">
       <input type="checkbox" data-setting="preferOfficial">
-      <span>Crunchyroll'da bu dilde resmi altyazı varsa onu kullan</span>
+      <span data-i18n="prefer_official">Use Crunchyroll's own subtitle in that language when it exists</span>
     </label>
     <label class="check">
       <input type="checkbox" data-setting="mergeSentences">
-      <span>Satırlara bölünmüş cümleleri bütün olarak çevir</span>
+      <span data-i18n="merge_sentences">Translate sentences split across lines as a whole</span>
+    </label>
+    <label class="field">
+      <span data-i18n="ui_lang">Menu language</span>
+      <select data-setting="uiLang" id="uiLang"></select>
     </label>
   </section>
 
@@ -66,53 +70,56 @@
     </div>
 
     <div class="provider-panel" data-provider="google">
-      <p class="note">Ücretsizdir, anahtar gerekmez. Hızlıdır ama çeviri satır satır ve bağlamdan bağımsızdır.</p>
+      <p class="note" data-i18n="note_google">Free and needs no key.</p>
     </div>
 
     <div class="provider-panel" data-provider="deepl">
       <label class="field">
-        <span>DeepL API anahtarı</span>
+        <span data-i18n="deepl_key">DeepL API key</span>
         <input type="password" id="deeplKey" autocomplete="off" spellcheck="false" placeholder="xxxxxxxx-xxxx-…:fx">
       </label>
-      <p class="note">Ücretsiz DeepL API hesabı ayda 500.000 karakter verir (bir bölüm ≈ 15–20 bin). Ücretsiz anahtarlar <code>:fx</code> ile biter.</p>
+      <p class="note" data-i18n="note_deepl"></p>
     </div>
 
     <div class="provider-panel" data-provider="gemini">
       <label class="field">
-        <span>Gemini API anahtarı</span>
+        <span data-i18n="gemini_key">Gemini API key</span>
         <input type="password" id="geminiKey" autocomplete="off" spellcheck="false" placeholder="AIza…">
       </label>
       <label class="field">
-        <span>Model</span>
+        <span data-i18n="model">Model</span>
         <select data-setting="geminiModel" id="geminiModel"></select>
       </label>
-      <p class="note">Anahtarı <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">Google AI Studio</a>'dan ücretsiz alırsın. Sahneyi ve önceki satırları dikkate alır, Google Çeviri'den belirgin biçimde iyidir. Ücretsiz katmanda istek sınırı vardır; hangi modelin açık olduğunu ve sınırları AI Studio gösterir. Google, ücretsiz katmanda gönderilen içeriği ürünlerini geliştirmek için kullanabiliyor.</p>
+      <p class="note">
+        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer" data-i18n="gemini_key_link">Get a free key from Google AI Studio</a>
+        <span data-i18n="note_gemini"></span>
+      </p>
     </div>
 
     <div class="provider-panel" data-provider="claude">
       <label class="field">
-        <span>Anthropic API anahtarı</span>
+        <span data-i18n="claude_key">Anthropic API key</span>
         <input type="password" id="claudeKey" autocomplete="off" spellcheck="false" placeholder="sk-ant-…">
       </label>
       <label class="field">
-        <span>Model</span>
+        <span data-i18n="model">Model</span>
         <select data-setting="claudeModel" id="claudeModel"></select>
       </label>
-      <p class="note">Sahneyi ve önceki satırları dikkate alarak çevirir; kalite en yüksektir. 24 dakikalık bölüm başına kabaca: Opus 5 ≈ 0,30–0,45 $, Sonnet 5 ≈ 0,12–0,18 $, Haiku 4.5 ≈ 0,06 $. Çeviriler önbelleğe alınır, aynı bölüm için tekrar ödeme yapılmaz.</p>
+      <p class="note" data-i18n="note_claude"></p>
     </div>
 
     <label class="field" id="llmBox" hidden>
-      <span>Çeviri talimatların <em>(isteğe bağlı)</em></span>
-      <textarea data-setting="llmInstructions" rows="3" maxlength="1500" placeholder="Örn: Samimi, gündelik bir dil kullan. Onur eklerini (-san, -kun) çevirme. Küfürleri yumuşatma."></textarea>
+      <span data-i18n="instructions">Your translation notes (optional)</span>
+      <textarea data-setting="llmInstructions" rows="3" maxlength="1500" data-i18n-ph="instructions_ph"></textarea>
     </label>
 
     <div class="perm-notice" id="permNotice" hidden>
-      <span id="permText">Bu servis için izin gerekiyor.</span>
-      <button type="button" class="btn" id="permGrant">İzin ver</button>
+      <span id="permText" data-i18n="perm_needed_generic">This service needs permission.</span>
+      <button type="button" class="btn" id="permGrant" data-i18n="perm_grant">Allow</button>
     </div>
 
     <div class="row">
-      <button type="button" class="btn" id="testProvider">Servisi test et</button>
+      <button type="button" class="btn" id="testProvider" data-i18n="test_service">Test the service</button>
       <span class="test-result" id="testResult"></span>
     </div>
   </section>
@@ -121,72 +128,79 @@
     <!-- Ayarlar değiştikçe güncellenen canlı örnek -->
     <div class="preview" id="preview">
       <div class="pv-stack" id="previewStack">
-        <span class="pv-line pv-sec" id="previewSec">Acele edersek hâlâ meteor <b>yağmurunu</b> yakalayabiliriz.</span>
-        <span class="pv-line pv-prim" id="previewPrim">…we can still catch the meteor <b>shower</b>.</span>
+        <span class="pv-line pv-sec" id="previewSec"><span data-i18n="preview_tr_before"></span><b data-i18n="preview_tr_word"></b><span data-i18n="preview_tr_after"></span></span>
+        <span class="pv-line pv-prim" id="previewPrim"><span data-i18n="preview_orig_before"></span><b data-i18n="preview_orig_word"></b><span data-i18n="preview_orig_after"></span></span>
       </div>
     </div>
 
-    <label class="check"><input type="checkbox" data-setting="showOriginal"><span>Orijinal satırı göster</span></label>
-    <label class="check"><input type="checkbox" data-setting="showTranslation"><span>Çeviri satırını göster <kbd>Alt+Shift+Y</kbd></span></label>
-    <label class="check"><input type="checkbox" data-setting="translationOnTop"><span>Çeviri orijinalin üstünde</span></label>
-    <label class="check"><input type="checkbox" data-setting="showSigns"><span>Tabela / ekran yazılarını da göster</span></label>
+    <div class="presets">
+      <span data-i18n="presets">Preset</span>
+      <button type="button" class="btn" data-preset="normal" data-i18n="preset_desktop">Desktop</button>
+      <button type="button" class="btn" data-preset="tv" data-i18n="preset_tv" data-i18n-title="preset_tv_title">TV mode</button>
+    </div>
+
+    <label class="check"><input type="checkbox" data-setting="showOriginal"><span data-i18n="show_original">Show the original line</span></label>
+    <label class="check"><input type="checkbox" data-setting="showTranslation"><span><span data-i18n="show_translation">Show the translation line</span> <kbd>Alt+Shift+Y</kbd></span></label>
+    <label class="check"><input type="checkbox" data-setting="translationOnTop"><span data-i18n="translation_on_top">Translation above the original</span></label>
+    <label class="check"><input type="checkbox" data-setting="showSigns"><span data-i18n="show_signs">Show signs and on-screen text too</span></label>
 
     <label class="range">
-      <span>Yazı boyutu <output data-for="fontScale"></output></span>
+      <span><span data-i18n="font_size">Text size</span> <output data-for="fontScale"></output></span>
       <input type="range" data-setting="fontScale" min="0.5" max="2.5" step="0.05">
     </label>
     <label class="range">
-      <span>Çeviri boyutu <output data-for="translationScale"></output></span>
+      <span><span data-i18n="translation_size">Translation size</span> <output data-for="translationScale"></output></span>
       <input type="range" data-setting="translationScale" min="0.5" max="1.5" step="0.05">
     </label>
     <label class="range">
-      <span>Arka plan koyuluğu <output data-for="bgOpacity"></output></span>
+      <span><span data-i18n="bg_opacity">Backdrop opacity</span> <output data-for="bgOpacity"></output></span>
       <input type="range" data-setting="bgOpacity" min="0" max="1" step="0.05">
     </label>
     <label class="range">
-      <span>Alttan boşluk <output data-for="bottomOffset"></output></span>
+      <span><span data-i18n="bottom_offset">Distance from the bottom</span> <output data-for="bottomOffset"></output></span>
       <input type="range" data-setting="bottomOffset" min="0" max="30" step="1">
     </label>
     <div class="colors">
-      <label><input type="color" data-setting="originalColor"><span>Orijinal</span></label>
-      <label><input type="color" data-setting="translationColor"><span>Çeviri</span></label>
-      <label><input type="color" data-setting="lookupColor"><span>Kelime</span></label>
+      <label><input type="color" data-setting="originalColor"><span data-i18n="color_original">Original</span></label>
+      <label><input type="color" data-setting="translationColor"><span data-i18n="color_translation">Translation</span></label>
+      <label><input type="color" data-setting="lookupColor"><span data-i18n="color_word">Word</span></label>
     </div>
   </section>
 
   <section class="card page" data-page="oynatici" role="tabpanel" hidden>
     <label class="check">
       <input type="checkbox" data-setting="stripHardsubs">
-      <span>Videoya gömülü altyazıyı kaldır <small>(bir sonraki bölümde ya da sayfa yenilenince geçerli olur)</small></span>
+      <span><span data-i18n="strip_hardsubs">Remove the subtitle burned into the video</span> <small data-i18n="strip_hardsubs_hint"></small></span>
     </label>
     <label class="check">
       <input type="checkbox" data-setting="hideNativeSubs">
-      <span>Oynatıcının kendi altyazı katmanını gizle</span>
+      <span data-i18n="hide_native">Hide the player's own subtitle layer</span>
     </label>
     <label class="check">
       <input type="checkbox" data-setting="liftWithControls">
-      <span>Kontroller görünürken altyazıyı yukarı kaydır</span>
+      <span data-i18n="lift_with_controls">Lift the subtitle while the controls are showing</span>
     </label>
   </section>
 
   <section class="card page" data-page="defter" role="tabpanel" hidden>
     <label class="check">
       <input type="checkbox" data-setting="wordLookup">
-      <span>Kelimenin üzerine gelince anlamını göster <small>(çift altyazıda; karşılığı çeviri satırında da renklenir)</small></span>
+      <span><span data-i18n="word_lookup">Show a word's meaning on hover</span> <small data-i18n="word_lookup_hint"></small></span>
     </label>
     <label class="check">
       <input type="checkbox" data-setting="notebook">
-      <span>Kelimeye tıklayınca kelime defterine kaydet <small>(anlamı, türü, cümlesi ve bölümüyle birlikte)</small></span>
+      <span><span data-i18n="notebook_save">Click a word to file it in the notebook</span> <small data-i18n="notebook_save_hint"></small></span>
     </label>
-    <p class="note" id="vocabCount">Defter okunuyor…</p>
-    <button type="button" class="btn ghost wide" id="openNotebook">Kelime defterini aç</button>
+    <p class="note" id="vocabCount" data-i18n="vocab_loading">Reading the notebook…</p>
+    <button type="button" class="btn ghost wide" id="openNotebook" data-i18n="open_notebook">Open the word notebook</button>
   </section>
 
   <footer class="bottom">
-    <button type="button" class="btn ghost" id="clearCache">Çeviri önbelleğini temizle</button>
-    <span class="muted" id="footerNote"><kbd>Alt+Shift+S</kbd> aç/kapat</span>
+    <button type="button" class="btn ghost" id="clearCache" data-i18n="clear_cache">Clear the translation cache</button>
+    <span class="muted" id="footerNote"><kbd>Alt+Shift+S</kbd><span data-i18n="footer_hint"> on/off</span></span>
   </footer>
 
+  <script src="../shared/i18n.js"></script>
   <script src="../shared/languages.js"></script>
   <script src="../shared/settings.js"></script>
   <script src="popup.js"></script>

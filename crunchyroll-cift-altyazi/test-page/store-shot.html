@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <title>Mağaza görseli</title>
-  <!-- Chrome Web Mağazası görselleri: ?view=popup | services (1280x800), tile (440x280), marquee (1400x560) -->
+  <!-- Mağaza görselleri. Her kare iki dili birden gösterir: solda İngilizce,
+       sağda Türkçe. ?view=altyazi | tabela | menu | servisler (1280x800),
+       tile (440x280), marquee (1400x560) -->
   <style>
     html, body { margin: 0; background: #0c0d11; }
     body { font-family: "Segoe UI", system-ui, sans-serif; color: #fff; overflow: hidden; }
@@ -15,23 +17,60 @@
         linear-gradient(135deg, #16171d, #0c0d11);
     }
     em { font-style: normal; color: #f47521; }
+    .shot { width: 1280px; height: 800px; padding: 40px 56px; display: flex; flex-direction: column; }
 
-    /* Ekran görüntüsü: solda metin, sağda eklenti menüsü */
-    .shot { width: 1280px; height: 800px; display: grid; grid-template-columns: 1fr 404px; align-items: center; gap: 56px; padding: 0 90px; }
-    .shot h1 { font-size: 50px; line-height: 1.12; margin: 0 0 26px; letter-spacing: -.01em; }
-    .shot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; font-size: 22px; line-height: 1.35; color: #d9dbe1; }
-    .shot li { display: flex; gap: 14px; }
-    .shot li::before { content: ""; flex: none; width: 10px; height: 10px; margin-top: 11px; border-radius: 50%; background: #f47521; box-shadow: 0 0 0 4px rgba(244, 117, 33, .2); }
-    .frame { width: 404px; height: 704px; border-radius: 16px; overflow: hidden; background: #0f1013; box-shadow: 0 30px 90px rgba(0, 0, 0, .65), 0 0 0 1px rgba(255, 255, 255, .08); }
+    /* Dil etiketi */
+    .flagrow { display: flex; gap: 28px; }
+    .flagrow > div { flex: 1; min-width: 0; }
+    .tag {
+      display: inline-block; font: 700 13px/1 "Segoe UI", sans-serif; letter-spacing: .14em;
+      text-transform: uppercase; color: #0c0d11; background: #f47521; padding: 6px 10px; margin-bottom: 12px;
+    }
+    .tag.tr { background: #ffd84d; }
+    h1 { font-size: 30px; line-height: 1.15; margin: 0 0 6px; letter-spacing: -.01em; }
+    h1.small { font-size: 23px; }
+    p.sub { margin: 0; font-size: 16px; line-height: 1.4; color: #c9ccd4; }
+
+    /* Video sahnesi */
+    .stage {
+      position: relative; width: 100%; height: 548px; margin-bottom: 24px; overflow: hidden;
+      background: linear-gradient(180deg, #141a3a 0%, #5b3b6e 62%, #e8906a 100%);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
+    }
+    .moon { position: absolute; left: 150px; top: 72px; width: 104px; height: 104px; border-radius: 50%; background: #ffe9b0; }
+    .hill { position: absolute; left: -10%; width: 120%; border-radius: 50% 50% 0 0; }
+    .hill.back { bottom: -150px; height: 400px; background: #2a2140; }
+    .hill.front { bottom: -230px; left: -35%; width: 120%; height: 440px; background: #17122a; }
+    .lines {
+      position: absolute; left: 0; right: 0; bottom: 26px; display: flex; flex-direction: column;
+      align-items: center; gap: 5px; text-align: center; padding: 0 40px;
+    }
+    .lines span {
+      display: inline-block; font-weight: 700; font-size: 29px; line-height: 1.25; color: #fff;
+      padding: .05em .34em; border-radius: .2em; background: rgba(0, 0, 0, .38);
+      text-shadow: 0 0 .08em #000, .05em .05em .06em #000, -.05em -.05em .06em #000;
+    }
+    .lines .sec { color: #ffd84d; }
+    .lines .hot { color: #4dd2ff; }
+    .sign { bottom: auto; top: 22px; }
+    .sign span { font-size: 21px; }
+
+    /* Menü görselleri: iki dil yan yana */
+    .pair { display: flex; gap: 36px; justify-content: center; margin-top: 26px; }
+    .pane { width: 404px; }
+    .frame {
+      width: 404px; height: 560px; overflow: hidden; background: #0f1013;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .08);
+    }
     .frame iframe { width: 404px; height: 704px; border: 0; display: block; }
 
     /* Tanıtım kutuları */
     .brand { display: flex; align-items: center; gap: 14px; }
     .brand img { display: block; }
-    .brand h1 { margin: 0; line-height: 1.08; letter-spacing: -.01em; }
+    .brand h1 { margin: 0; line-height: 1.08; }
     .brand p { margin: 6px 0 0; color: #c9ccd4; }
     .demo {
-      border-radius: 14px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
       background: linear-gradient(180deg, #141a3a 0%, #5b3b6e 60%, #e8906a 100%);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
     }
@@ -40,13 +79,11 @@
       text-shadow: 0 0 .08em #000, .05em .05em .06em #000, -.05em -.05em .06em #000;
     }
     .demo .sec { color: #ffd84d; }
-
     .tile { width: 440px; height: 280px; padding: 24px 26px; display: flex; flex-direction: column; justify-content: space-between; }
     .tile .brand h1 { font-size: 25px; }
     .tile .brand p { font-size: 14px; }
     .tile .demo { height: 116px; padding-bottom: 12px; gap: 4px; }
     .tile .demo span { font-size: 17px; }
-
     .marquee { width: 1400px; height: 560px; padding: 0 90px; display: grid; grid-template-columns: 1fr 640px; align-items: center; gap: 60px; }
     .marquee .brand { flex-direction: column; align-items: flex-start; gap: 22px; }
     .marquee .brand h1 { font-size: 58px; }
@@ -59,63 +96,85 @@
   <div id="root"></div>
   <script>
     (() => {
-      const view = new URLSearchParams(location.search).get('view') || 'popup';
+      const view = new URLSearchParams(location.search).get('view') || 'altyazi';
       const root = document.getElementById('root');
+      const scene = '<div class="moon"></div><div class="hill back"></div><div class="hill front"></div>';
       const demo = `
         <div class="demo">
           <span class="sec">Geri gelip gelmeyeceğini bilmiyorum.</span>
           <span>I don't know if he will come back.</span>
         </div>`;
-      const shots = {
-        popup: {
-          title: 'İki dil, <em>tek ekranda</em>',
-          items: [
-            'Orijinal altyazı ve Türkçe çevirisi aynı anda',
-            'Crunchyroll\'da resmi çeviri varsa onu kullanır',
-            'Çeviri önce izlediğin yerden başlar',
-            'Yazı boyutu, renk ve konum ayarları',
-          ],
-          src: 'popup-preview.html?s=done&p=google',
+
+      // Altyazı sahnesi üstte tek kare, altında iki dilde anlatım
+      const scenes = {
+        altyazi: {
+          body: `<div class="lines">
+                   <span class="sec">Acele edersek hâlâ meteor <b class="hot">yağmurunu</b> yakalayabiliriz.</span>
+                   <span>…we can still catch the meteor <b class="hot">shower</b>.</span>
+                 </div>`,
+          en: { title: 'Both languages, <em>one screen</em>', sub: 'The original subtitle and its translation, together over the video. Hover a word to see what it means.' },
+          tr: { title: 'İki dil, <em>tek ekranda</em>', sub: 'Orijinal altyazı ve çevirisi videonun üzerinde birlikte. Kelimenin üzerine gel, anlamını gör.' },
         },
-        services: {
-          title: 'Çeviriyi <em>istediğin gibi</em> yap',
-          items: [
-            'Google Çeviri: ücretsiz, anahtar gerekmez',
-            'DeepL: kendi API anahtarınla',
-            'Claude: sahneyi anlayan, üslubunu seçebildiğin çeviri',
-            'Çeviriler saklanır, aynı bölüm tekrar çevrilmez',
-          ],
-          src: 'popup-preview.html?s=done&p=claude',
+        tabela: {
+          body: `<div class="lines sign">
+                   <span class="sec">Bölüm 12 — Dönüş Yolu</span>
+                   <span>Episode 12: The Way Back</span>
+                 </div>
+                 <div class="lines">
+                   <span class="sec">Bu mektubu sana bıraktı.</span>
+                   <span>She left this letter for you.</span>
+                 </div>`,
+          en: { title: 'Signs and on-screen text <em>too</em>', sub: 'Episode titles, phone messages and signs are translated above, in a smaller size.' },
+          tr: { title: 'Tabela ve ekran yazıları <em>da</em>', sub: 'Bölüm başlığı, telefon mesajı ve tabelalar üstte, küçük puntoyla çevrilir.' },
         },
       };
 
-      if (shots[view]) {
-        const s = shots[view];
+      // Menü görselleri: solda İngilizce, sağda Türkçe aynı menü
+      const menus = {
+        menu: {
+          src: (lang) => `popup-preview.html?s=done&p=google&lang=${lang}&tab=diller`,
+          en: { title: 'The menu speaks <em>your language</em>', sub: 'It follows the browser and can be switched in the menu.' },
+          tr: { title: 'Menü <em>senin dilinde</em>', sub: 'Tarayıcıya göre açılır, menüden değiştirilebilir.' },
+        },
+        servisler: {
+          src: (lang) => `popup-preview.html?s=done&p=gemini&lang=${lang}&tab=servis`,
+          en: { title: 'Pick the <em>translation service</em>', sub: 'Google, DeepL, Gemini or Claude — with your own key.' },
+          tr: { title: '<em>Çeviri servisini</em> seç', sub: 'Google, DeepL, Gemini ya da Claude — kendi anahtarınla.' },
+        },
+        scroll: '.provider-panel.active[data-provider="gemini"]',
+      };
+
+      const head = (lang, text, small) => `
+        <div>
+          <span class="tag${lang === 'tr' ? ' tr' : ''}">${lang === 'tr' ? 'Türkçe' : 'English'}</span>
+          <h1${small ? ' class="small"' : ''}>${text.title}</h1>
+          <p class="sub">${text.sub}</p>
+        </div>`;
+
+      if (scenes[view]) {
+        const s = scenes[view];
         root.innerHTML = `
           <div class="canvas shot">
-            <div>
-              <h1>${s.title}</h1>
-              <ul>${s.items.map((i) => `<li>${i}</li>`).join('')}</ul>
-            </div>
-            <div class="frame"><iframe src="${s.src}" title="Eklenti menüsü"></iframe></div>
+            <div class="stage">${scene}${s.body}</div>
+            <div class="flagrow">${head('en', s.en)}${head('tr', s.tr)}</div>
           </div>`;
-        // Claude paneli görünsün diye menü yüklenince iframe'i aşağı kaydır
-        // (menü içeriği iframe'in load olayından sonra eklenir, bu yüzden beklenir)
-        if (view === 'services') {
-          const frame = root.querySelector('iframe');
-          const timer = setInterval(() => {
-            const panel = frame.contentDocument && frame.contentDocument.querySelector('.provider-panel.active[data-provider="claude"]');
-            if (!panel) return;
-            clearInterval(timer);
-            panel.scrollIntoView({ block: 'center' });
-          }, 100);
-        }
+      } else if (menus[view]) {
+        const m = menus[view];
+        root.innerHTML = `
+          <div class="canvas shot">
+            <div class="flagrow">${head('en', m.en, true)}${head('tr', m.tr, true)}</div>
+            <div class="pair">
+              <div class="pane"><div class="frame"><iframe src="${m.src('en')}" title="English menu"></iframe></div></div>
+              <div class="pane"><div class="frame"><iframe src="${m.src('tr')}" title="Türkçe menü"></iframe></div></div>
+            </div>
+          </div>`;
+        // Servis görselinde panel görünsün diye menü yüklenince kaydırılır
       } else if (view === 'tile') {
         root.innerHTML = `
           <div class="canvas tile">
             <div class="brand">
               <img src="../icons/icon128.png" width="64" height="64" alt="">
-              <div><h1>Crunchyroll için<br>Çift Altyazı</h1></div>
+              <div><h1>Dual Subtitles<br>for Crunchyroll</h1></div>
             </div>
             ${demo}
           </div>`;
@@ -125,8 +184,8 @@
             <div class="brand">
               <img src="../icons/icon128.png" width="112" height="112" alt="">
               <div>
-                <h1>Crunchyroll için<br>Çift Altyazı</h1>
-                <p>Orijinal altyazı ve Türkçe çevirisi <em>aynı anda</em></p>
+                <h1>Dual Subtitles<br>for Crunchyroll</h1>
+                <p>The original subtitle and its translation, <em>at the same time</em></p>
               </div>
             </div>
             ${demo}

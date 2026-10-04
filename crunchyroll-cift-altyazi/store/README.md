@@ -7,10 +7,10 @@ Bu klasör, eklentiyi Chrome Web Mağazası'na yüklerken gereken her şeyi içe
 | `../dist/crunchyroll-cift-altyazi-<sürüm>-magaza.zip` | Mağazaya yüklenecek paket (`npm run package` ile üretilir) |
 | `gizlilik-politikasi.html` | Gizlilik politikası sayfası. Herkese açık bir adrese yüklenmeli |
 | `gorseller/magaza-simgesi-128.png` | Mağaza simgesi (128×128) |
-| `gorseller/1-…png` – `4-…png` | Ekran görüntüleri (1280×800) |
+| `gorseller/1-…png` – `4-…png` | Ekran görüntüleri (1280×800). Her kare iki dili birden gösterir: solda İngilizce, sağda Türkçe |
 | `gorseller/kucuk-tanitim-440x280.png` | Küçük tanıtım kutusu |
 | `gorseller/buyuk-afis-1400x560.png` | Büyük afiş (isteğe bağlı) |
-| `gorseller/opera/*-612x408.png` | Opera mağazası için ekran görüntüleri (beyaz zemin) |
+| `gorseller/opera/*-612x408.png` | Opera mağazası için ekran görüntüleri (beyaz zemin, iki dilli anlatım) |
 | `gorseller/opera/tanitim-300x188.png` | Opera tanıtım görseli |
 
 ## 1. Senin yapman gerekenler
@@ -55,9 +55,12 @@ NASIL ÇALIŞIR
 • İki satır da videonun görüntü alanında durur, tam ekranda da görünür.
 
 ÖZELLİKLER
-• Çeviri servisi seçimi: Google Çeviri (ücretsiz, varsayılan), DeepL, Gemini veya Claude (kendi API anahtarınla).
+• Çeviri servisi seçimi: Google Çeviri (ücretsiz, varsayılan), DeepL, Gemini veya Claude (kendi API anahtarınla). Anahtar ya da kota biterse çeviri durmaz, kalan satırlar Google Çeviri ile tamamlanır.
 • İki satıra bölünmüş cümleler bütün olarak çevrilir, çeviri daha doğal olur.
 • Merak ettiğin kelimenin üzerine fareyle gel: kelime renklenir, iki Türkçe anlamı çıkar ve çeviri satırında o kelimeyi karşılayan sözcük de aynı renge boyanır.
+• Kelimeye tıklayınca kelime defterine kaydedilir: türü (fiil/isim/sıfat), o cümledeki anlamı, geçtiği replik ve çevirisi, örnek cümle, hangi animenin hangi bölümü. Defter Anki destesi, CSV ya da JSON olarak dışa aktarılır ve kendiliğinden silinmez.
+• TV modu: tek düğmeyle punto, arka plan ve konum uzaktan izlemeye göre ayarlanır.
+• Menü dili tarayıcıya göre açılır (Türkçe ya da İngilizce), menüden değiştirilebilir.
 • Çeviri önce izlediğin yerden başlar, ileri sardığında sıra oraya kayar.
 • Çevrilen bölümler tarayıcında saklanır, aynı bölüm tekrar çevrilmez.
 • Tabela ve ekran yazıları da çevrilir.
@@ -77,6 +80,12 @@ NOTLAR
 
 Bu eklenti Crunchyroll ile bağlantılı değildir ve Crunchyroll tarafından onaylanmamıştır. Crunchyroll, Crunchyroll, LLC'nin ticari markasıdır.
 ```
+
+### Dil (çok dilli liste)
+
+Eklenti 1.0.4'ten beri İngilizce ve Türkçe arayüze sahip; hangisinin açılacağını tarayıcının dili belirler, kullanıcı menüden değiştirebilir. Paketteki ad ve açıklama da `_locales` üzerinden gelir, yani mağazada **İngilizce tarayıcıda İngilizce, Türkçe tarayıcıda Türkçe** görünür.
+
+Panelde yapılması gereken: **Mağaza girişi** sekmesinde dil olarak önce **English** eklenip İngilizce açıklama yapıştırılmalı (aşağıda), sonra **Türkçe** eklenip Türkçe açıklama yapıştırılmalı. Varsayılan dili İngilizce yap: kullanıcıların çoğu Türkiye dışında.
 
 ### Gizlilik uygulamaları (Privacy practices)
 
@@ -99,7 +108,7 @@ Saves the user's settings (languages, translation service, appearance), the opti
 ```
 https://*.crunchyroll.com/* — the content scripts run on Crunchyroll watch pages. They read the subtitle list that the Crunchyroll player itself loads, download the selected subtitle file and draw the original and translated lines over the video.
 https://translate.googleapis.com/* — the default translation service. The background service worker sends the subtitle lines to Google Translate to translate them into the language the user chose.
-Optional host permissions (requested at runtime only when the user selects that service in the popup): https://api-free.deepl.com/* and https://api.deepl.com/* for DeepL, https://generativelanguage.googleapis.com/* for Gemini, https://api.anthropic.com/* for Claude. They are called with the user's own API key.
+Optional host permissions, requested at runtime only when the user selects that service in the popup and called with the user's own API key: https://api-free.deepl.com/* and https://api.deepl.com/* for DeepL, https://generativelanguage.googleapis.com/* for Google Gemini, https://api.anthropic.com/* for Claude. The Gemini host is also what the word lookup would use if selected; the lookup itself uses the already granted translate.googleapis.com.
 ```
 
 **Uzaktan kod (Remote code):** "No, I am not using remote code" seçeneğini işaretle. Gerekçe istenirse:
@@ -120,10 +129,10 @@ Alttaki üç beyanın (veriler satılmaz, amaç dışı kullanılmaz, kredi değ
 
 **Kimlik bilgisi (kullanıcı adı / şifre) alanlarını boş bırak.** Kendi Crunchyroll hesabının bilgilerini kimseye verme; inceleme ekibi ücretsiz hesap açıp reklamlı bölümlerle deneyebiliyor. Gerekirse bu iş için ayrı bir hesap açılır, kişisel hesap paylaşılmaz.
 
-**Ek talimatlar alanı en fazla 500 karakter.** Sığan hali (498 karakter):
+**Ek talimatlar alanı en fazla 500 karakter.** Sığan hali (396 karakter):
 
 ```
-Open https://www.crunchyroll.com and play any episode (a Crunchyroll account with access to it is required). Within a few seconds the English subtitle (white) and its Turkish translation (yellow) appear over the video. No API key is needed: the default service is Google Translate. Hover a word in the white line: it is highlighted, two meanings appear above it, and the word carrying it in the yellow line is highlighted too. The toolbar icon opens the settings; Alt+Shift+S toggles the subtitles.
+Open https://www.crunchyroll.com and play any episode (a Crunchyroll account with access to it is required). The English subtitle (white) and its Turkish translation (yellow) appear over the video; no API key is needed. Hover a word in the white line to see two meanings and the matching word highlighted in the yellow line; click it to file it in the word notebook, which the toolbar icon opens.
 ```
 
 Sınır olmayan bir alana (ör. Opera) uzun hali yazılabilir:
@@ -227,7 +236,7 @@ Summary:
 Shows the original Crunchyroll subtitle and its translation into the language you choose at the same time.
 ```
 
-Description:
+Description — Chrome'daki İngilizce liste de aynı metni kullanır:
 
 ```
 Crunchyroll does not offer subtitles in every language. This extension shows the original subtitle of the episode you are watching (English, for example) together with its translation into the language you choose, as two lines over the video.
@@ -238,9 +247,12 @@ HOW IT WORKS
 • Both lines stay inside the picture area of the video and remain visible in fullscreen.
 
 FEATURES
-• Pick your translation service: Google Translate (free, used by default), DeepL, Gemini or Claude with your own API key.
+• Pick your translation service: Google Translate (free, used by default), DeepL, Gemini or Claude with your own API key. If a key or quota runs out, the rest of the episode is finished with Google Translate instead of stopping.
 • Sentences split across two subtitle lines are translated as one, so the result reads naturally.
 • Hover a word in the original line to colour it, see two meanings of it and see which word in the translated line carries it.
+• Click that word to file it in a notebook with its part of speech, the meaning it carries in that line, the sentence and the episode it came from. The notebook exports as an Anki deck, CSV or JSON and is never cleared on its own.
+• A TV preset sets the font, backdrop and position for watching from a distance in one click.
+• The menu is in English or Turkish, picked from your browser's language and switchable in the menu itself.
 • Translation starts at the point you are watching and follows you when you skip ahead.
 • Translated episodes are kept in your browser, so the same episode is never translated twice.
 • Signs and on-screen text are translated as well, in a smaller size at the top.
@@ -256,7 +268,7 @@ PRIVACY
 
 NOTES
 • You need the right to watch the episode on Crunchyroll. The extension does not download video, it only draws subtitles.
-• Works in Opera and other Chromium-based browsers.
+• Works in Chrome and other Chromium-based browsers (Edge, Brave, Opera).
 
 This extension is not affiliated with or endorsed by Crunchyroll. Crunchyroll is a trademark of Crunchyroll, LLC.
 ```
@@ -271,6 +283,14 @@ Crunchyroll'da Türkçe altyazı yoksa bu eklenti bölümün İngilizce altyazı
 Changelog:
 
 ```
+1.0.3
+The menu and the notebook page follow Crunchyroll's own look: square
+corners, orange accents and an underlined tab bar.
+The translation no longer stops when a key or quota runs out: the rest of
+the episode is finished with Google Translate and the status card says so.
+The word notebook can be exported as an Anki deck. A TV preset sets the
+font, backdrop and offset for watching from a distance in one click.
+
 1.0.2
 Click a word to keep it in a word notebook with its part of speech, the
 meaning it carries in that line, the subtitle sentence and the episode it

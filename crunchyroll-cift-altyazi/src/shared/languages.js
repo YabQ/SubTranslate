@@ -60,7 +60,9 @@
   }
 
   const displayNames = {};
-  function displayName(code, uiLang = 'tr') {
+  // Dil adları arayüz diline göre yazılır: menü İngilizceyse 'German', Türkçeyse 'Almanca'
+  function displayName(code, lang) {
+    const uiLang = lang || (CRDS.i18n && CRDS.i18n.lang) || 'en';
     const c = normalizeLocale(code);
     if (!c || c === 'none' || c === 'unknown') return uiLang === 'tr' ? 'Bilinmeyen dil' : 'Unknown language';
     try {

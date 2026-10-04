@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Crunchyroll için Çift Altyazı",
-  "short_name": "Çift Altyazı",
-  "version": "1.0.2",
-  "description": "Crunchyroll'da orijinal altyazıyla birlikte Türkçe ya da seçtiğin dildeki çevirisini aynı anda gösterir.",
+  "name": "__MSG_app_name__",
+  "short_name": "__MSG_app_short_name__",
+  "version": "1.0.4",
+  "description": "__MSG_app_desc__",
+  "default_locale": "en",
   "minimum_chrome_version": "111",
   "icons": {
     "16": "icons/icon16.png",
@@ -45,6 +46,7 @@
     {
       "matches": ["https://*.crunchyroll.com/*"],
       "js": [
+        "src/shared/i18n.js",
         "src/shared/languages.js",
         "src/shared/settings.js",
         "src/content/subtitles.js",
@@ -57,14 +59,20 @@
       "all_frames": true
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["_locales/*/messages.json"],
+      "matches": ["https://*.crunchyroll.com/*"]
+    }
+  ],
   "commands": {
     "toggle-overlay": {
       "suggested_key": { "default": "Alt+Shift+S" },
-      "description": "Çift altyazıyı aç / kapat"
+      "description": "__MSG_cmd_toggle_overlay__"
     },
     "toggle-translation": {
       "suggested_key": { "default": "Alt+Shift+Y" },
-      "description": "Çeviri satırını göster / gizle"
+      "description": "__MSG_cmd_toggle_translation__"
     }
   }
 }

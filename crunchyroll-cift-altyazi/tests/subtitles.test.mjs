@@ -137,8 +137,11 @@ test('dil kodları: normalleştirme ve eşleştirme', () => {
   assert.ok(!L.sameLanguage('zh-CN', 'zh-TW'));
   assert.ok(L.sameLanguage('zh-TW', 'zh-HK'));
   assert.ok(!L.sameLanguage('tr', 'en-US'));
-  assert.equal(L.displayName('tr'), 'Türkçe');
-  assert.equal(L.displayName('de-DE'), 'Almanca', 'tek çeşitli dilde ülke eki atılır');
+  // Varsayılan dil İngilizce; arayüz dili verilince ona göre yazılır
+  assert.equal(L.displayName('tr'), 'Turkish');
+  assert.equal(L.displayName('tr', 'tr'), 'Türkçe');
+  assert.equal(L.displayName('de-DE'), 'German', 'tek çeşitli dilde ülke eki atılır');
+  assert.equal(L.displayName('de-DE', 'tr'), 'Almanca');
   assert.notEqual(L.displayName('es-419'), L.displayName('es-ES'), 'İspanyolca çeşitleri ayırt edilir');
   assert.notEqual(L.displayName('pt-BR'), L.displayName('pt-PT'));
   assert.notEqual(L.displayName('zh-CN'), L.displayName('zh-TW'));

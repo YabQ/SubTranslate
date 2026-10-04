@@ -6,9 +6,11 @@
    Hepsi aynı sözleşmeyi uygular: n satır alır, sırası korunmuş n çeviri döndürür.
    ========================================================= */
 import '../shared/languages.js';
+import '../shared/i18n.js';
 import Anthropic from './vendor/anthropic-sdk.mjs';
 
 const L = globalThis.CRDS.lang;
+const T = (key, subs) => globalThis.CRDS.i18n.t(key, subs);
 
 export class TranslateError extends Error {
   constructor(message, { retryable = true, fatal = false, retryAfter = 0 } = {}) {
@@ -69,10 +71,10 @@ async function googleRequest(text, sl, tl) {
       credentials: 'omit',
     });
   } catch (_) {
-    throw new TranslateError("Google Çeviri'ye bağlanılamadı");
+    throw new TranslateError(T('err_google_unreachable'));
   }
-  if (res.status === 429) throw new TranslateError('Google Çeviri istek sınırına ulaşıldı, birazdan tekrar denenecek', { retryAfter: 8000 });
-  if (!res.ok) throw new TranslateError(`Google Çeviri hatası (HTTP ${res.status})`, { retryable: res.status >= 500 });
+  if (res.status === 429) throw new TranslateError(T('err_google_rate'), { retryAfter: 8000 });
+  if (!res.ok) throw new TranslateError(T('err_google_http', res.status), { retryable: res.status >= 500 });
   const data = await res.json();
   return (data.sentences || []).map((s) => s.trans || '').join('');
 }
@@ -125,10 +127,10 @@ export async function lookupWord({ word, source, target }) {
       credentials: 'omit',
     });
   } catch (_) {
-    throw new TranslateError('Sözlüğe bağlanılamadı');
+    throw new TranslateError(T('err_dict_unreachable'));
   }
-  if (res.status === 429) throw new TranslateError('Sözlük istek sınırına ulaşıldı', { retryAfter: 8000 });
-  if (!res.ok) throw new TranslateError(`Sözlük hatası (HTTP ${res.status})`, { retryable: res.status >= 500 });
+  if (res.status === 429) throw new TranslateError(T('err_dict_rate'), { retryAfter: 8000 });
+  if (!res.ok) throw new TranslateError(T('err_dict_http', res.status), { retryable: res.status >= 500 });
   const data = await res.json();
   const meanings = [];
   const add = (value) => {
@@ -189,7 +191,7 @@ function deeplTarget(code) {
 
 async function deepl(texts, source, target, apiKey, context) {
   const key = (apiKey || '').trim();
-  if (!key) throw new TranslateError('DeepL API anahtarı girilmemiş (eklenti menüsünden ekleyin)', { retryable: false, fatal: true });
+  if (!key) throw new TranslateError(T('err_deepl_nokey'), { retryable: false, fatal: true });
   const endpoint = key.endsWith(':fx') ? 'https://api-free.deepl.com/v2/translate' : 'https://api.deepl.com/v2/translate';
   const sourceLang = L.baseLang(source).toUpperCase();
   const out = [];
@@ -206,16 +208,16 @@ async function deepl(texts, source, target, apiKey, context) {
         credentials: 'omit',
       });
     } catch (_) {
-      throw new TranslateError('DeepL sunucusuna bağlanılamadı');
+      throw new TranslateError(T('err_deepl_unreachable'));
     }
-    if (res.status === 401 || res.status === 403) throw new TranslateError('DeepL API anahtarı geçersiz', { retryable: false, fatal: true });
-    if (res.status === 456) throw new TranslateError('DeepL karakter kotası doldu', { retryable: false, fatal: true });
-    if (res.status === 429) throw new TranslateError('DeepL istek sınırına ulaşıldı, birazdan tekrar denenecek', { retryAfter: 8000 });
-    if (!res.ok) throw new TranslateError(`DeepL hatası (HTTP ${res.status})`, { retryable: res.status >= 500 });
+    if (res.status === 401 || res.status === 403) throw new TranslateError(T('err_deepl_badkey'), { retryable: false, fatal: true });
+    if (res.status === 456) throw new TranslateError(T('err_deepl_quota'), { retryable: false, fatal: true });
+    if (res.status === 429) throw new TranslateError(T('err_deepl_rate'), { retryAfter: 8000 });
+    if (!res.ok) throw new TranslateError(T('err_deepl_http', res.status), { retryable: res.status >= 500 });
     const data = await res.json();
     out.push(...(data.translations || []).map((t) => t.text || ''));
   }
-  if (out.length !== texts.length) throw new TranslateError('DeepL beklenmeyen bir yanıt döndürdü');
+  if (out.length !== texts.length) throw new TranslateError(T('err_deepl_shape'));
   return out;
 }
 
@@ -238,14 +240,17 @@ const GEMINI_SAFETY = [
   'HARM_CATEGORY_DANGEROUS_CONTENT',
 ].map((category) => ({ category, threshold: 'BLOCK_NONE' }));
 
+// Google'ın kendi açıklaması hatayı çözmenin en kısa yolu; mesaj varsa eklenir
 function geminiError(status, body) {
   const message = String((body && body.error && body.error.message) || '').slice(0, 160);
-  if (status === 400 && /api[ _-]?key/i.test(message)) return new TranslateError('Gemini API anahtarı geçersiz', { retryable: false, fatal: true });
-  if (status === 401 || status === 403) return new TranslateError('Gemini API anahtarı kabul edilmedi', { retryable: false, fatal: true });
-  if (status === 404) return new TranslateError('Seçilen Gemini modeli bu anahtarla kullanılamıyor', { retryable: false, fatal: true });
-  if (status === 429) return new TranslateError('Gemini istek sınırına ulaşıldı, birazdan tekrar denenecek', { retryAfter: 20000 });
-  if (status >= 500) return new TranslateError('Gemini sunucusu yanıt vermedi');
-  return new TranslateError(`Gemini hatası (HTTP ${status})${message ? `: ${message}` : ''}`, { retryable: false });
+  const detail = message ? `: ${message}` : '';
+  if (status === 400 && /api[ _-]?key/i.test(message)) return new TranslateError(T('err_gemini_badkey'), { retryable: false, fatal: true });
+  if (status === 401 || status === 403) return new TranslateError(T('err_gemini_rejected_key', [status, detail]), { retryable: false, fatal: true });
+  if (status === 404) return new TranslateError(T('err_gemini_model', detail), { retryable: false, fatal: true });
+  if (status === 429) return new TranslateError(T('err_gemini_rate', detail), { retryAfter: 20000 });
+  if (status === 503) return new TranslateError(T('err_gemini_busy', detail));
+  if (status >= 500) return new TranslateError(T('err_gemini_server', [status, detail]));
+  return new TranslateError(T('err_gemini_http', [status, detail]), { retryable: false });
 }
 
 async function geminiChunk(texts, source, target, opts, depth) {
@@ -265,7 +270,7 @@ async function geminiChunk(texts, source, target, opts, depth) {
       credentials: 'omit',
     });
   } catch (_) {
-    throw new TranslateError('Gemini sunucusuna bağlanılamadı');
+    throw new TranslateError(T('err_gemini_unreachable'));
   }
   const data = await res.json().catch(() => null);
   if (!res.ok) throw geminiError(res.status, data);
@@ -289,14 +294,22 @@ async function geminiChunk(texts, source, target, opts, depth) {
     return first.concat(second);
   }
   const blocked = (data && data.promptFeedback && data.promptFeedback.blockReason) || (candidate && candidate.finishReason === 'SAFETY');
-  if (blocked) throw new TranslateError('Gemini bu satırları çevirmeyi reddetti', { retryable: false });
-  throw new TranslateError('Gemini beklenmeyen bir yanıt döndürdü');
+  if (blocked) throw new TranslateError(T('err_gemini_refused'), { retryable: false });
+  throw new TranslateError(T('err_gemini_shape'));
 }
 
 async function gemini(texts, source, target, opts) {
   const apiKey = (opts.apiKey || '').trim();
-  if (!apiKey) throw new TranslateError('Gemini API anahtarı girilmemiş (eklenti menüsünden ekleyin)', { retryable: false, fatal: true });
-  return geminiChunk(texts, source, target, { ...opts, apiKey }, 0);
+  if (!apiKey) throw new TranslateError(T('err_gemini_nokey'), { retryable: false, fatal: true });
+  const params = { ...opts, apiKey };
+  try {
+    return await geminiChunk(texts, source, target, params, 0);
+  } catch (err) {
+    // Model yoğunsa (5xx) bir kez daha dene; istek sınırının kendi bekleme süresi var
+    if (!(err instanceof TranslateError) || !err.retryable || err.retryAfter) throw err;
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    return geminiChunk(texts, source, target, params, 0);
+  }
 }
 
 /* ---------- Claude (Anthropic API) ---------- */
@@ -332,15 +345,15 @@ function subtitleUser(texts, context) {
 }
 
 function claudeError(err) {
-  if (err instanceof Anthropic.AuthenticationError) return new TranslateError('Claude API anahtarı geçersiz', { retryable: false, fatal: true });
-  if (err instanceof Anthropic.PermissionDeniedError) return new TranslateError('Bu API anahtarının seçilen modele erişimi yok', { retryable: false, fatal: true });
-  if (err instanceof Anthropic.NotFoundError) return new TranslateError('Seçilen Claude modeli bulunamadı', { retryable: false, fatal: true });
-  if (err instanceof Anthropic.RateLimitError) return new TranslateError('Claude istek sınırına ulaşıldı, birazdan tekrar denenecek', { retryAfter: 15000 });
-  if (err instanceof Anthropic.BadRequestError) return new TranslateError(`Claude isteği kabul etmedi: ${String(err.message).slice(0, 160)}`, { retryable: false });
-  if (err instanceof Anthropic.APIConnectionError) return new TranslateError('Claude sunucusuna bağlanılamadı');
+  if (err instanceof Anthropic.AuthenticationError) return new TranslateError(T('err_claude_badkey'), { retryable: false, fatal: true });
+  if (err instanceof Anthropic.PermissionDeniedError) return new TranslateError(T('err_claude_model_denied'), { retryable: false, fatal: true });
+  if (err instanceof Anthropic.NotFoundError) return new TranslateError(T('err_claude_model_missing'), { retryable: false, fatal: true });
+  if (err instanceof Anthropic.RateLimitError) return new TranslateError(T('err_claude_rate'), { retryAfter: 15000 });
+  if (err instanceof Anthropic.BadRequestError) return new TranslateError(T('err_claude_badrequest', String(err.message).slice(0, 160)), { retryable: false });
+  if (err instanceof Anthropic.APIConnectionError) return new TranslateError(T('err_claude_unreachable'));
   if (err instanceof Anthropic.APIError) {
-    if (err.type === 'billing_error' || err.status === 402) return new TranslateError('Anthropic hesabında yeterli kredi yok', { retryable: false, fatal: true });
-    return new TranslateError(`Claude API hatası (${err.status || 'bilinmiyor'})`, { retryable: !err.status || err.status >= 500 });
+    if (err.type === 'billing_error' || err.status === 402) return new TranslateError(T('err_claude_credit'), { retryable: false, fatal: true });
+    return new TranslateError(T('err_claude_http', err.status || '?'), { retryable: !err.status || err.status >= 500 });
   }
   return new TranslateError(String((err && err.message) || err));
 }
@@ -365,7 +378,7 @@ async function claudeChunk(client, texts, source, target, opts, depth) {
   } catch (err) {
     throw claudeError(err);
   }
-  if (response.stop_reason === 'refusal') throw new TranslateError('Claude bu satırları çevirmeyi reddetti', { retryable: false });
+  if (response.stop_reason === 'refusal') throw new TranslateError(T('err_claude_refused'), { retryable: false });
 
   let list = null;
   if (response.stop_reason !== 'max_tokens') {
@@ -386,12 +399,12 @@ async function claudeChunk(client, texts, source, target, opts, depth) {
     const second = await claudeChunk(client, texts.slice(mid), source, target, { ...opts, context }, depth + 1);
     return first.concat(second);
   }
-  throw new TranslateError('Claude beklenmeyen bir yanıt döndürdü');
+  throw new TranslateError(T('err_claude_shape'));
 }
 
 async function claude(texts, source, target, opts) {
   const apiKey = (opts.apiKey || '').trim();
-  if (!apiKey) throw new TranslateError('Claude API anahtarı girilmemiş (eklenti menüsünden ekleyin)', { retryable: false, fatal: true });
+  if (!apiKey) throw new TranslateError(T('err_claude_nokey'), { retryable: false, fatal: true });
   // Anahtar kullanıcının kendi tarayıcısında kalır; istek doğrudan Anthropic'e gider
   const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true, maxRetries: 2, timeout: 180000 });
   return claudeChunk(client, texts, source, target, opts, 0);

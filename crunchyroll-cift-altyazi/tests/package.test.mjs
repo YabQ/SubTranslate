@@ -53,6 +53,7 @@ test('pakete yalnızca eklentinin çalışma dosyaları girer', () => {
   for (const needed of ['src/background/background.js', 'src/background/vendor/anthropic-sdk.mjs', 'src/content/content.js', 'src/page/hook.js', 'src/popup/popup.html', 'icons/icon128.png']) {
     assert.ok(files.includes(needed), `${needed} pakette olmalı`);
   }
-  assert.ok(files.every((f) => /^(manifest\.json|icons\/|src\/)/.test(f)), 'testler, deneme sayfası ve araçlar pakete girmemeli');
+  assert.ok(files.every((f) => /^(manifest\.json|_locales\/|icons\/|src\/)/.test(f)), 'testler, deneme sayfası ve araçlar pakete girmemeli');
+  assert.ok(files.includes('_locales/en/messages.json') && files.includes('_locales/tr/messages.json'), 'dil dosyaları pakete girmeli');
   assert.ok(files.every((f) => !f.includes('\\')), 'yol ayırıcı her zaman "/"');
 });

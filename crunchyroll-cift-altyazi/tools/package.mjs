@@ -9,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { deflateRawSync } from 'node:zlib';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const RUNTIME = ['manifest.json', 'icons', 'src'];
+const RUNTIME = ['manifest.json', '_locales', 'icons', 'src'];
 
 const CRC_TABLE = (() => {
   const table = new Uint32Array(256);
