@@ -225,6 +225,33 @@
       exact(subs, 'en-US') || base(subs, 'en') || base(caps, 'en') || subs[0] || caps[0] || null;
   }
 
+  const hasDialogue = (cues) => cues.some((c) => c.kind === 'dialogue');
+
+  // Seçilen izin yanındaki aynı dildeki öbür izler. Önce "captions", çünkü
+  // aradığımız konuşma metni orada olur.
+  function siblings(tracks, track) {
+    const same = tracks.filter((t) => t.url && t.url !== track.url && L.sameLanguage(t.lang, track.lang));
+    return [...same.filter((t) => t.kind !== 'subtitles'), ...same.filter((t) => t.kind === 'subtitles')];
+  }
+
+  // İngilizce dublajlı bölümlerde Crunchyroll'un "subtitles" izi yalnızca
+  // tabela ve şarkı sözü taşır, konuşmalar "captions" izindedir. Seçilen izde
+  // hiç konuşma yoksa aynı dilin öbür izlerini sırayla dener.
+  async function dialogueTrack(sess, track) {
+    for (const alt of siblings(sess.payload.tracks, track)) {
+      let parsed = null;
+      try {
+        const text = await fetchText(alt.url);
+        if (!alive(sess)) return null;
+        parsed = Subs.parse(text, alt.format);
+      } catch (_) {
+        continue; // bu iz açılmadı, sıradakine bak
+      }
+      if (hasDialogue(parsed.cues)) return { track: alt, cues: parsed.cues, format: parsed.format };
+    }
+    return null;
+  }
+
   async function fetchText(url) {
     try {
       const res = await fetch(url);
@@ -259,7 +286,14 @@
       if (!alive(sess)) return;
       const parsed = Subs.parse(text, track.format);
       if (!parsed.cues.length) throw new Error(T('ov_parse_failed', parsed.format || track.format || T('st_unknown_format')));
-      sess.primary = { track, cues: parsed.cues, format: parsed.format };
+      let primary = { track, cues: parsed.cues, format: parsed.format };
+      if (!hasDialogue(parsed.cues)) {
+        const spoken = await dialogueTrack(sess, track);
+        if (!alive(sess)) return;
+        // Konuşmayı taşıyan ize geç, tabelaları da yanına kat.
+        if (spoken) primary = { ...spoken, cues: Subs.merge(spoken.cues, parsed.cues) };
+      }
+      sess.primary = primary;
       sess.status = 'ready';
       ensureOverlay();
       renderNow();

@@ -332,6 +332,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
+/* ---------- İlk kurulum ---------- */
+
+// Karşılama sayfası yalnızca eklenti ilk kez kurulduğunda açılır. Sürüm
+// güncellemesi ('update') ya da tarayıcı güncellemesi ('chrome_update')
+// eldeki kullanıcının sekmesini açmaz.
+chrome.runtime.onInstalled.addListener((details) => {
+  if (!details || details.reason !== 'install') return;
+  chrome.tabs.create({ url: chrome.runtime.getURL('src/welcome/welcome.html') }).catch(() => {});
+});
+
 /* ---------- Klavye kısayolları ---------- */
 
 chrome.commands.onCommand.addListener(async (command) => {

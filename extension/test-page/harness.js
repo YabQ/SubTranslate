@@ -128,19 +128,30 @@
     const url = typeof input === 'string' ? input : input.url;
     if (!/\/fake\/playback\/v3\//.test(url)) return nativeFetch(input, init);
     const origin = location.origin;
+    // ?dub=1 → İngilizce dublajlı bölüm: "subtitles" izi yalnızca tabela ve
+    // şarkı sözü taşır, konuşmalar "captions" izindedir. Gerçek hayatta
+    // kullanıcıların "tabelaları çeviriyor ama konuşmaları göstermiyor"
+    // dediği durum bu.
+    const dub = new URLSearchParams(location.search).get('dub') === '1';
     const body = {
-      audioLocale: 'ja-JP',
+      audioLocale: dub ? 'en-US' : 'ja-JP',
       burnedInLocale: '',
       hardSubs: {
         'en-US': { hlang: 'en-US', url: `${origin}/fake/hardsub-en.mpd` },
         none: { hlang: 'none', url: `${origin}/fake/clean.mpd` },
       },
       subtitles: {
-        'en-US': { format: 'ass', language: 'en-US', url: `${origin}/tests/fixtures/sample.ass` },
+        'en-US': {
+          format: 'ass',
+          language: 'en-US',
+          url: `${origin}/tests/fixtures/${dub ? 'signs-only.ass' : 'sample.ass'}`,
+        },
         'es-419': { format: 'vtt', language: 'es-419', url: `${origin}/tests/fixtures/sample-es.vtt` },
         none: { format: 'ass', language: 'none' },
       },
-      captions: {},
+      captions: dub
+        ? { 'en-US': { format: 'ass', language: 'en-US', url: `${origin}/tests/fixtures/sample.ass` } }
+        : {},
     };
     return Promise.resolve(new Response(JSON.stringify(body), { headers: { 'content-type': 'application/json' } }));
   };

@@ -1,0 +1,98 @@
+:root {
+  --bg: #0f1013;
+  --card: #1a1c21;
+  --card-2: #23262d;
+  --line: #2d3038;
+  --text: #ececef;
+  --muted: #9a9ea8;
+  --accent: #f47521;
+  --accent-2: #ff9a4d;
+  --hot: #4dd2ff;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 44px 20px 56px;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.55 "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* ---------- Başlık ---------- */
+
+.top { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+.top img { border-radius: 2px; flex: none; }
+.eyebrow {
+  margin: 0; color: var(--accent); font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.titles h1 { margin: 3px 0 0; font-size: 27px; line-height: 1.2; letter-spacing: -.02em; }
+.lede { margin: 7px 0 0; color: var(--muted); font-size: 15px; }
+
+/* ---------- Adımlar ----------
+   Sayı, Crunchyroll'un turuncu kutusu içinde kartın sol kenarında durur */
+
+.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 12px; }
+.step {
+  counter-increment: step;
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: 2px;
+  padding: 15px 18px 15px 56px;
+}
+.step::before {
+  content: counter(step);
+  position: absolute; top: 15px; left: 16px;
+  width: 24px; height: 24px; border-radius: 2px;
+  background: var(--accent); color: #fff;
+  font: 700 13px/24px inherit; text-align: center;
+}
+.step h2 { margin: 0 0 5px; font-size: 16px; letter-spacing: -.01em; }
+.step p { margin: 0; }
+.aside { margin-top: 8px !important; color: var(--muted); font-size: 13px; }
+
+/* ---------- Düğmeler ---------- */
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.btn {
+  flex: none;
+  display: inline-block;
+  background: var(--card-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 2px;
+  padding: 11px 18px;
+  font: 700 13px/1 inherit; text-decoration: none; cursor: pointer;
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.btn:hover { border-color: var(--accent); }
+.btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+
+.hint { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+
+/* ---------- Değerlendirme ---------- */
+
+.review { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line); }
+.review h2 { margin: 0 0 4px; font-size: 14px; }
+.review p { margin: 0; color: var(--muted); }
+.review a { display: inline-block; margin-top: 8px; color: var(--hot); font-weight: 600; }
+.review a:hover { color: var(--accent-2); }
+
+/* ---------- Dar pencere ---------- */
+
+@media (max-width: 560px) {
+  body { padding: 28px 16px 40px; }
+  .top { gap: 12px; }
+  .top img { width: 44px; height: 44px; }
+  .titles h1 { font-size: 22px; }
+  .lede { font-size: 14px; }
+  .step { padding: 13px 14px 13px 48px; }
+  .step::before { left: 13px; }
+  .actions .btn { flex: 1 1 100%; text-align: center; }
+}

@@ -258,6 +258,23 @@
     return { format, cues };
   }
 
+  const cueKey = (c) => `${Math.round(c.start * 100)}|${c.text}`;
+
+  // İki ayrı izin satırlarını tek listede toplar. Crunchyroll'da İngilizce
+  // dublajlı bölümlerde tabelalar "subtitles" izinde, konuşmalar "captions"
+  // izinde gelir; ikisini birden göstermek için gerekiyor. Kimlikler baştan
+  // veriliyor, çünkü birleşmiş listede sıra değişiyor.
+  function merge(base, extra) {
+    const seen = new Set(base.map(cueKey));
+    const add = extra.filter((c) => !seen.has(cueKey(c)));
+    if (!add.length) return base;
+    const cues = [...base, ...add].sort((a, b) => a.start - b.start || a.order - b.order);
+    cues.forEach((c, i) => {
+      c.id = i;
+    });
+    return cues;
+  }
+
   // Zaman t'de görünen satırlar (dizi başlangıca göre sıralı)
   function activeCues(cues, t) {
     const out = [];
@@ -324,5 +341,5 @@
     return { units, unitOfCue };
   }
 
-  CRDS.subtitles = { parse, detectFormat, activeCues, buildUnits, translationText, parseClock };
+  CRDS.subtitles = { parse, merge, detectFormat, activeCues, buildUnits, translationText, parseClock };
 })();

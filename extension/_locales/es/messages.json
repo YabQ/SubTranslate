@@ -1,0 +1,707 @@
+{
+  "app_name": {
+    "message": "Subtítulos dobles para Crunchyroll"
+  },
+  "app_short_name": {
+    "message": "Subtítulos dobles"
+  },
+  "app_desc": {
+    "message": "Muestra a la vez el subtítulo original de Crunchyroll y su traducción al idioma que elijas."
+  },
+  "cmd_toggle_overlay": {
+    "message": "Activar o desactivar los subtítulos dobles"
+  },
+  "cmd_toggle_translation": {
+    "message": "Mostrar u ocultar la línea de traducción"
+  },
+  "ui_lang": {
+    "message": "Idioma del menú"
+  },
+  "ui_lang_auto": {
+    "message": "Igual que el navegador"
+  },
+  "ui_lang_en": {
+    "message": "English"
+  },
+  "ui_lang_tr": {
+    "message": "Türkçe"
+  },
+  "ui_lang_de": {
+    "message": "Deutsch"
+  },
+  "ui_lang_es": {
+    "message": "Español"
+  },
+  "ui_lang_fr": {
+    "message": "Français"
+  },
+  "ui_lang_pt_BR": {
+    "message": "Português (Brasil)"
+  },
+  "popup_toggle_title": {
+    "message": "Activar o desactivar los subtítulos dobles (Alt+Shift+S)"
+  },
+  "status_reading": {
+    "message": "Leyendo el estado…"
+  },
+  "retry": {
+    "message": "Volver a intentarlo"
+  },
+  "tab_languages": {
+    "message": "Idioma"
+  },
+  "tab_service": {
+    "message": "Servicio"
+  },
+  "tab_look": {
+    "message": "Aspecto"
+  },
+  "tab_player": {
+    "message": "Reproductor"
+  },
+  "tab_notebook": {
+    "message": "Cuaderno"
+  },
+  "lang_primary": {
+    "message": "Subtítulo original"
+  },
+  "lang_target": {
+    "message": "Traducir a"
+  },
+  "lang_in_episode": {
+    "message": "  •  en este episodio"
+  },
+  "prefer_official": {
+    "message": "Usar el subtítulo propio de Crunchyroll en ese idioma cuando exista"
+  },
+  "merge_sentences": {
+    "message": "Traducir enteras las frases partidas en varias líneas"
+  },
+  "model": {
+    "message": "Modelo"
+  },
+  "note_google": {
+    "message": "Gratis y sin necesidad de clave. Rápido, pero traduce línea por línea sin ver la escena."
+  },
+  "deepl_key": {
+    "message": "Clave de API de DeepL"
+  },
+  "note_deepl": {
+    "message": "Una cuenta gratuita de la API de DeepL incluye 500.000 caracteres al mes (un episodio son unos 15.000–20.000). Las claves gratuitas terminan en :fx."
+  },
+  "gemini_key": {
+    "message": "Clave de API de Gemini"
+  },
+  "gemini_key_link": {
+    "message": "Consigue una clave gratis en Google AI Studio"
+  },
+  "note_gemini": {
+    "message": "Tiene en cuenta la escena y las líneas anteriores, así que es claramente mejor que el Traductor de Google. El plan gratuito tiene límites de peticiones; en AI Studio puedes ver qué modelo puedes usar y cuáles son esos límites. Google puede utilizar el contenido enviado en el plan gratuito para mejorar sus productos."
+  },
+  "claude_key": {
+    "message": "Clave de API de Anthropic"
+  },
+  "note_claude": {
+    "message": "Traduce teniendo en cuenta la escena y las líneas anteriores; la mejor calidad. Aproximadamente por episodio de 24 minutos: Opus 5 ≈ 0,30–0,45 $, Sonnet 5 ≈ 0,12–0,18 $, Haiku 4.5 ≈ 0,06 $. Las traducciones se guardan en la caché, así que nunca se paga dos veces por el mismo episodio."
+  },
+  "instructions": {
+    "message": "Tus indicaciones para la traducción (opcional)"
+  },
+  "instructions_ph": {
+    "message": "Ej.: Usa un tono informal. Deja los honoríficos como -san y -kun. No suavices las palabrotas."
+  },
+  "claude_opus": {
+    "message": "Claude Opus 5 — la mejor calidad"
+  },
+  "claude_sonnet": {
+    "message": "Claude Sonnet 5 — equilibrado"
+  },
+  "claude_haiku": {
+    "message": "Claude Haiku 4.5 — el más rápido y económico"
+  },
+  "gemini_38": {
+    "message": "Gemini 3.8 Flash — la mejor calidad"
+  },
+  "gemini_35": {
+    "message": "Gemini 3.5 Flash — equilibrado"
+  },
+  "gemini_35_lite": {
+    "message": "Gemini 3.5 Flash-Lite — el más rápido y con más cuota"
+  },
+  "perm_needed_generic": {
+    "message": "Este servicio necesita permiso."
+  },
+  "perm_needed": {
+    "message": "$1 necesita permiso antes de poder usarse."
+  },
+  "perm_grant": {
+    "message": "Permitir"
+  },
+  "perm_denied": {
+    "message": "✗ no se dio permiso para $1"
+  },
+  "perm_denied_keep": {
+    "message": "✗ no se dio permiso para $1; se sigue usando el servicio anterior."
+  },
+  "test_service": {
+    "message": "Probar el servicio"
+  },
+  "test_no_answer": {
+    "message": "Sin respuesta"
+  },
+  "presets": {
+    "message": "Preajuste"
+  },
+  "preset_desktop": {
+    "message": "Escritorio"
+  },
+  "preset_tv": {
+    "message": "Modo TV"
+  },
+  "preset_tv_title": {
+    "message": "Para ver desde lejos: texto más grande, fondo más oscuro, más arriba"
+  },
+  "preview_orig_before": {
+    "message": "…we can still catch the meteor "
+  },
+  "preview_orig_word": {
+    "message": "shower"
+  },
+  "preview_orig_after": {
+    "message": "."
+  },
+  "preview_tr_before": {
+    "message": "Si nos damos prisa, aún podremos ver la "
+  },
+  "preview_tr_word": {
+    "message": "lluvia"
+  },
+  "preview_tr_after": {
+    "message": " de meteoros."
+  },
+  "show_original": {
+    "message": "Mostrar la línea original"
+  },
+  "show_translation": {
+    "message": "Mostrar la línea de traducción"
+  },
+  "translation_on_top": {
+    "message": "Traducción encima del original"
+  },
+  "show_signs": {
+    "message": "Mostrar también los carteles y los textos en pantalla"
+  },
+  "font_size": {
+    "message": "Tamaño del texto"
+  },
+  "translation_size": {
+    "message": "Tamaño de la traducción"
+  },
+  "bg_opacity": {
+    "message": "Opacidad del fondo"
+  },
+  "bottom_offset": {
+    "message": "Distancia desde abajo"
+  },
+  "color_original": {
+    "message": "Original"
+  },
+  "color_translation": {
+    "message": "Traducción"
+  },
+  "color_word": {
+    "message": "Palabra"
+  },
+  "strip_hardsubs": {
+    "message": "Quitar el subtítulo incrustado en el vídeo"
+  },
+  "strip_hardsubs_hint": {
+    "message": "(se aplica al episodio siguiente o al recargar la página)"
+  },
+  "hide_native": {
+    "message": "Ocultar la capa de subtítulos del propio reproductor"
+  },
+  "lift_with_controls": {
+    "message": "Subir el subtítulo mientras se ven los controles"
+  },
+  "word_lookup": {
+    "message": "Mostrar el significado de una palabra al pasar el ratón"
+  },
+  "word_lookup_hint": {
+    "message": "(con subtítulos dobles; su equivalente en la traducción también se colorea)"
+  },
+  "notebook_save": {
+    "message": "Haz clic en una palabra para guardarla en el cuaderno"
+  },
+  "notebook_save_hint": {
+    "message": "(con su significado, su categoría, la frase y el episodio)"
+  },
+  "vocab_loading": {
+    "message": "Leyendo el cuaderno…"
+  },
+  "vocab_count": {
+    "message": "$1 palabras, encontradas $2 veces. Nunca se borra nada por su cuenta."
+  },
+  "vocab_empty": {
+    "message": "El cuaderno está vacío. Con los subtítulos dobles activados, pasa el ratón por una palabra y haz clic para guardarla aquí."
+  },
+  "open_notebook": {
+    "message": "Abrir el cuaderno de palabras"
+  },
+  "clear_cache": {
+    "message": "Borrar la caché de traducciones"
+  },
+  "cache_cleared": {
+    "message": "se borró la traducción de $1 episodio(s)"
+  },
+  "footer_hint": {
+    "message": " activar/desactivar"
+  },
+  "st_off": {
+    "message": "Desactivado"
+  },
+  "st_off_body": {
+    "message": "Actívalo con el interruptor de arriba a la derecha."
+  },
+  "st_not_crunchyroll": {
+    "message": "No es una pestaña de Crunchyroll"
+  },
+  "st_not_crunchyroll_body": {
+    "message": "Cuando abras un episodio en Crunchyroll, aquí aparecerá su estado."
+  },
+  "st_waiting": {
+    "message": "Esperando la lista de subtítulos"
+  },
+  "st_waiting_body": {
+    "message": "Empieza a reproducir un episodio. Si acabas de instalar la extensión, recarga la página una vez."
+  },
+  "st_loading": {
+    "message": "Cargando el subtítulo…"
+  },
+  "st_failed": {
+    "message": "No se pudo cargar el subtítulo"
+  },
+  "st_ready": {
+    "message": "Listo"
+  },
+  "st_preparing": {
+    "message": "Preparando…"
+  },
+  "st_translating": {
+    "message": "Traduciendo…"
+  },
+  "st_partial": {
+    "message": "La traducción se detuvo a medias"
+  },
+  "st_none": {
+    "message": "No se pudo hacer la traducción"
+  },
+  "st_primary": {
+    "message": "Original: $1 · $2 líneas"
+  },
+  "st_official": {
+    "message": "Traducción: subtítulo propio de Crunchyroll en $1"
+  },
+  "st_same_lang": {
+    "message": "El idioma de destino es el mismo que el original; no se muestra la segunda línea."
+  },
+  "st_translation_off": {
+    "message": "La línea de traducción está desactivada."
+  },
+  "st_progress": {
+    "message": "$1 · $2 · $3/$4"
+  },
+  "st_done": {
+    "message": "Traducción: $1 · $2"
+  },
+  "st_cached": {
+    "message": " (desde la caché)"
+  },
+  "st_stripped": {
+    "message": "Se quitó el subtítulo incrustado en el vídeo."
+  },
+  "st_unknown_format": {
+    "message": "formato desconocido"
+  },
+  "provider_google": {
+    "message": "Traductor de Google"
+  },
+  "service_fallback": {
+    "message": "$1 → $2 (de reserva)"
+  },
+  "ov_no_tracks": {
+    "message": "Este episodio no tiene ningún subtítulo utilizable"
+  },
+  "ov_download_failed": {
+    "message": "No se pudo descargar el archivo de subtítulos$1"
+  },
+  "ov_parse_failed": {
+    "message": "No se pudo leer el archivo de subtítulos ($1)"
+  },
+  "ov_session_error": {
+    "message": "Subtítulos dobles: $1"
+  },
+  "ov_preparing": {
+    "message": "Preparando la traducción… ($1)"
+  },
+  "ov_fallback": {
+    "message": "$1 se detuvo: $2. El Traductor de Google termina el resto."
+  },
+  "ov_translate_unreachable": {
+    "message": "No se pudo contactar con el servicio de traducción"
+  },
+  "ov_translate_stopped": {
+    "message": "Traducción detenida: $1"
+  },
+  "ov_translate_error": {
+    "message": "Error de traducción: $1"
+  },
+  "ov_no_meaning": {
+    "message": "No se encontró ningún significado"
+  },
+  "ov_click_to_save": {
+    "message": "Haz clic para guardarla"
+  },
+  "ov_saving": {
+    "message": "Guardando…"
+  },
+  "ov_saved": {
+    "message": "Guardada en el cuaderno"
+  },
+  "ov_saved_again": {
+    "message": "Guardada en el cuaderno · $1 veces"
+  },
+  "ov_save_failed": {
+    "message": "No se pudo guardar"
+  },
+  "ov_episode": {
+    "message": "Episodio $1"
+  },
+  "err_bad_url": {
+    "message": "dirección no válida"
+  },
+  "err_blocked_host": {
+    "message": "host no permitido: $1"
+  },
+  "err_no_permission": {
+    "message": "No se ha dado permiso para $1. Elige el servicio en el menú de la extensión y concede el permiso."
+  },
+  "err_google_rate": {
+    "message": "Se alcanzó el límite de peticiones del Traductor de Google, se reintentará en breve"
+  },
+  "err_google_unreachable": {
+    "message": "No se pudo contactar con el servidor del Traductor de Google"
+  },
+  "err_google_http": {
+    "message": "Error del Traductor de Google (HTTP $1)"
+  },
+  "err_dict_unreachable": {
+    "message": "No se pudo contactar con el diccionario"
+  },
+  "err_dict_rate": {
+    "message": "Se alcanzó el límite de peticiones del diccionario"
+  },
+  "err_dict_http": {
+    "message": "Error del diccionario (HTTP $1)"
+  },
+  "err_deepl_nokey": {
+    "message": "Falta la clave de API de DeepL (añádela en el menú de la extensión)"
+  },
+  "err_deepl_unreachable": {
+    "message": "No se pudo contactar con el servidor de DeepL"
+  },
+  "err_deepl_badkey": {
+    "message": "La clave de API de DeepL no es válida"
+  },
+  "err_deepl_quota": {
+    "message": "Se agotó la cuota de caracteres de DeepL"
+  },
+  "err_deepl_rate": {
+    "message": "Se alcanzó el límite de peticiones de DeepL, se reintentará en breve"
+  },
+  "err_deepl_http": {
+    "message": "Error de DeepL (HTTP $1)"
+  },
+  "err_deepl_shape": {
+    "message": "DeepL devolvió una respuesta inesperada"
+  },
+  "err_gemini_nokey": {
+    "message": "Falta la clave de API de Gemini (añádela en el menú de la extensión)"
+  },
+  "err_gemini_badkey": {
+    "message": "La clave de API de Gemini no es válida"
+  },
+  "err_gemini_rejected_key": {
+    "message": "La clave de Gemini fue rechazada (HTTP $1)$2"
+  },
+  "err_gemini_model": {
+    "message": "Esta clave no puede usar el modelo de Gemini elegido$1"
+  },
+  "err_gemini_rate": {
+    "message": "Se alcanzó el límite de peticiones de Gemini, se reintentará en breve$1"
+  },
+  "err_gemini_busy": {
+    "message": "El modelo de Gemini está ocupado ahora mismo (HTTP 503)$1"
+  },
+  "err_gemini_server": {
+    "message": "El servidor de Gemini devolvió un error (HTTP $1)$2"
+  },
+  "err_gemini_http": {
+    "message": "Error de Gemini (HTTP $1)$2"
+  },
+  "err_gemini_unreachable": {
+    "message": "No se pudo contactar con el servidor de Gemini"
+  },
+  "err_gemini_refused": {
+    "message": "Gemini se negó a traducir estas líneas"
+  },
+  "err_gemini_shape": {
+    "message": "Gemini devolvió una respuesta inesperada"
+  },
+  "err_claude_nokey": {
+    "message": "Falta la clave de API de Claude (añádela en el menú de la extensión)"
+  },
+  "err_claude_badkey": {
+    "message": "La clave de API de Claude no es válida"
+  },
+  "err_claude_model_denied": {
+    "message": "Esta clave de API no tiene acceso al modelo elegido"
+  },
+  "err_claude_model_missing": {
+    "message": "No se encontró el modelo de Claude elegido"
+  },
+  "err_claude_rate": {
+    "message": "Se alcanzó el límite de peticiones de Claude, se reintentará en breve"
+  },
+  "err_claude_badrequest": {
+    "message": "Claude no aceptó la petición: $1"
+  },
+  "err_claude_unreachable": {
+    "message": "No se pudo contactar con el servidor de Claude"
+  },
+  "err_claude_credit": {
+    "message": "A la cuenta de Anthropic no le queda saldo"
+  },
+  "err_claude_http": {
+    "message": "Error de la API de Claude ($1)"
+  },
+  "err_claude_refused": {
+    "message": "Claude se negó a traducir estas líneas"
+  },
+  "err_claude_shape": {
+    "message": "Claude devolvió una respuesta inesperada"
+  },
+  "nb_title": {
+    "message": "Cuaderno de palabras"
+  },
+  "nb_search_ph": {
+    "message": "Busca una palabra, un significado o una frase"
+  },
+  "nb_all_shows": {
+    "message": "Todas las series"
+  },
+  "nb_all_types": {
+    "message": "Todas las categorías"
+  },
+  "nb_sort_new": {
+    "message": "Más recientes primero"
+  },
+  "nb_sort_old": {
+    "message": "Más antiguas primero"
+  },
+  "nb_sort_az": {
+    "message": "Alfabético"
+  },
+  "nb_sort_count": {
+    "message": "Encontradas más veces"
+  },
+  "nb_empty": {
+    "message": "El cuaderno está vacío. Con los subtítulos dobles activados, pasa el ratón por una palabra y haz clic para guardarla aquí."
+  },
+  "nb_empty_filtered": {
+    "message": "Ninguna entrada coincide con estos filtros."
+  },
+  "nb_summary": {
+    "message": "$1 palabras · encontradas $2 veces · $3 series"
+  },
+  "nb_summary_empty": {
+    "message": "Aún no hay palabras"
+  },
+  "nb_export_anki": {
+    "message": "Descargar un mazo de Anki"
+  },
+  "nb_export_csv": {
+    "message": "Descargar como CSV"
+  },
+  "nb_export_json": {
+    "message": "Descargar como JSON"
+  },
+  "nb_clear_all": {
+    "message": "Borrar todo el cuaderno"
+  },
+  "nb_copy": {
+    "message": "Copiar"
+  },
+  "nb_delete": {
+    "message": "Borrar"
+  },
+  "nb_copy_sentence": {
+    "message": "Copiar la frase"
+  },
+  "nb_label_line": {
+    "message": "Línea"
+  },
+  "nb_label_tr": {
+    "message": "Traducción"
+  },
+  "nb_label_example": {
+    "message": "Ejemplo"
+  },
+  "nb_word": {
+    "message": "Palabra"
+  },
+  "nb_sentence": {
+    "message": "Frase"
+  },
+  "nb_copied": {
+    "message": "$1 copiado"
+  },
+  "nb_copy_failed": {
+    "message": "No se pudo copiar"
+  },
+  "nb_met_times": {
+    "message": "encontrada $1 veces"
+  },
+  "nb_go_to": {
+    "message": "ir al episodio ($1)"
+  },
+  "nb_deleted": {
+    "message": "«$1» borrada"
+  },
+  "nb_cleared": {
+    "message": "Se vació el cuaderno"
+  },
+  "nb_confirm_clear": {
+    "message": "Se borrarán las $1 palabras. Esto no se puede deshacer, ¿seguro que quieres continuar?"
+  },
+  "nb_anki_deck": {
+    "message": "Subtítulos dobles"
+  },
+  "nb_anki_done": {
+    "message": "Archivo de Anki descargado"
+  },
+  "nb_csv_done": {
+    "message": "CSV descargado"
+  },
+  "nb_json_done": {
+    "message": "JSON descargado"
+  },
+  "nb_word_title": {
+    "message": "Copiar o borrar"
+  },
+  "wc_doc_title": {
+    "message": "Te damos la bienvenida a los subtítulos dobles"
+  },
+  "wc_title": {
+    "message": "Todo está listo"
+  },
+  "wc_lede": {
+    "message": "Los subtítulos dobles ya están activados. No hay nada que configurar."
+  },
+  "wc_step1_title": {
+    "message": "Ya funciona"
+  },
+  "wc_step1_body": {
+    "message": "Abre cualquier episodio en Crunchyroll. En unos segundos, el subtítulo original y su traducción aparecen sobre el vídeo, en dos líneas. Sin clave de API y sin cuenta."
+  },
+  "wc_step1_reload": {
+    "message": "¿Ya tienes Crunchyroll abierto en otra pestaña? Recárgala una vez."
+  },
+  "wc_step2_title": {
+    "message": "Los ajustes están en el icono de la barra"
+  },
+  "wc_step2_body": {
+    "message": "El icono está en la barra de herramientas del navegador, a la derecha de la barra de direcciones. Haz clic en él para cambiar los dos idiomas, el aspecto de las líneas y el servicio de traducción."
+  },
+  "wc_step2_pin": {
+    "message": "Si no lo ves, haz clic en la pieza de puzle de la barra de herramientas y fija esta extensión. Un icono sin fijar es el motivo más habitual por el que la gente cree que una extensión no funciona."
+  },
+  "wc_step3_title": {
+    "message": "Guarda las palabras que aprendes"
+  },
+  "wc_step3_body": {
+    "message": "Pasa el ratón por una palabra de la línea original para ver sus significados. Al hacer clic, la palabra se guarda en tu cuaderno junto con la frase y el episodio del que viene."
+  },
+  "wc_step3_anki": {
+    "message": "El cuaderno se puede exportar como mazo de Anki, CSV o JSON."
+  },
+  "wc_cta_watch": {
+    "message": "Abrir Crunchyroll"
+  },
+  "wc_cta_notebook": {
+    "message": "Abrir el cuaderno de palabras"
+  },
+  "wc_settings_hint": {
+    "message": "Los ajustes se abren desde el icono de la barra de herramientas, no desde esta página."
+  },
+  "wc_review_title": {
+    "message": "Un pequeño favor"
+  },
+  "wc_review_body": {
+    "message": "Si la extensión se gana su sitio, una reseña corta ayuda a que otras personas la encuentren."
+  },
+  "wc_review_link": {
+    "message": "Escribir una reseña en Chrome Web Store"
+  },
+  "pos_noun": {
+    "message": "sustantivo"
+  },
+  "pos_verb": {
+    "message": "verbo"
+  },
+  "pos_adjective": {
+    "message": "adjetivo"
+  },
+  "pos_adverb": {
+    "message": "adverbio"
+  },
+  "pos_pronoun": {
+    "message": "pronombre"
+  },
+  "pos_preposition": {
+    "message": "preposición"
+  },
+  "pos_conjunction": {
+    "message": "conjunción"
+  },
+  "pos_interjection": {
+    "message": "interjección"
+  },
+  "pos_exclamation": {
+    "message": "interjección"
+  },
+  "pos_determiner": {
+    "message": "determinante"
+  },
+  "pos_article": {
+    "message": "artículo"
+  },
+  "pos_numeral": {
+    "message": "numeral"
+  },
+  "pos_number": {
+    "message": "numeral"
+  },
+  "pos_abbreviation": {
+    "message": "abreviatura"
+  },
+  "pos_phrase": {
+    "message": "locución"
+  },
+  "pos_prefix": {
+    "message": "prefijo"
+  },
+  "pos_suffix": {
+    "message": "sufijo"
+  }
+}

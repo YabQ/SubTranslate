@@ -11,6 +11,7 @@ globalThis.CRDS.i18n.use(JSON.parse(readFileSync(new URL('../_locales/en/message
 
 const listeners = {};
 const sent = [];
+const opened = [];
 const badges = [];
 const grantedOrigins = new Set();
 const onEvent = (name) => ({ addListener: (fn) => { listeners[name] = fn; } });
@@ -33,8 +34,12 @@ function area() {
 
 globalThis.chrome = {
   storage: { local: area(), session: area(), onChanged: onEvent('storage') },
-  runtime: { onMessage: onEvent('message') },
-  tabs: { onRemoved: onEvent('removed'), sendMessage: async (...args) => { sent.push(args); } },
+  runtime: { onMessage: onEvent('message'), onInstalled: onEvent('installed'), getURL: (path) => `chrome-extension://test/${path}` },
+  tabs: {
+    onRemoved: onEvent('removed'),
+    sendMessage: async (...args) => { sent.push(args); },
+    create: async (options) => { opened.push(options); },
+  },
   action: { setBadgeText: async (o) => { badges.push(o); }, setBadgeBackgroundColor: async () => {} },
   commands: { onCommand: onEvent('command') },
   permissions: { contains: async ({ origins }) => origins.every((o) => grantedOrigins.has(o)) },
@@ -142,6 +147,17 @@ test('klavye kısayolları ayarları değiştirir', async () => {
   assert.equal(chrome.storage.local.data.settings.showTranslation, false);
   await listeners.command('toggle-overlay');
   assert.equal(chrome.storage.local.data.settings.enabled, true);
+});
+
+test('karşılama sayfası yalnızca ilk kurulumda açılır', () => {
+  // Eldeki kullanıcı sürüm yükseltmesinde rahatsız edilmez
+  listeners.installed({ reason: 'update', previousVersion: '1.0.4' });
+  listeners.installed({ reason: 'chrome_update' });
+  listeners.installed(undefined);
+  assert.deepEqual(opened, [], 'güncellemede sayfa açılmaz');
+
+  listeners.installed({ reason: 'install' });
+  assert.deepEqual(opened, [{ url: 'chrome-extension://test/src/welcome/welcome.html' }]);
 });
 
 test('ayarlar: eski claudeInstructions kaydı yeni ada taşınır', () => {

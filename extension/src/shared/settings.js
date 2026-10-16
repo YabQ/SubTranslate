@@ -83,7 +83,8 @@
       } else if (typeof def === 'string') out[key] = String(val);
     }
     if (!PROVIDERS.includes(out.provider)) out.provider = DEFAULTS.provider;
-    if (out.uiLang !== 'auto' && !/^[a-z]{2}$/.test(out.uiLang)) out.uiLang = DEFAULTS.uiLang;
+    // 'en' ya da 'pt-BR' biçimi; tanınmayan bir kod yüklenirken yedek dile düşer
+    if (out.uiLang !== 'auto' && !/^[a-z]{2}(-[A-Z]{2})?$/.test(out.uiLang)) out.uiLang = DEFAULTS.uiLang;
     if (!CLAUDE_MODELS.some((m) => m.id === out.claudeModel)) out.claudeModel = DEFAULTS.claudeModel;
     if (!GEMINI_MODELS.some((m) => m.id === out.geminiModel)) out.geminiModel = DEFAULTS.geminiModel;
     for (const key of ['originalColor', 'translationColor', 'lookupColor']) {

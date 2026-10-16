@@ -26,6 +26,18 @@
   "ui_lang_tr": {
     "message": "Türkçe"
   },
+  "ui_lang_de": {
+    "message": "Deutsch"
+  },
+  "ui_lang_es": {
+    "message": "Español"
+  },
+  "ui_lang_fr": {
+    "message": "Français"
+  },
+  "ui_lang_pt_BR": {
+    "message": "Português (Brasil)"
+  },
   "popup_toggle_title": {
     "message": "Çift altyazıyı aç / kapat (Alt+Shift+S)"
   },
@@ -586,6 +598,60 @@
   },
   "nb_word_title": {
     "message": "Kopyala ya da sil"
+  },
+  "wc_doc_title": {
+    "message": "Çift Altyazı'ya hoş geldin"
+  },
+  "wc_title": {
+    "message": "Her şey hazır"
+  },
+  "wc_lede": {
+    "message": "Çift altyazı şimdiden açık. Ayarlanacak bir şey yok."
+  },
+  "wc_step1_title": {
+    "message": "Zaten çalışıyor"
+  },
+  "wc_step1_body": {
+    "message": "Crunchyroll'da bir bölüm aç. Birkaç saniye içinde orijinal altyazı ve çevirisi, iki satır halinde videonun üzerinde görünür. API anahtarı da hesap da gerekmez."
+  },
+  "wc_step1_reload": {
+    "message": "Crunchyroll başka bir sekmede zaten açıksa, o sekmeyi bir kez yenile."
+  },
+  "wc_step2_title": {
+    "message": "Ayarlar araç çubuğu simgesinde"
+  },
+  "wc_step2_body": {
+    "message": "Simge, tarayıcının araç çubuğunda, adres çubuğunun sağındadır. Tıklayınca iki dili, satırların görünümünü ve çeviri servisini değiştirebilirsin."
+  },
+  "wc_step2_pin": {
+    "message": "Simgeyi göremiyorsan araç çubuğundaki yapboz parçasına tıkla ve bu eklentiyi sabitle. Eklentiyi çalışmıyor sanmanın en yaygın nedeni sabitlenmemiş simgedir."
+  },
+  "wc_step3_title": {
+    "message": "Öğrendiğin kelimeleri sakla"
+  },
+  "wc_step3_body": {
+    "message": "Orijinal satırdaki bir kelimenin üzerine gelince anlamları görünür. Tıkladığında kelime, geçtiği cümleyle ve bölümüyle birlikte kelime defterine yazılır."
+  },
+  "wc_step3_anki": {
+    "message": "Defter, Anki destesi, CSV ya da JSON olarak dışa aktarılabilir."
+  },
+  "wc_cta_watch": {
+    "message": "Crunchyroll'u aç"
+  },
+  "wc_cta_notebook": {
+    "message": "Kelime defterini aç"
+  },
+  "wc_settings_hint": {
+    "message": "Ayarlar bu sayfadan değil, araç çubuğu simgesinden açılır."
+  },
+  "wc_review_title": {
+    "message": "Küçük bir ricam var"
+  },
+  "wc_review_body": {
+    "message": "Eklenti işine yarıyorsa, kısa bir değerlendirme başkalarının da onu bulmasını sağlar."
+  },
+  "wc_review_link": {
+    "message": "Chrome Web Mağazası'nda değerlendirme yaz"
   },
   "pos_noun": {
     "message": "isim"

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Karşılama sayfası önizleme</title>
+  <link rel="stylesheet" href="../src/welcome/welcome.css">
+</head>
+<body>
+  <!-- Karşılama sayfasını sahte "chrome" API'siyle normal bir sayfada gösterir.
+       ?lang=en|tr sayfayı o dilde açar (varsayılan: tarayıcının dili). -->
+  <script>
+    (() => {
+      const lang = new URLSearchParams(location.search).get('lang') || 'auto';
+      const local = { settings: { uiLang: lang } };
+      const listeners = [];
+      const pick = (src, keys) => {
+        const list = keys == null ? Object.keys(src) : [].concat(keys);
+        return Object.fromEntries(list.filter((k) => k in src).map((k) => [k, src[k]]));
+      };
+      window.chrome = {
+        storage: {
+          local: {
+            get: async (k) => pick(local, k),
+            set: async (o) => {
+              Object.assign(local, o);
+              listeners.forEach((fn) => fn(Object.fromEntries(Object.keys(o).map((k) => [k, { newValue: o[k] }])), 'local'));
+            },
+          },
+          onChanged: { addListener: (fn) => listeners.push(fn) },
+        },
+        runtime: {
+          getURL: (path) => '../' + path,
+          sendMessage: async (msg) => { console.log('sendMessage', msg); return null; },
+        },
+      };
+    })();
+
+    fetch('../src/welcome/welcome.html').then((r) => r.text()).then(async (html) => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('script').forEach((s) => s.remove());
+      // Sayfa kök klasörden bir derin olduğu için simgenin yolu kayar
+      for (const img of doc.querySelectorAll('img[src]')) img.setAttribute('src', img.getAttribute('src').replace('../../', '../'));
+      document.body.insertAdjacentHTML('beforeend', doc.body.innerHTML);
+      for (const src of ['../src/shared/i18n.js', '../src/shared/settings.js', '../src/welcome/welcome.js']) {
+        await new Promise((resolve) => {
+          const s = document.createElement('script');
+          s.src = src;
+          s.onload = resolve;
+          document.body.append(s);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

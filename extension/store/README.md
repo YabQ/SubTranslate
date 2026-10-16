@@ -60,7 +60,7 @@ NASIL ÇALIŞIR
 • Merak ettiğin kelimenin üzerine fareyle gel: kelime renklenir, iki Türkçe anlamı çıkar ve çeviri satırında o kelimeyi karşılayan sözcük de aynı renge boyanır.
 • Kelimeye tıklayınca kelime defterine kaydedilir: türü (fiil/isim/sıfat), o cümledeki anlamı, geçtiği replik ve çevirisi, örnek cümle, hangi animenin hangi bölümü. Defter Anki destesi, CSV ya da JSON olarak dışa aktarılır ve kendiliğinden silinmez.
 • TV modu: tek düğmeyle punto, arka plan ve konum uzaktan izlemeye göre ayarlanır.
-• Menü dili tarayıcıya göre açılır (Türkçe ya da İngilizce), menüden değiştirilebilir.
+• Menü dili tarayıcıya göre açılır (Türkçe, İngilizce, Almanca, İspanyolca, Portekizce ya da Fransızca), menüden değiştirilebilir.
 • Çeviri önce izlediğin yerden başlar, ileri sardığında sıra oraya kayar.
 • Çevrilen bölümler tarayıcında saklanır, aynı bölüm tekrar çevrilmez.
 • Tabela ve ekran yazıları da çevrilir.
@@ -83,7 +83,7 @@ Bu eklenti Crunchyroll ile bağlantılı değildir ve Crunchyroll tarafından on
 
 ### Dil (çok dilli liste)
 
-Eklenti 1.0.4'ten beri İngilizce ve Türkçe arayüze sahip; hangisinin açılacağını tarayıcının dili belirler, kullanıcı menüden değiştirebilir. Paketteki ad ve açıklama da `_locales` üzerinden gelir, yani mağazada **İngilizce tarayıcıda İngilizce, Türkçe tarayıcıda Türkçe** görünür.
+Eklenti 1.0.6'dan beri altı dilde arayüze sahip: İngilizce, Türkçe, Almanca, İspanyolca, Portekizce (Brezilya) ve Fransızca. Hangisinin açılacağını tarayıcının dili belirler, kullanıcı menüden değiştirebilir. Paketteki ad ve açıklama da `_locales` üzerinden gelir, yani mağaza kaydı kullanıcının tarayıcı diline göre görünür.
 
 Panelde yapılması gereken: **Mağaza girişi** sekmesinde dil olarak önce **English** eklenip İngilizce açıklama yapıştırılmalı (aşağıda), sonra **Türkçe** eklenip Türkçe açıklama yapıştırılmalı. Varsayılan dili İngilizce yap: kullanıcıların çoğu Türkiye dışında.
 
@@ -155,6 +155,15 @@ DeepL, Gemini and Claude are optional, need the user's own API key, and the brow
 - **Bölgeler:** Tüm bölgeler ya da yalnızca Türkiye.
 
 Son olarak **İncelemeye gönder** düğmesine bas. İnceleme genellikle birkaç gün sürer. Yeni hesaplarda daha uzun sürebilir.
+
+## Yayındaki kayıt
+
+Mağazanın eklentiye verdiği kimlik: **`dokkeifgjdekkeacknhhhkdhmpiooaek`**
+
+| Adres | |
+|---|---|
+| Mağaza sayfası | https://chromewebstore.google.com/detail/dual-subtitles-for-crunch/dokkeifgjdekkeacknhhhkdhmpiooaek |
+| Değerlendirme sayfası | Aynı adresin sonuna `/reviews`. Karşılama sayfasındaki bağlantı buraya gider (`src/welcome/welcome.js` içindeki `STORE_ID`) |
 
 ## 4. Güncelleme yayınlamak
 
@@ -252,7 +261,7 @@ FEATURES
 • Hover a word in the original line to colour it, see two meanings of it and see which word in the translated line carries it.
 • Click that word to file it in a notebook with its part of speech, the meaning it carries in that line, the sentence and the episode it came from. The notebook exports as an Anki deck, CSV or JSON and is never cleared on its own.
 • A TV preset sets the font, backdrop and position for watching from a distance in one click.
-• The menu is in English or Turkish, picked from your browser's language and switchable in the menu itself.
+• The menu is in English, German, Spanish, Brazilian Portuguese, French or Turkish, picked from your browser's language and switchable in the menu itself.
 • Translation starts at the point you are watching and follows you when you skip ahead.
 • Translated episodes are kept in your browser, so the same episode is never translated twice.
 • Signs and on-screen text are translated as well, in a smaller size at the top.
@@ -283,6 +292,24 @@ Crunchyroll'da Türkçe altyazı yoksa bu eklenti bölümün İngilizce altyazı
 Changelog:
 
 ```
+1.0.6
+Episodes watched with an English dub now show the spoken lines. For those
+episodes Crunchyroll puts only signs and song lyrics in the subtitle track
+and keeps the dialogue in a separate captions track, so the extension was
+showing the signs on their own. It now falls back to the track carrying the
+dialogue and keeps the signs alongside it.
+A page opens on the first install explaining that the extension already
+works and where the settings are.
+The interface is now available in German, Spanish, Brazilian Portuguese and
+French as well as English and Turkish.
+The name on the toolbar button follows the interface language instead of
+always being Turkish.
+
+1.0.4
+The interface is available in English as well as Turkish. It opens in the
+language of your browser and can be switched from the menu at any time.
+The translation language is also picked from the browser on first install.
+
 1.0.3
 The menu and the notebook page follow Crunchyroll's own look: square
 corners, orange accents and an underlined tab bar.

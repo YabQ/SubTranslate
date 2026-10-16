@@ -43,6 +43,33 @@ test('ASS: diyalog, italik, satır sonu, tabela ve çizim ayrımı', () => {
   assert.equal(cues.find((c) => c.text === 'La la la~').text, 'La la la~', 'karaoke etiketleri temizlenmeli');
 });
 
+test('ASS: dublaj izinde hiç konuşma yok, hepsi tabela ya da şarkı', () => {
+  const { cues } = Subs.parse(fixture('signs-only.ass'), 'ass');
+  assert.ok(cues.length > 0, 'iz boş olmamalı');
+  assert.ok(!cues.some((c) => c.kind === 'dialogue'), 'konuşma satırı bulunmamalı');
+});
+
+test('merge: konuşma izine tabelalar katılır, kimlikler baştan verilir', () => {
+  const signs = Subs.parse(fixture('signs-only.ass'), 'ass').cues;
+  const spoken = Subs.parse(fixture('sample.ass'), 'ass').cues;
+  const merged = Subs.merge(spoken, signs);
+
+  assert.ok(merged.some((c) => c.kind === 'dialogue'), 'konuşmalar korunmalı');
+  assert.ok(merged.some((c) => c.text === 'Central Library'), 'tabela katılmalı');
+  assert.equal(merged.length, spoken.length + signs.length, 'iki izin tamamı girmeli');
+
+  for (let i = 1; i < merged.length; i++) {
+    assert.ok(merged[i].start >= merged[i - 1].start, 'zamana göre sıralı olmalı');
+  }
+  assert.deepEqual(merged.map((c) => c.id), merged.map((_, i) => i), 'kimlikler 0..n-1 olmalı');
+});
+
+test('merge: aynı anda aynı metin iki kez girmez', () => {
+  const signs = Subs.parse(fixture('signs-only.ass'), 'ass').cues;
+  const merged = Subs.merge(signs, signs.map((c) => ({ ...c })));
+  assert.equal(merged.length, signs.length, 'çift kayıt elenmeli');
+});
+
 test('ASS: satırlar başlangıç zamanına göre sıralanır ve id alır', () => {
   const { cues } = Subs.parse(fixture('sample.ass'));
   for (let i = 1; i < cues.length; i++) assert.ok(cues[i - 1].start <= cues[i].start);

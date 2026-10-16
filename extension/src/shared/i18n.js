@@ -8,28 +8,51 @@
 (() => {
   const CRDS = (globalThis.CRDS = globalThis.CRDS || {});
 
-  const SUPPORTED = ['en', 'tr'];
+  // Dil kodları BCP-47 biçiminde tutulur (pt-BR); klasör ve anahtar adı için
+  // fileId() ile alt çizgiye çevrilir
+  const SUPPORTED = ['en', 'tr', 'de', 'es', 'fr', 'pt-BR'];
   const FALLBACK = 'en';
+
+  // Küçük harfli koddan asıl yazımına: 'pt-br' → 'pt-BR'
+  const BY_TAG = new Map(SUPPORTED.map((code) => [code.toLowerCase(), code]));
 
   let messages = {};
   let active = FALLBACK;
 
+  // Chrome klasör adlarında ve mesaj anahtarlarında alt çizgi ister: pt-BR → pt_BR
+  function fileId(code) {
+    return String(code).replace('-', '_');
+  }
+
+  // 'de-DE' → 'de'; 'pt' ya da 'pt-PT' → 'pt-BR'. Bölge tam tutmasa da aynı
+  // dilin paketi, İngilizceye düşmekten iyidir.
+  function resolve(tag) {
+    const want = tag.toLowerCase().replace('_', '-');
+    if (BY_TAG.has(want)) return BY_TAG.get(want);
+    const base = want.split('-')[0];
+    if (!base) return FALLBACK;
+    if (BY_TAG.has(base)) return BY_TAG.get(base);
+    for (const [key, code] of BY_TAG) {
+      if (key.split('-')[0] === base) return code;
+    }
+    return FALLBACK;
+  }
+
   // 'auto' ise tarayıcının dili, desteklenmiyorsa yedek dil
   function pick(lang) {
     const want = String(lang || 'auto').toLowerCase();
-    if (want !== 'auto') return SUPPORTED.includes(want) ? want : FALLBACK;
+    if (want !== 'auto') return resolve(want);
     let ui = '';
     try {
-      ui = (chrome.i18n.getUILanguage() || '').toLowerCase();
+      ui = chrome.i18n.getUILanguage() || '';
     } catch (_) {
-      ui = String(globalThis.navigator ? navigator.language || '' : '').toLowerCase();
+      ui = String(globalThis.navigator ? navigator.language || '' : '');
     }
-    const base = ui.split('-')[0];
-    return SUPPORTED.includes(base) ? base : FALLBACK;
+    return resolve(ui);
   }
 
   async function fetchBundle(code) {
-    const url = chrome.runtime.getURL(`_locales/${code}/messages.json`);
+    const url = chrome.runtime.getURL(`_locales/${fileId(code)}/messages.json`);
     const res = await fetch(url);
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
@@ -76,7 +99,8 @@
       return key;
     }
     const list = subs == null ? [] : [].concat(subs);
-    return text.replace(/\$(\d)/g, (_m, i) => {
+    // Yalnızca $1..$9 yer tutucudur; "$0.30" gibi para tutarları olduğu gibi kalır
+    return text.replace(/\$([1-9])/g, (_m, i) => {
       const value = list[Number(i) - 1];
       return value == null ? '' : String(value);
     });
@@ -101,5 +125,5 @@
     return active;
   }
 
-  CRDS.i18n = { SUPPORTED, FALLBACK, load, use, t, apply, pick, get lang() { return active; } };
+  CRDS.i18n = { SUPPORTED, FALLBACK, load, use, t, apply, pick, fileId, get lang() { return active; } };
 })();

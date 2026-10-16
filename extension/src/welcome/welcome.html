@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome</title>
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+  <header class="top">
+    <img src="../../icons/icon128.png" width="56" height="56" alt="">
+    <div class="titles">
+      <p class="eyebrow">Crunchyroll</p>
+      <h1 data-i18n="wc_title">You're ready to go</h1>
+      <p class="lede" data-i18n="wc_lede">Dual subtitles are already turned on. There is nothing to set up.</p>
+    </div>
+  </header>
+
+  <ol class="steps">
+    <li class="step">
+      <h2 data-i18n="wc_step1_title">It already works</h2>
+      <p data-i18n="wc_step1_body">Open any episode on Crunchyroll. Within a few seconds the original subtitle and its translation appear over the video, as two lines. No API key, no account.</p>
+      <p class="aside" data-i18n="wc_step1_reload">Is Crunchyroll already open in another tab? Reload it once.</p>
+    </li>
+    <li class="step">
+      <h2 data-i18n="wc_step2_title">The toolbar icon is the settings</h2>
+      <p data-i18n="wc_step2_body">The icon sits in the browser's toolbar, to the right of the address bar. Click it to change the two languages, the look of the lines and the translation service.</p>
+      <p class="aside" data-i18n="wc_step2_pin">If you cannot see it, click the puzzle piece in the toolbar and pin this extension. An unpinned icon is the most common reason people think an extension is not working.</p>
+    </li>
+    <li class="step">
+      <h2 data-i18n="wc_step3_title">Keep the words you learn</h2>
+      <p data-i18n="wc_step3_body">Hover a word in the original line to see its meanings. Click it and the word is filed in your notebook, together with the sentence and the episode it came from.</p>
+      <p class="aside" data-i18n="wc_step3_anki">The notebook exports as an Anki deck, CSV or JSON.</p>
+    </li>
+  </ol>
+
+  <div class="actions">
+    <a class="btn primary" id="watch" href="https://www.crunchyroll.com/" data-i18n="wc_cta_watch">Open Crunchyroll</a>
+    <button type="button" class="btn" id="openNotebook" data-i18n="wc_cta_notebook">Open the word notebook</button>
+  </div>
+  <!-- Ayar menüsü bir sayfadan açılamaz (chrome.action.openPopup eklenti
+       sayfalarına kapalı), bu yüzden yalnızca simge gösterilir -->
+  <p class="hint" data-i18n="wc_settings_hint">The settings open from the toolbar icon, not from this page.</p>
+
+  <footer class="review">
+    <h2 data-i18n="wc_review_title">One small favour</h2>
+    <p data-i18n="wc_review_body">If the extension earns its place, a short review helps other people find it.</p>
+    <a id="review" href="#" target="_blank" rel="noreferrer" data-i18n="wc_review_link">Leave a review on the Chrome Web Store</a>
+  </footer>
+
+  <script src="../shared/i18n.js"></script>
+  <script src="../shared/settings.js"></script>
+  <script src="welcome.js"></script>
+</body>
+</html>

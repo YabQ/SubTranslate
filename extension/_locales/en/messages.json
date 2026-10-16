@@ -26,6 +26,18 @@
   "ui_lang_tr": {
     "message": "Türkçe"
   },
+  "ui_lang_de": {
+    "message": "Deutsch"
+  },
+  "ui_lang_es": {
+    "message": "Español"
+  },
+  "ui_lang_fr": {
+    "message": "Français"
+  },
+  "ui_lang_pt_BR": {
+    "message": "Português (Brasil)"
+  },
   "popup_toggle_title": {
     "message": "Turn the dual subtitles on or off (Alt+Shift+S)"
   },
@@ -586,6 +598,60 @@
   },
   "nb_word_title": {
     "message": "Copy or delete"
+  },
+  "wc_doc_title": {
+    "message": "Welcome to Dual Subtitles"
+  },
+  "wc_title": {
+    "message": "You're ready to go"
+  },
+  "wc_lede": {
+    "message": "Dual subtitles are already turned on. There is nothing to set up."
+  },
+  "wc_step1_title": {
+    "message": "It already works"
+  },
+  "wc_step1_body": {
+    "message": "Open any episode on Crunchyroll. Within a few seconds the original subtitle and its translation appear over the video, as two lines. No API key, no account."
+  },
+  "wc_step1_reload": {
+    "message": "Is Crunchyroll already open in another tab? Reload it once."
+  },
+  "wc_step2_title": {
+    "message": "The toolbar icon is the settings"
+  },
+  "wc_step2_body": {
+    "message": "The icon sits in the browser's toolbar, to the right of the address bar. Click it to change the two languages, the look of the lines and the translation service."
+  },
+  "wc_step2_pin": {
+    "message": "If you cannot see it, click the puzzle piece in the toolbar and pin this extension. An unpinned icon is the most common reason people think an extension is not working."
+  },
+  "wc_step3_title": {
+    "message": "Keep the words you learn"
+  },
+  "wc_step3_body": {
+    "message": "Hover a word in the original line to see its meanings. Click it and the word is filed in your notebook, together with the sentence and the episode it came from."
+  },
+  "wc_step3_anki": {
+    "message": "The notebook exports as an Anki deck, CSV or JSON."
+  },
+  "wc_cta_watch": {
+    "message": "Open Crunchyroll"
+  },
+  "wc_cta_notebook": {
+    "message": "Open the word notebook"
+  },
+  "wc_settings_hint": {
+    "message": "The settings open from the toolbar icon, not from this page."
+  },
+  "wc_review_title": {
+    "message": "One small favour"
+  },
+  "wc_review_body": {
+    "message": "If the extension earns its place, a short review helps other people find it."
+  },
+  "wc_review_link": {
+    "message": "Leave a review on the Chrome Web Store"
   },
   "pos_noun": {
     "message": "noun"

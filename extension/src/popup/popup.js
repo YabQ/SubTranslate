@@ -71,7 +71,11 @@
   }
 
   function fillUiLang() {
-    const options = [option('auto', T('ui_lang_auto')), ...I18n.SUPPORTED.map((code) => option(code, T(`ui_lang_${code}`)))];
+    // Anahtar adı klasör gibi alt çizgili: pt-BR → ui_lang_pt_BR
+    const options = [
+      option('auto', T('ui_lang_auto')),
+      ...I18n.SUPPORTED.map((code) => option(code, T(`ui_lang_${I18n.fileId(code)}`))),
+    ];
     $('#uiLang').replaceChildren(...options);
     $('#uiLang').value = current.uiLang;
   }

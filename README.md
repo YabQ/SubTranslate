@@ -10,7 +10,7 @@ A Chrome extension that shows the **original Crunchyroll subtitle and its transl
 - **Your choice of service:** Google Translate (free, no key), DeepL, Google Gemini or Anthropic Claude with your own API key. If a key or quota runs out mid-episode, the rest is finished with Google Translate instead of stopping.
 - **Word lookup:** hover a word to see two meanings of it and which word carries it in the translation.
 - **Word notebook:** click that word to file it with its part of speech, the sentence it came from, an example and the episode. Exports as an Anki deck, CSV or JSON.
-- **Interface in English or Turkish**, following the browser and switchable in the menu.
+- **Interface in six languages** — English, Turkish, German, Spanish, Brazilian Portuguese and French — following the browser and switchable in the menu.
 
 ![The menu in English and in Turkish](extension/store/gorseller/3-menu.png)
 

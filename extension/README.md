@@ -31,7 +31,7 @@ When Crunchyroll has no subtitle in your language, the extension translates the 
 
 ## Languages
 
-The interface opens in the browser's language: English in an English Chrome, Turkish in a Turkish one. It can also be set by hand from **Languages → Menu language** in the popup, and the choice applies at once. The strings live in `_locales/en` and `_locales/tr`; adding a language is a matter of copying that folder and translating it.
+The interface opens in the browser's language: English in an English Chrome, German in a German one. English, Turkish, German, Spanish, Brazilian Portuguese and French are available, and anything else falls back to English. It can also be set by hand from **Languages → Menu language** in the popup, and the choice applies at once. The strings live in `_locales/<code>`; adding a language is a matter of copying one of those folders and translating it, then listing the code in `SUPPORTED` in `src/shared/i18n.js`.
 
 On a fresh install the target language is taken from the browser as well (German in a German browser), and can be changed afterwards.
 
@@ -120,7 +120,7 @@ By hand:
 ```
 extension/
 ├── manifest.json
-├── _locales/                   Interface strings (en, tr)
+├── _locales/                   Interface strings (en, tr, de, es, fr, pt_BR)
 ├── src/
 │   ├── page/hook.js            Page world: reads the playback response, removes the hardsub
 │   ├── content/                Content scripts: parser, overlay, orchestration
@@ -128,6 +128,7 @@ extension/
 │   │   └── vendor/             Bundled Anthropic SDK (single file)
 │   ├── popup/                  The extension menu
 │   ├── notebook/               The word notebook page
+│   ├── welcome/                The page shown once, on the first install
 │   └── shared/                 Language codes, settings, i18n, stem matching, notebook records
 ├── store/                      Publishing guide, privacy policy, store images
 ├── tests/                      node --test tests and sample subtitles
@@ -136,7 +137,7 @@ extension/
 └── dist/                       npm run package output (not in git)
 ```
 
-- **Tests:** `npm test` (Node 20+). 52 tests covering the parsers, the hook, the translation services, stem matching, notebook records, the background worker and packaging.
+- **Tests:** `npm test` (Node 20+). 56 tests covering the parsers, the hook, the translation services, stem matching, notebook records, the background worker and packaging.
 - **Package:** `npm run package` writes the store package and the manual-install package (with `KURULUM.txt` inside) into `dist/`.
 - **Try-out page:** serve the folder over HTTP (`npx http-server extension -p 5612`) and open `http://localhost:5612/test-page/index.html`. The real scripts run against a fake Bitmovin player and a fake `chrome` API. `test-page/popup-preview.html` shows the menu (`?lang=en|tr`, `?tab=…`), `test-page/notebook-preview.html` the notebook (`?s=empty` for the empty state). The store images are screenshots of `store-shot.html?view=altyazi|tabela|menu|servisler` at 1280×800 (and `tile` / `marquee` at 440×280 and 1400×560). The Opera store wants 612×408 on a white background, so its images come from `opera-shot.html?view=altyazi|tabela|menu|servisler|tanitim`.
 - **Updating the Anthropic SDK:** `npm install`, then `npm run vendor`.
