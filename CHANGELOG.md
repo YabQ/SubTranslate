@@ -5,6 +5,17 @@ The version here is the version published on the
 Each release is tagged, so `v1.0.6` in this repository is the build the store
 is serving as 1.0.6.
 
+## 1.0.8
+
+- **The second line no longer disappears when the episode has no track in
+  your original language.** Choosing the original line fell back to "the
+  first track there is", and on an episode dubbed into your own language
+  that first track was your language, which left nothing to translate and so
+  nothing to show. A track in a language other than your translation
+  language is now preferred for the original line, and the honest "nothing
+  to translate here" state is kept for when there genuinely is no other
+  language.
+
 ## 1.0.7
 
 - **Every dub language, not just English.** 1.0.6 only half fixed this. The

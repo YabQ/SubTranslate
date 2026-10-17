@@ -215,14 +215,22 @@
     state.seq++;
   }
 
-  function pickPrimary(tracks, preferred) {
+  function pickPrimary(tracks, preferred, target) {
     const usable = tracks.filter((t) => t.url && L.normalizeLocale(t.lang) !== 'none');
     const subs = usable.filter((t) => t.kind === 'subtitles');
     const caps = usable.filter((t) => t.kind !== 'subtitles');
     const exact = (list, code) => list.find((t) => L.normalizeLocale(t.lang) === L.normalizeLocale(code));
     const base = (list, code) => list.find((t) => L.baseLang(t.lang) === L.baseLang(code));
+    // Son çare olarak çeviri dilinin kendisini orijinal satır yapmak eklentiyi
+    // işlevsiz bırakıyor: çevrilecek bir şey kalmıyor ve ikinci satır hiç
+    // gelmiyor. Türkçe dublajlı bir bölümde yalnızca Türkçe izler bulunduğunda
+    // olan buydu. Önce hedef dilden farklı bir iz aranıyor; gerçekten başka
+    // dil yoksa hedef dildeki ize düşülüyor ve "çevrilecek bir şey yok"
+    // durumu dürüst biçimde gösteriliyor.
+    const other = (list) => list.find((t) => !L.sameLanguage(target, t.lang));
     return exact(subs, preferred) || exact(caps, preferred) || base(subs, preferred) || base(caps, preferred) ||
-      exact(subs, 'en-US') || base(subs, 'en') || base(caps, 'en') || subs[0] || caps[0] || null;
+      exact(subs, 'en-US') || base(subs, 'en') || base(caps, 'en') ||
+      other(subs) || other(caps) || subs[0] || caps[0] || null;
   }
 
   const dialogueCount = (cues) => cues.filter((c) => c.kind === 'dialogue').length;
@@ -294,7 +302,7 @@
     state.session = sess;
     pushStatus();
     try {
-      const track = pickPrimary(payload.tracks, s.primaryLang);
+      const track = pickPrimary(payload.tracks, s.primaryLang, s.targetLang);
       if (!track) throw new Error(T('ov_no_tracks'));
       const text = await fetchText(track.url);
       if (!alive(sess)) return;

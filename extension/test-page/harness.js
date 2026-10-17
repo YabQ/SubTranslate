@@ -132,7 +132,24 @@
     // şarkı sözü taşır, konuşmalar "captions" izindedir. Gerçek hayatta
     // kullanıcıların "tabelaları çeviriyor ama konuşmaları göstermiyor"
     // dediği durum bu.
-    const dub = new URLSearchParams(location.search).get('dub') === '1';
+    const q = new URLSearchParams(location.search);
+    const dub = q.get('dub') === '1';
+    // ?dub=tr → Türkçe dublajlı bölüm: İngilizce iz hiç yok, ilk sıradaki iz
+    // hedef dilin kendisi. Eklenti buna takılıp "çevrilecek bir şey yok"
+    // diyordu; orijinal satır için hedef dilden farklı bir iz seçmeli.
+    if (q.get('dub') === 'tr') {
+      const body = {
+        audioLocale: 'tr-TR',
+        burnedInLocale: '',
+        hardSubs: { none: { hlang: 'none', url: `${origin}/fake/clean.mpd` } },
+        subtitles: {
+          'tr-TR': { format: 'ass', language: 'tr-TR', url: `${origin}/tests/fixtures/signs-only.ass` },
+          'de-DE': { format: 'ass', language: 'de-DE', url: `${origin}/tests/fixtures/sample.ass` },
+        },
+        captions: {},
+      };
+      return Promise.resolve(new Response(JSON.stringify(body), { headers: { 'content-type': 'application/json' } }));
+    }
     const body = {
       audioLocale: dub ? 'en-US' : 'ja-JP',
       burnedInLocale: '',

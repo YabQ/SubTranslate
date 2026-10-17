@@ -292,6 +292,13 @@ Crunchyroll'da Türkçe altyazı yoksa bu eklenti bölümün İngilizce altyazı
 Changelog:
 
 ```
+1.0.8
+The second line no longer disappears when the episode carries no track in
+your original language. Picking the original line fell back to the first
+track available, and on an episode dubbed into your own language that was
+your language, which left nothing to translate. A track in some other
+language is now preferred for the original line.
+
 1.0.7
 Finishes the dubbed-episode fix that 1.0.6 only half made. The signs track
 Crunchyroll serves for a dub also carries the song lyrics, and those sit at
