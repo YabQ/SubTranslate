@@ -53,7 +53,9 @@ test('pakete yalnızca eklentinin çalışma dosyaları girer', () => {
   for (const needed of ['src/background/background.js', 'src/background/vendor/anthropic-sdk.mjs', 'src/content/content.js', 'src/page/hook.js', 'src/popup/popup.html', 'src/welcome/welcome.html', 'icons/icon128.png']) {
     assert.ok(files.includes(needed), `${needed} pakette olmalı`);
   }
-  assert.ok(files.every((f) => /^(manifest\.json|_locales\/|icons\/|src\/)/.test(f)), 'testler, deneme sayfası ve araçlar pakete girmemeli');
+  // GPL-3.0 lisans metninin programla birlikte iletilmesini şart koşuyor
+  assert.ok(files.includes('LICENSE'), 'LICENSE pakete girmeli');
+  assert.ok(files.every((f) => /^(manifest\.json|LICENSE|_locales\/|icons\/|src\/)/.test(f)), 'testler, deneme sayfası ve araçlar pakete girmemeli');
   for (const code of ['en', 'tr', 'de', 'es', 'fr', 'pt_BR']) {
     assert.ok(files.includes(`_locales/${code}/messages.json`), `_locales/${code} pakete girmeli`);
   }

@@ -151,3 +151,11 @@ Source comments are in Turkish, the author's language; everything the user sees 
 - Chromium-based browsers only (Chrome 111+, Edge, Brave, Opera). Firefox is not supported.
 - Machine translation makes mistakes. Anime slang and wordplay come out best with Claude.
 - A word's part of speech and "the meaning used in this line" are guesses drawn from free dictionary data. The counterpart is looked for by stem similarity, so in compounds like "meteor shower" the part of speech can come out wrong (verb instead of noun). The subtitle line and its translation filed in the notebook are always correct.
+
+## Licence
+
+[GNU General Public License v3.0](LICENSE). You may use, study, change and share this code; anything you build on it has to stay under the same licence and stay open.
+
+The bundled Anthropic SDK under `src/background/vendor/` is third-party code and keeps its own MIT licence, in `anthropic-sdk.LICENSE.txt` beside it.
+
+This extension is not affiliated with or endorsed by Crunchyroll. Crunchyroll is a trademark of Crunchyroll, LLC.

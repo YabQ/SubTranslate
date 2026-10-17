@@ -26,6 +26,12 @@ Everything else — features, settings, how it reads the player, troubleshooting
 
 Subtitle text is sent only to the translation service you select; nothing goes to the developer, and there is no analytics or tracking code. API keys stay in your browser. The full policy, in English and Turkish, is at [privacy-policy.html](https://yabq.github.io/SubTranslate/privacy-policy.html).
 
+## Licence
+
+[GNU General Public License v3.0](LICENSE). You may use, study, change and share this code; anything you build on it has to stay under the same licence and stay open.
+
+The bundled Anthropic SDK under `extension/src/background/vendor/` is third-party code and keeps its own MIT licence, in `anthropic-sdk.LICENSE.txt` beside it.
+
 ## Notes
 
 This extension is not affiliated with or endorsed by Crunchyroll. Crunchyroll is a trademark of Crunchyroll, LLC. You need the right to watch the episode; the extension does not download video, it only draws subtitles.
