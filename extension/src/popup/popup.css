@@ -192,6 +192,7 @@ select:focus, input:focus, textarea:focus { outline: none; border-color: var(--a
 .provider-panel { display: none; }
 .provider-panel.active { display: block; }
 .note { color: var(--muted); font-size: 12px; margin: 4px 0 8px; }
+.ver { opacity: .55; margin-left: 6px; }
 
 .row { display: flex; align-items: center; gap: 8px; }
 .btn {

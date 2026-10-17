@@ -60,6 +60,7 @@
         },
         runtime: {
           getURL: (path) => '../' + path,
+          getManifest: () => ({ version: '1.0.6' }),
           sendMessage: async (msg) => {
             if (msg.type === 'test-provider') return { ok: true, translations: ['Hey, uzun zamandır görüşemedik! Nasılsın?'] };
             if (msg.type === 'cache-clear') return 3;

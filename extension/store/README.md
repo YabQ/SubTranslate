@@ -292,6 +292,15 @@ Crunchyroll'da Türkçe altyazı yoksa bu eklenti bölümün İngilizce altyazı
 Changelog:
 
 ```
+1.0.7
+Finishes the dubbed-episode fix that 1.0.6 only half made. The signs track
+Crunchyroll serves for a dub also carries the song lyrics, and those sit at
+the bottom of the screen like ordinary lines, so the extension read the
+track as if it held dialogue and never looked for the real one. It now
+compares how much dialogue each track in that language actually carries and
+takes the fullest, which covers every dub language rather than only English.
+The menu footer shows the version, so a problem can be matched to a build.
+
 1.0.6
 Episodes watched with an English dub now show the spoken lines. For those
 episodes Crunchyroll puts only signs and song lyrics in the subtitle track

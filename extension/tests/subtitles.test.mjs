@@ -43,19 +43,30 @@ test('ASS: diyalog, italik, satır sonu, tabela ve çizim ayrımı', () => {
   assert.equal(cues.find((c) => c.text === 'La la la~').text, 'La la la~', 'karaoke etiketleri temizlenmeli');
 });
 
-test('ASS: dublaj izinde hiç konuşma yok, hepsi tabela ya da şarkı', () => {
-  const { cues } = Subs.parse(fixture('signs-only.ass'), 'ass');
-  assert.ok(cues.length > 0, 'iz boş olmamalı');
-  assert.ok(!cues.some((c) => c.kind === 'dialogue'), 'konuşma satırı bulunmamalı');
+// Dublaj izini "hiç diyalog yok" diye ayırt etmek yetmiyor: alttaki şarkı
+// sözleri konuşma sayılıyor. Ayırt edici olan, bir bölüme göre ne kadar ince
+// olduğu. Bu test o tuzağı sabitliyor.
+test('ASS: dublaj izi konuşma taşıyormuş gibi görünür ama incedir', () => {
+  const signs = Subs.parse(fixture('signs-only.ass'), 'ass').cues;
+  const spoken = Subs.parse(fixture('sample.ass'), 'ass').cues;
+  const count = (cues) => cues.filter((c) => c.kind === 'dialogue').length;
+
+  assert.ok(signs.length > 0, 'iz boş olmamalı');
+  assert.ok(count(signs) > 0, 'şarkı sözleri konuşma gibi görünür, ölçüt bu olamaz');
+  assert.ok(count(signs) < count(spoken), 'dublaj izi konuşma izinden ince olmalı');
+  assert.ok(signs.some((c) => c.kind === 'sign'), 'tabelalar tabela olarak tanınmalı');
 });
 
 test('merge: konuşma izine tabelalar katılır, kimlikler baştan verilir', () => {
-  const signs = Subs.parse(fixture('signs-only.ass'), 'ass').cues;
+  // İçerik betiği yalnızca konuşma olmayan satırları aktarıyor, çünkü şarkı
+  // sözleri iki izde birden bulunabiliyor.
+  const signs = Subs.parse(fixture('signs-only.ass'), 'ass').cues.filter((c) => c.kind !== 'dialogue');
   const spoken = Subs.parse(fixture('sample.ass'), 'ass').cues;
   const merged = Subs.merge(spoken, signs);
 
   assert.ok(merged.some((c) => c.kind === 'dialogue'), 'konuşmalar korunmalı');
   assert.ok(merged.some((c) => c.text === 'Central Library'), 'tabela katılmalı');
+  assert.ok(!merged.some((c) => c.text.startsWith('Along the road')), 'şarkı sözü aktarılmamalı');
   assert.equal(merged.length, spoken.length + signs.length, 'iki izin tamamı girmeli');
 
   for (let i = 1; i < merged.length; i++) {

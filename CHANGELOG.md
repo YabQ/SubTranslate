@@ -5,6 +5,19 @@ The version here is the version published on the
 Each release is tagged, so `v1.0.6` in this repository is the build the store
 is serving as 1.0.6.
 
+## 1.0.7
+
+- **Every dub language, not just English.** 1.0.6 only half fixed this. The
+  signs track Crunchyroll serves for a dub also carries the song lyrics, and
+  those sit at the bottom of the screen like ordinary lines, so the extension
+  read the track as though it held dialogue and never went looking for the
+  real one. The test fixture put the lyrics at the top of the screen, which
+  is why the gap slipped through. The rule is no longer "does this track have
+  any dialogue" but "how much": the tracks in that language are compared and
+  the fullest one wins.
+- The menu footer shows the version, so a reported problem can be matched to
+  the build it came from.
+
 ## 1.0.6
 
 - **Dubbed episodes show the spoken lines again.** On an episode watched with

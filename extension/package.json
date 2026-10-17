@@ -1,6 +1,6 @@
 {
   "name": "crunchyroll-cift-altyazi",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "private": true,
   "description": "Crunchyroll için çift altyazı (orijinal + çeviri) Chrome eklentisi",
   "type": "module",

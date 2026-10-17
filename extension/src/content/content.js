@@ -225,7 +225,11 @@
       exact(subs, 'en-US') || base(subs, 'en') || base(caps, 'en') || subs[0] || caps[0] || null;
   }
 
-  const hasDialogue = (cues) => cues.some((c) => c.kind === 'dialogue');
+  const dialogueCount = (cues) => cues.filter((c) => c.kind === 'dialogue').length;
+
+  // Bir bölümde yüzlerce replik olur. Bundan azını taşıyan bir iz konuşma izi
+  // değildir; tabela ve şarkı sözü izidir.
+  const THIN = 40;
 
   // Seçilen izin yanındaki aynı dildeki öbür izler. Önce "captions", çünkü
   // aradığımız konuşma metni orada olur.
@@ -234,10 +238,15 @@
     return [...same.filter((t) => t.kind !== 'subtitles'), ...same.filter((t) => t.kind === 'subtitles')];
   }
 
-  // İngilizce dublajlı bölümlerde Crunchyroll'un "subtitles" izi yalnızca
-  // tabela ve şarkı sözü taşır, konuşmalar "captions" izindedir. Seçilen izde
-  // hiç konuşma yoksa aynı dilin öbür izlerini sırayla dener.
-  async function dialogueTrack(sess, track) {
+  // Japonca dışında bir dublajla izlerken Crunchyroll'un o dildeki "subtitles"
+  // izi yalnızca tabela ve şarkı sözü taşır; konuşmalar ayrı "captions"
+  // izindedir. Şarkı sözleri çoğu zaman ekranın altında, normal satır
+  // hizasında geldiği için "hiç konuşma yok" ölçütü yetmiyor — o satırlar
+  // konuşma sayılıyor. Bu yüzden ölçüt sayı: bölüme göre fazla ince olan iz
+  // şüphelidir ve aynı dilin izleri arasında en çok konuşma taşıyan aranır.
+  async function richerTrack(sess, track, have) {
+    let best = null;
+    let bestCount = have;
     for (const alt of siblings(sess.payload.tracks, track)) {
       let parsed = null;
       try {
@@ -247,9 +256,14 @@
       } catch (_) {
         continue; // bu iz açılmadı, sıradakine bak
       }
-      if (hasDialogue(parsed.cues)) return { track: alt, cues: parsed.cues, format: parsed.format };
+      const count = dialogueCount(parsed.cues);
+      if (count > bestCount) {
+        best = { track: alt, cues: parsed.cues, format: parsed.format };
+        bestCount = count;
+      }
+      if (bestCount >= THIN) break; // yeterince dolu bir iz bulundu, aramayı uzatma
     }
-    return null;
+    return best;
   }
 
   async function fetchText(url) {
@@ -287,11 +301,17 @@
       const parsed = Subs.parse(text, track.format);
       if (!parsed.cues.length) throw new Error(T('ov_parse_failed', parsed.format || track.format || T('st_unknown_format')));
       let primary = { track, cues: parsed.cues, format: parsed.format };
-      if (!hasDialogue(parsed.cues)) {
-        const spoken = await dialogueTrack(sess, track);
+      const have = dialogueCount(parsed.cues);
+      if (have < THIN) {
+        const spoken = await richerTrack(sess, track, have);
         if (!alive(sess)) return;
-        // Konuşmayı taşıyan ize geç, tabelaları da yanına kat.
-        if (spoken) primary = { ...spoken, cues: Subs.merge(spoken.cues, parsed.cues) };
+        // Konuşmayı taşıyan ize geç, tabelaları da yanına kat. Yalnızca
+        // tabela ve üst satırlar aktarılıyor: şarkı sözleri iki izde birden
+        // bulunabiliyor ve aynı satırı iki kez göstermek istemiyoruz.
+        if (spoken) {
+          const signs = parsed.cues.filter((c) => c.kind !== 'dialogue');
+          primary = { ...spoken, cues: Subs.merge(spoken.cues, signs) };
+        }
       }
       sess.primary = primary;
       sess.status = 'ready';

@@ -98,6 +98,13 @@
     $('#targetLang').replaceChildren(...targets.map((c) => option(c, L.displayName(c))));
     $('#claudeModel').replaceChildren(...S.CLAUDE_MODELS.map((m) => option(m.id, T(m.key))));
     $('#geminiModel').replaceChildren(...S.GEMINI_MODELS.map((m) => option(m.id, T(m.key))));
+    // Sürüm burada yazılı olmazsa, bir kullanıcı hata bildirdiğinde hangi
+    // yapıyı çalıştırdığı anlaşılmıyor.
+    try {
+      $('#version').textContent = `v${chrome.runtime.getManifest().version}`;
+    } catch (_) {
+      /* manifest okunamadıysa boş kalsın */
+    }
   }
 
   function updateOutput(key, value) {
