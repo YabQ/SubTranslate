@@ -2,6 +2,8 @@
 
 A Chrome extension that shows the **original Crunchyroll subtitle and its translation at the same time**, as two lines over the video — for watching a show in a language your Crunchyroll account has no subtitles for.
 
+**Version 1.0.6** — the same code that is published on the [Chrome Web Store](https://chromewebstore.google.com/detail/dual-subtitles-for-crunch/dokkeifgjdekkeacknhhhkdhmpiooaek). Every release is tagged here, and what changed in each one is in the [changelog](CHANGELOG.md).
+
 ![The original subtitle and its translation over the video](extension/store/gorseller/1-cift-altyazi.png)
 
 ## What it does
